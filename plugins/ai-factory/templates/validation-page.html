@@ -1,0 +1,211 @@
+<title>Pilot validation</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one working column, the summary first, one card per action grouped by state. */
+:root {
+  --bg: #f3f4f6; --surface: #ffffff; --ink: #1c2230; --muted: #5d6677; --line: #d9dde5;
+  --accent: #2f4fb5; --accent-ink: #ffffff;
+  --wait: #9a5b00; --wait-bg: #fdf1dc; --ok: #1d6b45; --ok-bg: #e2f3ea;
+  --bad: #a3262c; --bad-bg: #fbe6e7; --edit: #5a3fa8; --edit-bg: #ede8fa; --info-bg: #e7ecfa;
+  --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #12151c; --surface: #1b1f29; --ink: #e6e9f0; --muted: #9aa3b5; --line: #2e3443;
+  --accent: #7d97f0; --accent-ink: #10131a;
+  --wait: #f0b65a; --wait-bg: #3a2a10; --ok: #6fd0a0; --ok-bg: #12301f;
+  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; --info-bg: #1f2740; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #12151c; --surface: #1b1f29; --ink: #e6e9f0; --muted: #9aa3b5; --line: #2e3443;
+  --accent: #7d97f0; --accent-ink: #10131a;
+  --wait: #f0b65a; --wait-bg: #3a2a10; --ok: #6fd0a0; --ok-bg: #12301f;
+  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; --info-bg: #1f2740; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); }
+.wrap { max-width: 900px; margin: 0 auto; padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 20px; }
+header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
+h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
+h2 { font-size: 13px; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+.counts { display: flex; gap: 8px; flex-wrap: wrap; }
+.count { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.count b { font-weight: 600; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; }
+.filters button { font: inherit; font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 10px; }
+.list { display: flex; flex-direction: column; gap: 10px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.card.human { border-left: 4px solid var(--wait); border-radius: 0 10px 10px 0; }
+.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.key { font-family: var(--mono); font-weight: 500; color: var(--accent); }
+.chip { font-size: 12px; padding: 1px 8px; border-radius: 6px; background: var(--info-bg); color: var(--ink); }
+.st { font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 6px; }
+.st-pending { background: var(--wait-bg); color: var(--wait); }
+.st-ok, .st-done { background: var(--ok-bg); color: var(--ok); }
+.st-rejected, .st-failed { background: var(--bad-bg); color: var(--bad); }
+.st-changed { background: var(--edit-bg); color: var(--edit); }
+.date { margin-left: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.summary { font-weight: 500; margin: 0; }
+pre { margin: 0; font: 13px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; max-height: 320px; overflow: auto; }
+.files { font: 12px var(--mono); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.note { font-size: 13px; color: var(--muted); }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
+.actions button { font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+.actions button.danger { color: var(--bad); }
+.actions button:disabled { opacity: 0.5; cursor: wait; }
+button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+textarea { font: 14px/1.4 var(--sans); width: 100%; min-height: 70px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); box-sizing: border-box; }
+.edit { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 20px; color: var(--muted); }
+.err { color: var(--bad); font-size: 13px; }
+details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Pilot validation</h1>
+    <div class="counts" id="counts"><span class="count">Loading…</span></div>
+  </header>
+  <div class="filters" role="group" aria-label="Pilot">
+    <button type="button" data-f="all" aria-pressed="true">All</button>
+    <button type="button" data-f="support" aria-pressed="false">Support</button>
+    <button type="button" data-f="dev" aria-pressed="false">Dev</button>
+  </div>
+  <section aria-labelledby="h-pending">
+    <h2 id="h-pending">To approve</h2>
+    <div id="pending" class="empty">The support and dev pilots put here every action that waits for you: an answer to a requester, a status change, a plan, a merge request. OK runs it on the next tick; Change sends it back to the pilot with your instruction.</div>
+  </section>
+  <section aria-labelledby="h-tasks">
+    <h2 id="h-tasks">Tasks for you</h2>
+    <div id="tasks" class="empty">Scripts to run yourself and other manual steps will appear here. Tick Done once it is done: the pilot then sends what follows.</div>
+  </section>
+  <section aria-labelledby="h-history">
+    <h2 id="h-history">Handled in the last 7 days</h2>
+    <div id="history" class="empty">Nothing yet.</div>
+  </section>
+</div>
+
+<script>
+const TYPES = { comment: "Answer", transition: "Status change", assign: "Assignment", create_ticket: "New ticket", human_task: "Task for you", plan: "Plan", ship: "Push and MR/PR", review_answers: "Review answers", merge_staging: "Merge to staging" };
+const STATUSES = { pending: "Pending", ok: "Approved", rejected: "Rejected", changed: "To redo", done: "Done", failed: "Failed" };
+let rows = [], filter = "all", col = null;
+const busy = new Set(), editing = new Set();
+try { filter = localStorage.getItem("filter") || "all"; } catch (e) {}
+
+function el(tag, attrs = {}, ...kids) {
+  const n = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+  }
+  for (const k of kids) if (k != null) n.append(k);
+  return n;
+}
+const when = iso => { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(undefined, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+
+async function decide(id, status, note) {
+  if (busy.has(id)) return;
+  busy.add(id); render();
+  try {
+    const fields = { status, decided_at: new Date().toISOString() };
+    if (note !== undefined) fields.note = note;
+    await col.doc(id).update(fields);
+    editing.delete(id);
+  } catch (e) {
+    const r = rows.find(x => x.id === id); if (r) r._err = "Saving failed (" + (e.code || "error") + "). Try again in a moment.";
+  } finally { busy.delete(id); render(); }
+}
+
+function card(r) {
+  const human = r.type === "human_task";
+  const top = el("div", { class: "top" },
+    el("span", { class: "key" }, r.ticket || "—"),
+    el("span", { class: "chip" }, r.pilot || ""),
+    el("span", { class: "chip" }, TYPES[r.type] || r.type || "Action"),
+    el("span", { class: "st st-" + r.status }, STATUSES[r.status] || r.status),
+    el("span", { class: "date" }, when(r.handled_at || r.decided_at || r.created_at)));
+  const c = el("article", { class: "card" + (human ? " human" : "") }, top, el("p", { class: "summary" }, r.summary || ""));
+  if (r.content) {
+    const pre = el("pre", {}, typeof r.content === "string" ? r.content : JSON.stringify(r.content, null, 2));
+    c.append(r.status === "pending" ? pre : el("details", {}, el("summary", {}, "Content"), pre));
+  }
+  if (Array.isArray(r.files) && r.files.length) c.append(el("div", { class: "files" }, ...r.files.map(f => el("span", {}, f))));
+  if (r.note && r.status !== "pending") c.append(el("div", { class: "note" }, (r.status === "failed" ? "Error: " : "Instruction: ") + r.note));
+  if (r._err) c.append(el("div", { class: "err", role: "alert" }, r._err));
+  if (r.status === "pending") {
+    const zone = el("div", { class: "actions" });
+    if (editing.has(r.id)) {
+      const ta = el("textarea", { id: "note-" + r.id, "aria-label": "Instruction for the pilot", placeholder: "What to change: tone, content, status, scope…" });
+      const err = el("div", { class: "err" });
+      ta.addEventListener("input", () => { err.textContent = ""; });
+      zone.append(el("div", { class: "edit" }, ta, err, el("div", { class: "actions" },
+        el("button", { type: "button", class: "primary", onclick: () => { const v = ta.value.trim(); if (!v) { err.textContent = "Write the instruction before sending."; ta.focus(); return; } decide(r.id, "changed", v); } }, "Send back to the pilot"),
+        el("button", { type: "button", onclick: () => { editing.delete(r.id); render(); } }, "Cancel"))));
+    } else if (human) {
+      zone.append(
+        el("button", { type: "button", class: "primary", onclick: () => decide(r.id, "done") }, "Done"),
+        el("button", { type: "button", onclick: () => { editing.add(r.id); render(); } }, "Change"),
+        el("button", { type: "button", class: "danger", onclick: () => decide(r.id, "rejected") }, "Drop"));
+    } else {
+      zone.append(
+        el("button", { type: "button", class: "primary", onclick: () => decide(r.id, "ok") }, "OK"),
+        el("button", { type: "button", onclick: () => { editing.add(r.id); render(); } }, "Change"),
+        el("button", { type: "button", class: "danger", onclick: () => decide(r.id, "rejected") }, "Reject"));
+    }
+    if (busy.has(r.id)) zone.querySelectorAll("button").forEach(b => b.disabled = true);
+    c.append(zone);
+  }
+  return c;
+}
+
+function fill(id, list, empty) {
+  const box = document.getElementById(id);
+  box.replaceChildren();
+  if (!list.length) { box.className = "empty"; box.textContent = empty; return; }
+  box.className = "list";
+  list.forEach(r => box.append(card(r)));
+}
+
+function render() {
+  const visible = rows.filter(r => filter === "all" || r.pilot === filter);
+  const pending = visible.filter(r => r.status === "pending" && r.type !== "human_task");
+  const tasks = visible.filter(r => r.status === "pending" && r.type === "human_task");
+  const history = visible.filter(r => !["pending", "ok", "changed"].includes(r.status));
+  fill("pending", pending, "Nothing to approve. The next pilot tick will put here what waits for you.");
+  fill("tasks", tasks, "No task waiting.");
+  fill("history", history, "Nothing yet.");
+  const n = s => visible.filter(r => r.status === s).length;
+  document.getElementById("counts").replaceChildren(
+    el("span", { class: "count" }, el("b", {}, String(pending.length)), " to approve"),
+    el("span", { class: "count" }, el("b", {}, String(tasks.length)), " tasks"),
+    el("span", { class: "count" }, el("b", {}, String(n("ok") + n("changed"))), " on their way to the pilot"),
+    el("span", { class: "count" }, el("b", {}, String(n("failed"))), " failed"));
+  document.querySelectorAll(".filters button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === filter)));
+}
+
+document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
+  filter = b.dataset.f; try { localStorage.setItem("filter", filter); } catch (e) {} render();
+}));
+render();
+
+(async () => {
+  const db = await claude.use("db");
+  if (!db) { document.getElementById("counts").replaceChildren(el("span", { class: "count" }, "Queue unavailable in this view")); return; }
+  col = db.collection("actions");
+  let open = [], handled = [];
+  const merge = () => {
+    const errors = Object.fromEntries(rows.filter(r => r._err).map(r => [r.id, r._err]));
+    rows = [...open, ...handled].map(r => ({ ...r, _err: errors[r.id] }))
+      .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
+    render();
+  };
+  const failed = e => { document.getElementById("counts").replaceChildren(el("span", { class: "count err" }, "Reading stopped (" + e.code + "). Reload the page.")); };
+  col.where("status", "in", ["pending", "ok", "changed"]).onSnapshot(snap => {
+    open = snap.docs.map(d => ({ id: d.id, ...d.data() })); merge();
+  }, failed);
+  col.where("status", "in", ["done", "rejected", "failed"]).orderBy("created_at", "desc").limit(60).onSnapshot(snap => {
+    handled = snap.docs.map(d => ({ id: d.id, ...d.data() })); merge();
+  }, failed);
+})();
+</script>
