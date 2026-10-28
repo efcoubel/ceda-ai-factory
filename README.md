@@ -50,7 +50,7 @@ Adapters marked `draft` have not run on a real project yet.
 ## Install
 
 ```bash
-claude plugin marketplace add <github owner>/ceda-ai-factory
+claude plugin marketplace add efcoubel/ceda-ai-factory
 claude plugin install ai-factory@ceda
 ```
 
