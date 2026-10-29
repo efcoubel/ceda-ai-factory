@@ -8,10 +8,10 @@
 - **Stack**:
 - **Talks to**:
 - **Commands**:
-  - install:
-  - run locally:
-  - unit tests:
-  - static analysis:
-  - lint:
-  - build:
+  - install: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - run locally: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - unit tests: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - static analysis: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - lint: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - build: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
 - **Conventions**:

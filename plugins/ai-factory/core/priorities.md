@@ -26,7 +26,12 @@ never taken over.
 
 ## C. Start, if fewer than `pilots.dev.max_in_chain` tickets are in the chain
 
-A ticket is "in the chain" from framing to MR/PR creation, plans waiting for approval included.
+A ticket is "in the chain" from framing to `tested`, plans waiting for approval included. A ticket
+at `tested` waiting for shipping approval counts against `unattended.max_ready` instead; at that
+limit nothing new starts either (`core/autonomy.md`, "Working while the user is away").
+
+With `unattended.auto_plan` on, a low-risk ticket goes past its plan without waiting and continues
+to `tested` in the same tick (it counts in the code budget). Other tickets stop at the plan.
 
 | # | What | How to recognize it | Skill |
 |---|---|---|---|

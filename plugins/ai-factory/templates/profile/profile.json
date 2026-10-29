@@ -9,17 +9,62 @@
     "working_language": "en"
   },
   "tools": {
-    "ticketing": { "adapter": "none", "config": {} },
-    "forge": { "adapter": "none", "config": {} },
-    "chat": { "adapter": "none", "config": {} },
-    "database": { "adapter": "none", "config": {} },
-    "logs": { "adapter": "none", "config": {} },
-    "queue": { "adapter": "file", "config": {} }
+    "ticketing": {
+      "adapter": "none",
+      "config": {}
+    },
+    "forge": {
+      "adapter": "none",
+      "config": {}
+    },
+    "chat": {
+      "adapter": "none",
+      "config": {}
+    },
+    "database": {
+      "adapter": "none",
+      "config": {}
+    },
+    "logs": {
+      "adapter": "none",
+      "config": {}
+    },
+    "queue": {
+      "adapter": "file",
+      "config": {}
+    }
   },
   "repos": [],
   "pilots": {
-    "support": { "enabled": false },
-    "dev": { "enabled": true, "max_in_chain": 3 }
+    "support": {
+      "enabled": false
+    },
+    "dev": {
+      "enabled": true,
+      "max_in_chain": 3
+    }
   },
-  "autonomy": { "start_mode": "dry" }
+  "autonomy": {
+    "start_mode": "dry"
+  },
+  "unattended": {
+    "auto_plan": false,
+    "low_risk": [
+      "cause_proven",
+      "single_repo",
+      "no_data_migration",
+      "no_dependency_change",
+      "no_public_contract",
+      "small",
+      "type_allowed"
+    ],
+    "types": [
+      "bug",
+      "task"
+    ],
+    "max_files": 5,
+    "max_ready": 5,
+    "max_ticks_per_day": 30,
+    "max_tickets_per_day": 6
+  }
 }

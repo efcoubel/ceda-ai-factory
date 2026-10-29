@@ -78,6 +78,20 @@ call:
    pilot (which projects, which are background only); start in `dry` mode (recommended: everything
    waits for approval) or `normal`; validation queue on an artifact page (if available) or a local
    file.
+7. **When you are away** (only if the dev pilot is enabled). Explain in two sentences that without
+   answers the pilot would stop at the plans, and that local work (branch, code, review, tests)
+   never leaves the machine. Then ask:
+   - may the pilot approve its own plan for **low-risk** tickets and take them up to `tested`
+     (`unattended.auto_plan`; recommended: yes for solo projects, no for team projects until the
+     earned-autonomy figures say so);
+   - which criteria define low-risk: show the list of `core/autonomy.md` as a multi-select, all
+     checked by default, and which ticket types qualify (recommended: bug, task);
+   - how many tested tickets may wait for shipping before it stops starting new ones
+     (`max_ready`, recommended 5), and the daily caps (`max_ticks_per_day` 30,
+     `max_tickets_per_day` 6);
+   - for each test command found in step 1, whether it can run with nobody around
+     (`unattended: yes/no` in `repos.md`); propose `yes` for unit tests and static analysis, and
+     ask for anything that needs a device, an emulator or a login.
 
 Save the answers after each block (phase 0, "keep progress").
 

@@ -42,7 +42,16 @@
     "support": { "enabled": false },
     "dev": { "enabled": true, "max_in_chain": 3 }
   },
-  "autonomy": { "start_mode": "dry" }
+  "autonomy": { "start_mode": "dry" },
+  "unattended": {
+    "auto_plan": false,
+    "low_risk": ["cause_proven", "single_repo", "no_data_migration", "no_dependency_change", "no_public_contract", "small", "type_allowed"],
+    "types": ["bug", "task"],
+    "max_files": 5,
+    "max_ready": 5,
+    "max_ticks_per_day": 30,
+    "max_tickets_per_day": 6
+  }
 }
 ```
 
@@ -56,6 +65,11 @@
 | `repos[].path` | relative to the project root |
 | `repos[].protected_branches` | branches no skill ever merges into or pushes to; the hook enforces it |
 | `autonomy.start_mode` | `dry` (everything queued) or `normal` (delegated actions run) |
+| `unattended.auto_plan` | `true`: the pilot approves its own plan for low-risk tickets and works them up to `tested` without waiting (`core/autonomy.md`, "Working while the user is away") |
+| `unattended.low_risk` | the criteria a ticket must all meet to be low-risk, taken from the list in `core/autonomy.md`; dropping one makes the rule looser, and only listed criteria are understood |
+| `unattended.types`, `max_files` | ticket types and plan size that can be low-risk |
+| `unattended.max_ready` | tickets at `tested` waiting for shipping, beyond which nothing new starts |
+| `unattended.max_ticks_per_day`, `max_tickets_per_day` | daily caps that bound the cost of a long absence |
 
 ## `repos.md`
 
@@ -65,7 +79,8 @@ One `## <repo name>` section per repository:
 - **Stack**: language and version, framework, package manager, main libraries.
 - **Talks to**: the other repositories or services it calls and is called by.
 - **Commands**: install, run locally, unit tests, static analysis, lint, build. Each with where it
-  runs (host, container name, emulator).
+  runs (host, container name, emulator) and `unattended: yes` when a pilot can run it with nobody
+  around (no device to plug, no login to type, no emulator to start by hand).
 - **Conventions**: what a reviewer would flag (from the repo's own rules files and history).
 
 ## `environments.md`
