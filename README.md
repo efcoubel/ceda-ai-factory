@@ -9,8 +9,8 @@ It works with the tools you already use. An onboarding discovers your repositori
 ticketing, forge, chat, data and logs, asks only what it could not find, and writes a project
 profile. The engine stays the same; the profile makes it yours.
 
-> Status: **0.1, early**. The onboarding and the doctor are written; the ticket chain and the
-> pilots are being ported from a production setup. See [the roadmap](#roadmap).
+> Status: **0.2, early**. The onboarding, the doctor, new projects and the ticket chain are
+> written; the pilots are being ported from a production setup. See [the roadmap](#roadmap).
 
 ## What it does
 
@@ -23,9 +23,10 @@ profile. The engine stays the same; the profile makes it yours.
   the repositories with the stack's official generator, the remote, branch protection and CI, sets
   up the ticketing and seeds the backlog, then writes the profile. The onboarding offers it when
   the folder holds no repository.
-- **The ticket chain** *(coming)* — `ticket-1-frame` → `ticket-2-code` → `ticket-3-review` →
-  `ticket-4-test` → `ticket-5-ship` → `ticket-6-feedback` → `ticket-7-staging`, or `ticket <KEY>`
-  end to end, stopping only at its checkpoints.
+- **The ticket chain** — `ticket-1-frame` → `ticket-2-code` → `ticket-3-review` (a fresh agent) →
+  `ticket-4-test` → `ticket-5-ship` → `ticket-6-feedback` → `ticket-7-staging` (a staging branch,
+  a release to testers or a staging deploy), or `/ai-factory:ticket <KEY>` end to end, stopping
+  only at its checkpoints.
 - **The pilots** *(coming)* — `support` triages and answers support requests; `dev` moves
   development tickets in priority order. Both run in a loop (`/loop 30m /ai-factory:dev pilot`).
 

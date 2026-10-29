@@ -103,8 +103,12 @@ call:
    (recommended), keep the file as the ticketing (`none` adapter pointed at it), or leave it as an
    archive and start fresh in the tool.
 4. **Review and chat**: how many approvals a MR/PR needs and who gives them (solo: the fresh-agent
-   review stands in); which chat tool and which channels announce reviews, if any.
-5. **Environments**: which environments exist, their URLs, where non-production data lives and how
+   review stands in, zero approvals); the MR/PR options (squash, delete the branch); which chat
+   tool and which channels announce reviews, if any.
+5. **Testing and environments**: per repository, how a change reaches testers (`core/staging.md`:
+   a staging branch, a release to testers with its build and distribution commands, a deploy to a
+   staging environment, or nothing), and whether that runs unattended; who tests and where the
+   test procedure goes. Then: which environments exist, their URLs, where non-production data lives and how
    old it is, where logs are; confirm that **production data is never connected to** (not
    negotiable) and which branches are protected.
 6. **Pilots and autonomy**: enable the support pilot, the dev pilot, or both; scope of the dev

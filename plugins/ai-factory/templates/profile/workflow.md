@@ -24,3 +24,9 @@
 
 - Approvals needed:
 - Who approves:
+
+## Testing
+
+- Tester:
+- Test procedure goes to:
+- Deployment notes go to:

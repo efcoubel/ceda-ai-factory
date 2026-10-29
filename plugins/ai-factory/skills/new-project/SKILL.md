@@ -52,7 +52,8 @@ Then settle, in one `AskUserQuestion` call:
 - the forge (GitHub, GitLab…), the account or organization, public or private;
 - the commit language and format (default: English, conventional commits), the branch format
   (default: `<KEY>-<slug>`);
-- the ticketing tool (`adapters/ticketing/`), and whether a chat tool is used.
+- the ticketing tool (`adapters/ticketing/`), and whether a chat tool is used;
+- how changes will reach testers (`core/staging.md`), even if it is `none` for now.
 
 ## 3. Create the foundations
 

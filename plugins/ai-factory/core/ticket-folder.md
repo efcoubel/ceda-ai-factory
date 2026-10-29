@@ -9,14 +9,18 @@ Chain steps hand over through files, not through the conversation. Each ticket h
 | `plan.md` | frame | Summary, decisions, repos and branch, acceptance criteria, steps |
 | `review.md` | review | Findings per review round, with their outcome |
 | `test.md` | test | Checks run, what the branch changes, test procedure, release notes |
-| `ship.md` | ship | MR/PR links, values written in the ticketing tool |
+| `ship.md` | ship, staging | MR/PR links, values written in the ticketing tool, what staging did |
+| `ship-<repo>.md` | ship | The MR/PR description of one repository |
+| `test-data.md` | test | The queries that found the accounts or records the test procedure uses |
 | `feedback.md` | feedback | Review threads handled, with their outcome |
 | `support.md` | support skills | Type, difficulty, diagnosis and evidence, proposed answer |
 | `actions.json` | skills in pilot mode | Actions proposed for the validation queue |
 
-Development states, in order: `framing`, `planned`, `coded`, `reviewed`, `tested`, `shipped`,
-`feedback`, `staging`. Support states: `triaged`, `queued`, `human-task`, `waiting-requester`,
-`escalated`, `closed`.
+Development states, in order: `framing`, `planned` (or `planned (auto)` when the pilot approved a
+low-risk plan itself), `coded`, `reviewed`, `tested`, `shipped`, `feedback`, `staging`. Worktrees a
+pilot needs live under `.ai-factory/state/worktrees/<KEY>/`.
+
+Support states: `triaged`, `queued`, `human-task`, `waiting-requester`, `escalated`, `closed`.
 
 Rules:
 

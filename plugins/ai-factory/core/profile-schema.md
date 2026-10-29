@@ -19,7 +19,7 @@
   },
   "tools": {
     "ticketing": { "adapter": "notion", "config": {} },
-    "forge": { "adapter": "github", "config": {} },
+    "forge": { "adapter": "github", "config": { "mr_options": { "squash": true, "delete_branch": true, "draft": false } } },
     "chat": { "adapter": "none", "config": {} },
     "database": { "adapter": "firestore", "config": {} },
     "logs": { "adapter": "none", "config": {} },
@@ -31,7 +31,7 @@
       "path": "lima",
       "remote": "git@github.com:<owner>/lima.git",
       "default_branch": "main",
-      "staging_branch": null,
+      "staging": { "kind": "release", "build": "flutter build apk --release", "how": "firebase appdistribution:distribute …", "target": "testers", "unattended": false },
       "protected_branches": ["main"],
       "commit_language": "en",
       "commit_format": "conventional",
@@ -64,6 +64,8 @@
 | `tools.<category>.adapter` | a file name in `adapters/<category>/` without `.md`, or `none` |
 | `tools.<category>.config` | what that adapter's "Profile config" section asks for. **Never a secret**: secrets are named by reference (env var, file and section, vault path) |
 | `repos[].path` | relative to the project root |
+| `repos[].staging` | how a change reaches testers: `branch`, `release`, `deploy` or `none` (`core/staging.md`) |
+| `tools.forge.config.mr_options` | options applied when opening a MR/PR: `squash`, `delete_branch`, `draft`, `reviewers`, `labels` |
 | `repos[].protected_branches` | branches no skill ever merges into or pushes to; the hook enforces it |
 | `repos[].commit_format` | `conventional`, or the repository's own convention in words (`US-<epic>.<n>: <subject>, or Fix: <subject>`) |
 | `repos[].commit_examples` | two or three real subjects from the history; the code step writes commits that look like them |
@@ -103,7 +105,9 @@ production), and **what is forbidden** (production writes are always forbidden t
   status name, never by id.
 - The **fields** a transition requires and what to put in them.
 - The **review rule**: how many approvals a MR/PR needs, who can approve (solo: a fresh-agent
-  review replaces human approval).
+  review replaces human approval, and zero approvals are needed).
+- The **tester**: who tests in staging (a product owner, a client, the user), and where the test
+  procedure and deployment notes go (a ticketing field, a comment, the MR/PR description).
 
 ## `priorities.md`
 

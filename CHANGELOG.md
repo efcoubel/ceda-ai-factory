@@ -1,5 +1,15 @@
 # Changelog
 
+## 0.2.0
+
+- The ticket chain: `ticket` and `ticket-1-frame` to `ticket-7-staging`, with manual, chain, pilot
+  and dry modes, checkpoints queued in pilot mode, low-risk plans approved by the pilot in
+  unattended mode, a circuit breaker, and worktrees when the user's working tree is dirty.
+- `core/chain.md` (rules every step follows), `core/review-rules.md`, `core/staging.md`.
+- Staging per repository: a branch, a release to testers, a deploy, or none (`repos[].staging`
+  replaces `staging_branch`); the onboarding asks how changes reach testers.
+- MR/PR options in the forge config; the tester and where the test procedure goes in `workflow.md`.
+
 ## 0.1.3
 
 - Ticket keys that are not the tool's own (`config.key`: native, title prefix or field, with a
