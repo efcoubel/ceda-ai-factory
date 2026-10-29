@@ -44,6 +44,7 @@
     "dev": { "enabled": true, "max_in_chain": 3 }
   },
   "autonomy": { "start_mode": "dry" },
+  "production_targets": ["lima-prod-ec"],
   "unattended": {
     "auto_plan": false,
     "low_risk": ["cause_proven", "single_repo", "no_data_migration", "no_dependency_change", "no_public_contract", "small", "type_allowed"],
@@ -65,8 +66,9 @@
 | `tools.<category>.config` | what that adapter's "Profile config" section asks for. **Never a secret**: secrets are named by reference (env var, file and section, vault path) |
 | `repos[].path` | relative to the project root |
 | `repos[].staging` | how a change reaches testers: `branch`, `release`, `deploy` or `none`, or a list of them run in order (`core/staging.md`) |
-| `tools.forge.config.mr_options` | options applied when opening a MR/PR: `squash`, `delete_branch`, `draft`, `reviewers`, `labels` |
+| `tools.forge.config.mr_options` | `draft`, `reviewers`, `labels` (applied at opening) and `squash`, `delete_branch` (at merge, by the user or the forge's settings; `adapters/forge/contract.md`) |
 | `repos[].protected_branches` | branches no skill ever merges into or pushes to; the hook enforces it |
+| `production_targets` | production project ids, aliases, clusters, apps or buckets that deploy and cloud CLIs (`firebase`, `gcloud`, `kubectl`, `fly`, `vercel`, `aws`…) must never name; the second hook blocks them, with the database's production projects and the `.firebaserc` aliases pointing to them. It covers those CLIs only: a production host reached any other way is protected by the rules, not the hook |
 | `repos[].commit_format` | `conventional`, or the repository's own convention in words (`US-<epic>.<n>: <subject>, or Fix: <subject>`) |
 | `repos[].commit_examples` | two or three real subjects from the history; the code step writes commits that look like them |
 | `repos[].branch_format` | the branch name pattern, with `<KEY>` for the ticket key (`tools.ticketing.config.key`) |

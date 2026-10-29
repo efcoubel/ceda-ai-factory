@@ -16,7 +16,10 @@ A remote on a GitLab host; the `glab` CLI (`glab auth status`).
 
 ## Operations
 
-- `open`: `glab mr create --source-branch … --target-branch … --title … --description "$(cat <file>)" --yes`.
+- `open`: `glab mr create --source-branch … --target-branch … --title … --description "$(cat <file>)" --yes`,
+  plus `--draft`, `--reviewer <user>`, `--label <name>`, and the merge-time options, which GitLab
+  stores on the MR itself: `--remove-source-branch` for `delete_branch`, `--squash-before-merge`
+  for `squash`.
   Fallback if the token is refused: `git push -o merge_request.create -o merge_request.target=<branch> -o "merge_request.title=…"`.
 - `find` / `state`: `glab api "projects/<p>/merge_requests?state=opened&search=<KEY>"`, then
   `.../approvals` (`approved_by`) and `.../discussions?per_page=100` (skip system notes).

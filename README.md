@@ -48,6 +48,8 @@ Adapters marked `draft` have not run on a real project yet.
 
 - **Production data is never connected to.** Diagnosis runs on copies; fixes are scripts you run.
 - **Protected branches are never merged or pushed to** by Claude: a hook blocks it.
+- **Production is never deployed to or written** by Claude: a second hook blocks deploy and cloud
+  commands that name a production project, alias or bucket from the profile.
 - **Nothing leaves your machine without approval**, except the few *delegated* actions you can list
   and change (`core/autonomy.md`). New projects start in `dry` mode: even those wait.
 - **No secret in the profile.** It names where secrets live (a file section, an env var), never

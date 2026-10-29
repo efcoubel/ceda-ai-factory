@@ -18,7 +18,8 @@ Chain steps hand over through files, not through the conversation. Each ticket h
 | `actions.json` | skills in pilot mode | Actions proposed for the validation queue |
 
 Development states, in order: `framing`, `planned` (or `planned (auto)` when the pilot approved a
-low-risk plan itself), `coded`, `reviewed`, `tested`, `shipped`, `feedback`, `staging`. Worktrees a
+low-risk plan itself), `coded`, `reviewed`, `tested`, `shipped`, `feedback`, `staging`, `done`
+(the MR/PR is merged into the default branch). Worktrees a
 pilot needs live under `.ai-factory/state/worktrees/<KEY>/`.
 
 Support states: `triaged`, `queued`, `human-task`, `waiting-requester`, `escalated`, `closed`.

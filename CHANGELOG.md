@@ -1,5 +1,31 @@
 # Changelog
 
+## 0.2.2
+
+From the second ticket run, shipped, staged and merged.
+
+- A second hook blocks deploy and cloud commands (`firebase`, `gcloud`, `gsutil`, `kubectl`,
+  `fly`, `vercel`, `aws`…) that name a production target: `production_targets`, the database's
+  production projects and the `.firebaserc` aliases pointing to them; a `firebase` write without
+  `--project` is blocked too. Read commands (logs, list, describe) stay allowed. The onboarding
+  writes in `environments.md` exactly what the hooks guard.
+- MR/PR options: `draft`, `reviewers`, `labels` applied at opening (GitHub and GitLab); `squash`
+  and `delete_branch` are merge-time, shown with what really applies them (GitLab: the MR; GitHub:
+  the repository's settings, checked by the adapter). The ship recap never promises an option
+  nothing applies.
+- Review: "blocking" now includes a criterion not proven, a contradiction with the plan and a
+  user-facing rule broken; the severity is decided when sorting, and each change is recorded and
+  reported.
+- Chain: a `done` state and a close-out once the MR/PR is merged (local branch cleaned, outward
+  clean-up proposed); with zero approvals needed, `shipped` goes on to staging, whose checkpoint
+  asks.
+- Staging lists what the command really deploys, and writes in the ticket only in the form
+  `workflow.md` states.
+- Doctor: the production hook is tested on each target; a commit convention in the README that
+  contradicts the profile is reported.
+- Test: `test-data.md` is written for seed accounts too; more Flutter web tips (modal sheets,
+  physical pixels, the Auth emulator banner).
+
 ## 0.2.1
 
 From the first ticket run end to end on a real project.

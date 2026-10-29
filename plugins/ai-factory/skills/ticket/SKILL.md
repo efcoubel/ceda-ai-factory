@@ -26,9 +26,19 @@ From `state.md` (no folder: framing):
 | `tested` | `ticket-5-ship` |
 | `shipped` | read the MR/PR state (forge adapter, `state`): a thread to handle → `ticket-6-feedback`; approved per `workflow.md` → `ticket-7-staging`; else stop: it waits for review |
 | `feedback` | approved → `ticket-7-staging`; else stop: it waits for review |
-| `staging` | nothing: testing, then the merge into the default branch, are the user's |
+| `staging` | read the MR/PR state: merged → the close-out below; else stop: testing, then the merge into the default branch, are the user's |
+| `done` | nothing |
 
 Say in one line where you resume from.
+
+**Close-out**, once every MR/PR of the ticket is merged (forge adapter, `state`):
+
+1. Set `state.md` to `done`, with a journal line giving each merge commit and the ticket's status.
+2. Propose, as one recap, the outward clean-up: the testing label or status of `workflow.md` left
+   on a closed ticket, the remote branches the forge did not delete. Done after the user's go
+   (`pilot`: a `cleanup` action).
+3. Locally, free: switch each repository back to its default branch, pull it, and delete the
+   ticket's local branch if `git branch -d` accepts it (merged). Never `-D`.
 
 ## 2. Run the steps
 
@@ -37,7 +47,9 @@ After each step, read `state.md` again and go on without asking. Stop, saying wh
 - a step reached its checkpoint (manual or `chain`: it asked the user; `pilot`: it queued);
 - `state.md` has a new `blocked:` line;
 - `ticket-3-review` still finds blocking issues on its third round;
-- the chain reaches `shipped`: what follows depends on the reviewers.
+- the chain reaches `shipped` and `workflow.md` needs approvals: what follows depends on the
+  reviewers. With zero approvals needed and no thread open, go on to `ticket-7-staging`: its own
+  checkpoint asks before anything reaches testers.
 
 In manual or `chain` mode, once the user answers a checkpoint, resume the chain.
 

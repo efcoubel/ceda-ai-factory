@@ -35,7 +35,11 @@ write it first) on the local environment of `environments.md`:
 - **Flutter web** draws on a canvas: the page tools see nothing until the accessibility tree is
   on (click the hidden `flt-semantics-placeholder` element, or start the app with semantics
   enabled). A download may stop the page from repainting in the session's browser: what follows a
-  download is checked again after a reload, or left for the tester;
+  download is checked again after a reload, or left for the tester. A modal sheet swallows clicks
+  while it animates out: wait a second, or click through the accessibility tree. Screenshot
+  coordinates may be in physical pixels (twice the viewport on a high-density screen): compare the
+  screenshot's size with the viewport before clicking by coordinates. The Firebase Auth emulator's
+  banner covers the bottom of the page: reach what is under it by URL, or hide the banner;
 - **mobile**: integration tests on an emulator or simulator (`repos.md`), only if marked
   `unattended: yes` or the user is in the conversation; the backend on its emulator
   (`adapters/database/<adapter>.md`), never a production project;
@@ -78,8 +82,8 @@ Write for them, in the working language, as a user manual:
   get it) is in the first step. When no build reaches testers yet (`repos[].staging` is `none` or
   not in place), the first step says how the tester runs the branch. An account in a given state
   is looked up in non-production data (database adapter); its business identifier goes in the
-  procedure, the query that found it in `test-data.md`. Accounts from a seed: `test-data.md` names
-  the seed file and the accounts used, no query.
+  procedure, the query that found it in `test-data.md`. Accounts from a seed: `test-data.md` is
+  still written, in one or two lines: the seed file and the accounts used.
 - Steps truly out of the tester's reach (a command to run, a date to simulate) start with "A
   developer …".
 - Format for where it will be pasted (`workflow.md`, "Transitions": a ticketing field, a comment, a

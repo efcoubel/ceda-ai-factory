@@ -114,9 +114,16 @@ call:
 5. **Testing and environments**: per repository, how a change reaches testers (`core/staging.md`:
    a staging branch, a release to testers with its build and distribution commands, a deploy to a
    staging environment, or nothing), and whether that runs unattended; who tests and where the
-   test procedure goes. Then: which environments exist, their URLs, where non-production data lives and how
+   test procedure goes. For everything the chain writes in the ticketing tool at a status change
+   (the procedure, deployment notes, "still to do" notes, a label), record the **form** in
+   `workflow.md`: a comment with a given heading, a section of the description, a field, a label
+   name. Then: which environments exist, their URLs, where non-production data lives and how
    old it is, where logs are; confirm that **production data is never connected to** (not
-   negotiable) and which branches are protected.
+   negotiable) and which branches are protected. List the production project ids, aliases,
+   clusters or apps found (`.firebaserc`, deploy scripts, CI) as `production_targets`, for the
+   user to complete. In `environments.md`, say exactly what the hooks guard (those targets through
+   the deploy and cloud CLIs, the protected branches) and that the rest relies on the rules: never
+   write that "the hook protects production" more broadly than that.
 6. **Pilots and autonomy**: enable the support pilot, the dev pilot, or both; scope of the dev
    pilot (which projects, which are background only); start in `dry` mode (recommended: everything
    waits for approval) or `normal`; validation queue on an artifact page (if available) or a local

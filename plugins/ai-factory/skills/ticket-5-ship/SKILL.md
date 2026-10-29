@@ -31,8 +31,10 @@ a foreseeable conflict); `git status --short` clean; no secret, credential or fi
   folder.
 - **Title**: what the ticket delivers as a whole, in the repository's commit format (often the
   ticket's title, rephrased), not the subject of whichever commit came first.
-- **Options**: the forge's MR/PR options of the profile (`tools.forge.config`: squash, delete the
-  source branch, draft, reviewers, labels).
+- **Options**: those of `tools.forge.config.mr_options` the adapter applies at opening (draft,
+  reviewers, labels), and apart, the merge-time ones (squash, delete the branch) with what really
+  applies them: the MR itself, the repository's settings (read them), or the user when merging
+  (`adapters/forge/contract.md`, "MR/PR options"). Never show as done what nothing will do.
 - **Ticket**: the transition to the "ask for review" status of `workflow.md` and its required
   fields (test procedure, deployment notes, links), in the format each field expects.
 - **Ticket comment**, if `workflow.md` puts the test procedure or the notes in a comment: its

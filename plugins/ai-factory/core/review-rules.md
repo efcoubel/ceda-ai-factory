@@ -40,7 +40,9 @@ files of the diff.
 
 ## Severity
 
-- **Blocking**: a bug, a project rule broken, a security flaw, a likely regression, an acceptance
-  criterion not met.
+- **Blocking**: a bug; a project rule broken; a security flaw (an access rule too permissive, a
+  missing access check); a likely regression; an acceptance criterion not met **or not proven** by
+  a test or a step to play; a contradiction with a decision recorded in `plan.md`; a user-facing
+  rule of section 3 broken.
 - **To consider**: a real improvement that is debatable.
 - A nitpick that brings almost nothing is not reported. A review with no finding is a valid result.

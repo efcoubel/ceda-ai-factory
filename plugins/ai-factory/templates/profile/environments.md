@@ -15,3 +15,4 @@
 - **Data**: never read or written by Claude directly
 - **Logs**:
 - **Forbidden**: any write; any direct data connection
+- **Guarded by the hook**: <the `production_targets` and aliases it blocks, or "nothing: rules only">

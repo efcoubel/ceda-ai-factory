@@ -30,3 +30,4 @@
 - Tester:
 - Test procedure goes to:
 - Deployment notes go to:
+- Written at each status change, with its form (comment heading, description section, field, label):

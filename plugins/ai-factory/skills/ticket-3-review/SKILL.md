@@ -38,7 +38,13 @@ Its prompt stands alone and holds:
 
 ## 3. Sort and record
 
-Check each finding against the code: drop those whose evidence does not hold, saying so. Findings
+Check each finding against the code: drop those whose evidence does not hold, saying so.
+
+The severity is decided here, against "Severity" in `core/review-rules.md`, not taken from the
+reviewer: a finding that meets the definition of blocking is blocking whatever the reviewer wrote,
+and the other way round. Each change of severity is written in `review.md` with its reason
+(`to consider → blocking: criterion 4 not proven`), and in manual or `chain` mode it is said to the
+user in the step's report, since it adds a fixing round. Findings
 that only matter for a topic the plan explicitly excluded go under "Watch out" in `plan.md`, never
 into a fix. Append to `review.md` a "Round N" block with the table kept and the outcome of each
 finding.

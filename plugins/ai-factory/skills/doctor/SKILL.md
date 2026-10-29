@@ -26,7 +26,8 @@ Run them in parallel where independent. For each tool in `profile.json` → `too
 | 6 | Data | per non-production environment: the adapter's check fails; **and** a production environment is configured as reachable (that is broken, not a warning) |
 | 7 | Logs | the adapter's check fails |
 | 8 | Queue | the adapter's check fails; for an artifact, a `view`-level read returns rows |
-| 9 | Hook | the protected-branch hook does not block a dry `git push origin <protected>` (test it with the hook script directly, never with git) |
+| 9 | Hooks | the protected-branch hook does not block a dry `git push origin <protected>`, or the production hook does not block a dry deploy naming each of `production_targets` (`firebase deploy --project <target>`, `gcloud run deploy --project <target>`). Test them by feeding the hook scripts a command, never by running it |
+| 9b | Conventions | a commit convention written in `README.md`, `CONTRIBUTING.md` or `CLAUDE.md` differs from `repos[].commit_format` and the recent history: a warning, so the user settles which one counts |
 | 10 | CLIs and runtimes | a command used in `repos.md` (test, analyse, lint) is not on the machine or its container is not running |
 | 10b | Unattended commands | a command marked `unattended: yes` that starts services (emulators, a local server, an end-to-end run) does not start and stop on its own: run it once with its input closed, its non-interactive flag and a short time limit (an emulator with `true` as its script); broken if it asks a question, cannot bind its ports, or does not return |
 | 11 | Expiry | a token whose expiry is known expires within 30 days; a server certificate (TLS) used by a data or log access is expired or misnamed |

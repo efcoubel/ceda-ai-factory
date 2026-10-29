@@ -12,11 +12,22 @@ A `github.com` remote; the `gh` CLI (`gh auth status`).
 
 ## Check
 
-`gh auth status`, then `gh repo view <owner>/<name> --json name` for each repo.
+`gh auth status`, then `gh repo view <owner>/<name> --json name` for each repo. Warning when a
+merge-time option of `mr_options` does not match the repository's settings (see `open`).
 
 ## Operations
 
-- `open`: `gh pr create --base <default_branch> --head <branch> --title … --body-file <file>`.
+- `open`: `gh pr create --base <default_branch> --head <branch> --title … --body-file <file>`, plus
+  `--draft` when `mr_options.draft`, `--reviewer <login>` per reviewer, `--label <name>` per label.
+- **Merge-time options**: GitHub sets them per repository, not per PR. Read them with
+  `gh repo view <owner>/<name> --json deleteBranchOnMerge,squashMergeAllowed,mergeCommitAllowed,rebaseMergeAllowed`:
+  - `delete_branch: true` holds only if `deleteBranchOnMerge` is true;
+  - `squash: true` holds only if `squashMergeAllowed` is true, and the user picks it when merging
+    (it is the forced choice only when the other merge methods are off).
+
+  The fix for a setting that differs is a repository setting (`gh repo edit <owner>/<name> --delete-branch-on-merge`,
+  `--enable-squash-merge`, `--enable-merge-commit=false`): proposed to the user as a configuration
+  change, never made on the way.
 - `find`: `gh pr list -R <repo> --search "<KEY> in:title,head" --state open --json number,url,headRefName,isDraft`.
 - `state`: `gh pr view <n> --json reviews,reviewDecision,isDraft,commits`; threads with
   `gh api graphql` (`reviewThreads { isResolved comments { author { login } body } }`).

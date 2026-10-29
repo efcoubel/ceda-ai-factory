@@ -23,7 +23,10 @@ From `repos[].staging` (one entry, or each entry of a list in order):
   `git merge-tree --write-tree origin/<staging branch> origin/<branch>` to detect a conflict without
   touching anything;
 - `release` / `deploy`: the exact `build` and `how` commands, the target, and a check that the
-  target is not production;
+  target is not production. List **what the command deploys**, not only what the branch changed:
+  `firebase deploy --only firestore` sends the rules and the indexes, `--only functions` every
+  function of the codebase (unchanged ones are skipped). Each item says whether the branch changed
+  it;
 - `none`: nothing to do; skip to step 4.
 
 ## 3. Checkpoint
@@ -44,8 +47,9 @@ From `repos[].staging` (one entry, or each entry of a list in order):
   conflict stops everything for that repository: show it, do not resolve it without approval.
 - `release` / `deploy`: run `build` then `how` on the ticket's branch; keep the output's link or
   build number.
-- Move the ticket to the testing status of `workflow.md` if there is one (part of the approved
-  action).
+- Move the ticket to the testing status of `workflow.md` if there is one, and write what
+  `workflow.md` asks for at that point (a label, a comment) in the form it states (part of the
+  approved action). A form it does not state is asked, not guessed.
 
 Set `state.md` to `staging`, write what was done in `ship.md`.
 
