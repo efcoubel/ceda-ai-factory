@@ -23,6 +23,8 @@ A remote on a GitLab host; the `glab` CLI (`glab auth status`).
 - `reply`: `POST .../discussions/<id>/notes` with a JSON body (`glab api --input <file> -H "Content-Type: application/json"`).
 - `resolve`: `PUT .../discussions/<id>?resolved=true`, then check `resolved` is `true`.
 - `approve`: `glab mr approve <n>`.
+- `create_repo`: `glab repo create <namespace>/<name> --private|--public --description …`.
+- `protect_branch`: `glab api -X POST "projects/<p>/protected_branches" -f name=main -f push_access_level=0 -f merge_access_level=40`.
 
 ## Pitfalls
 

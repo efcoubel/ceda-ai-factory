@@ -29,6 +29,10 @@ The Atlassian MCP connector is available (tools such as `searchJiraIssuesUsingJq
 - `assign`: `editJiraIssue` with `assignee`; `lookupJiraAccountId` to find the account.
 - `create`: `getJiraProjectIssueTypesMetadata` for the type, then `createJiraIssue`.
 - `link`: `getIssueLinkTypes`, then `createIssueLink`.
+- `create` with `parent`: an epic link or a sub-task, depending on the project's hierarchy
+  (`getJiraProjectIssueTypesMetadata` tells which types exist).
+- `setup`: Jira projects and workflows are created in the Jira UI, not through the connector: a
+  task for the user, with the statuses and types to create.
 
 ## Pitfalls
 

@@ -30,6 +30,9 @@ options of the status property.
 - `create`: `notion-create-pages` in the data source.
 - `link`: a relation property if the database has one; otherwise a mention in the body.
 - `me`: `notion-get-self`.
+- `setup`: `notion-create-database` with the properties of the profile config (title, status with
+  the statuses as options, type, priority, assignee, a unique ID with `key_prefix`, a parent
+  relation for sub-items).
 
 ## Pitfalls
 

@@ -18,6 +18,11 @@ profile. The engine stays the same; the profile makes it yours.
   writes `.ai-factory/` in your project, creates the validation queue, runs the doctor.
 - **`/ai-factory:doctor`** — checks every access the profile relies on, with the fix for each
   broken one.
+- **`/ai-factory:new-project`** — starts a project from an empty folder with you: frames the
+  product (light, or `full` with personas, journeys and risks), chooses the stack together, creates
+  the repositories with the stack's official generator, the remote, branch protection and CI, sets
+  up the ticketing and seeds the backlog, then writes the profile. The onboarding offers it when
+  the folder holds no repository.
 - **The ticket chain** *(coming)* — `ticket-1-frame` → `ticket-2-code` → `ticket-3-review` →
   `ticket-4-test` → `ticket-5-ship` → `ticket-6-feedback` → `ticket-7-staging`, or `ticket <KEY>`
   end to end, stopping only at its checkpoints.
@@ -54,7 +59,8 @@ claude plugin marketplace add efcoubel/ceda-ai-factory
 claude plugin install ai-factory@ceda
 ```
 
-Then, in your project's root folder: `/ai-factory:onboarding`.
+Then, in your project's root folder — or in an empty folder for a new project:
+`/ai-factory:onboarding`.
 
 To try it without installing, from a clone:
 
@@ -64,7 +70,7 @@ claude --plugin-dir /path/to/ceda-ai-factory/plugins/ai-factory
 
 ## Roadmap
 
-- 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page.
+- 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page; new projects (0.1.2).
 - 0.2 — the ticket chain.
 - 0.3 — the dev pilot and the review skills for teams.
 - 0.4 — the support pilot.

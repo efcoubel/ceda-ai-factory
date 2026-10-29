@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.2
+
+- New `new-project` skill: framing (light or full), stack choice, repositories from the official
+  generator, remote, branch protection, CI, ticketing setup, backlog of epics and sub-issues,
+  profile. The onboarding hands over to it when the folder holds no repository.
+- Ticketing contract: `create` with a parent, `setup`. Forge contract: `create_repo`,
+  `protect_branch`.
+
 ## 0.1.1
 
 - Onboarding asks the conversation language first.

@@ -9,6 +9,8 @@
 | `resolve` | thread | — |
 | `approve` | MR/PR | — |
 | `me` | — | the user's handle |
+| `create_repo` | owner, name, visibility, description | remote URL (new projects only) |
+| `protect_branch` | repo, branch | no direct push, status checks required (new projects only) |
 
 Rules: the target of a MR/PR is the repo's `default_branch`, never a protected branch other than
 that one, and never merged by a skill. Pushes go through `git` and are guarded by the hook.

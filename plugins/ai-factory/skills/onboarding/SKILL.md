@@ -32,10 +32,16 @@ again.
 - From the current directory, look for `.ai-factory/profile.json` upwards (`core/architecture.md`).
   - **Found, complete**: say what it covers and offer to update one section (`update repos`,
     `update tools`, `update environments`, `update workflow`, `update autonomy`) or to start over.
-  - **Found, with `"onboarding": {"done": false, …}`**: resume at the recorded phase.
+  - **Found, with `"onboarding": {"done": false, …}`**: resume at the recorded phase; with
+    `"path": "new-project"`, hand over to `/ai-factory:new-project`, which resumes itself.
   - **Not found**: the project root is the current directory, unless it is inside a git repository
     whose parent holds sibling repositories; then propose the parent. Confirm the root in one
     question before writing anything.
+- **No repository yet**: no git repository at the root or up to two levels below, and the folder
+  is empty or holds only notes (text, markdown, PDFs, images). Say so, and ask: start a new project
+  together (recommended), or point to where the existing repositories are. For a new project,
+  invoke `/ai-factory:new-project` with the `Skill` tool, after saving the chosen language in
+  `onboarding.answers.language`; this onboarding stops there.
 - Keep progress in `.ai-factory/profile.json` → `"onboarding": {"done": false, "phase": "<n>", "answers": {…}}`
   after each phase, so a stop loses nothing.
 
