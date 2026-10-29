@@ -9,10 +9,25 @@ argument-hint: "[update <section>]"
 **Plugin root**: two directories above this skill's base directory. Read
 `<plugin root>/core/architecture.md` and `core/profile-schema.md` first.
 
-Speak to the user in their language (detect it from their messages); write the profile files in
-English, except free text the user dictates.
+Write the profile files in English, except free text the user dictates. Everything said to the
+user follows the language chosen in step 0.
 
-## 0. Where am I
+## 0. Language
+
+Before anything else, settle the language of the conversation. Guess it, in this order: the
+`language` setting of Claude Code (`~/.claude/settings.json`, then the project's
+`.claude/settings.json`), the language of the user's message if they wrote more than the command,
+the system locale (`$LANG`, `$LC_ALL`, or `defaults read -g AppleLanguages` on macOS). Then ask one
+question with `AskUserQuestion`, in that guessed language: "Which language should we use?", the
+guess first marked "(Recommended)", English second if different, the user can type another.
+
+Use the answer for every message, question and recap from then on, and propose it as
+`project.working_language` in block 1 (the language pilots use for plans, answers and ticket
+comments); the user may choose a different working language there, for a team that writes tickets
+in another language. Save it in `onboarding.answers.language`, so a resumed onboarding does not ask
+again.
+
+## 1. Where am I
 
 - From the current directory, look for `.ai-factory/profile.json` upwards (`core/architecture.md`).
   - **Found, complete**: say what it covers and offer to update one section (`update repos`,
@@ -24,7 +39,7 @@ English, except free text the user dictates.
 - Keep progress in `.ai-factory/profile.json` → `"onboarding": {"done": false, "phase": "<n>", "answers": {…}}`
   after each phase, so a stop loses nothing.
 
-## 1. Discover, without asking
+## 2. Discover, without asking
 
 Gather silently, in parallel where possible. Record what you found and where (file and line), so
 the recap can show its evidence.
@@ -54,7 +69,7 @@ the recap can show its evidence.
 
 Never print secrets, env values or personal data from what you read.
 
-## 2. Ask what is missing
+## 3. Ask what is missing
 
 Use the `AskUserQuestion` tool, at most four questions per call, each with your best guess as the
 first option marked "(Recommended)" when discovery suggests one. Skip any question discovery
@@ -89,20 +104,20 @@ call:
    - how many tested tickets may wait for shipping before it stops starting new ones
      (`max_ready`, recommended 5), and the daily caps (`max_ticks_per_day` 30,
      `max_tickets_per_day` 6);
-   - for each test command found in step 1, whether it can run with nobody around
+   - for each test command found in step 2, whether it can run with nobody around
      (`unattended: yes/no` in `repos.md`); propose `yes` for unit tests and static analysis, and
      ask for anything that needs a device, an emulator or a login.
 
-Save the answers after each block (phase 0, "keep progress").
+Save the answers after each block (step 1, "keep progress").
 
-## 3. Recap and confirm
+## 4. Recap and confirm
 
 Write the recap as a single message (or, if the `Artifact` tool exists, offer it as a private
 page): one table per profile file, each value with its source ("found in `pubspec.yaml`", "your
 answer"). Then the list of what will be written and where, including any change outside
 `.ai-factory/`. Ask for a go, or for corrections; apply corrections and show only what changed.
 
-## 4. Write the profile
+## 5. Write the profile
 
 From `<plugin root>/templates/profile/`:
 
@@ -116,7 +131,7 @@ From `<plugin root>/templates/profile/`:
 Touch nothing outside `.ai-factory/` unless the recap listed it and the user agreed (for example a
 short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
 
-## 5. Create the validation queue
+## 6. Create the validation queue
 
 - `artifact` adapter: publish `<plugin root>/templates/validation-page.html` as a new private
   artifact titled "<project name> validation", with `capabilities: {db: {rules: [{path: "", read:
@@ -124,7 +139,7 @@ short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
   `adapters/queue/artifact.md`.
 - `file` adapter: create `state/pilot/queue.md` with its header.
 
-## 6. Check and hand over
+## 7. Check and hand over
 
 Run `/ai-factory:doctor`. Then tell the user, in a few lines:
 
