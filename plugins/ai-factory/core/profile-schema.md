@@ -35,6 +35,7 @@
       "protected_branches": ["main"],
       "commit_language": "en",
       "commit_format": "conventional",
+      "commit_examples": ["feat(US-3.2): Add offline queue", "fix: Keep the session after refresh"],
       "branch_format": "<KEY>-<slug>"
     }
   ],
@@ -64,12 +65,16 @@
 | `tools.<category>.config` | what that adapter's "Profile config" section asks for. **Never a secret**: secrets are named by reference (env var, file and section, vault path) |
 | `repos[].path` | relative to the project root |
 | `repos[].protected_branches` | branches no skill ever merges into or pushes to; the hook enforces it |
+| `repos[].commit_format` | `conventional`, or the repository's own convention in words (`US-<epic>.<n>: <subject>, or Fix: <subject>`) |
+| `repos[].commit_examples` | two or three real subjects from the history; the code step writes commits that look like them |
+| `repos[].branch_format` | the branch name pattern, with `<KEY>` for the ticket key (`tools.ticketing.config.key`) |
+| `tools.ticketing.config.key` | where a ticket's key lives and how new keys are numbered (`adapters/ticketing/contract.md`, "Ticket keys"); absent means `native` |
 | `autonomy.start_mode` | `dry` (everything queued) or `normal` (delegated actions run) |
 | `unattended.auto_plan` | `true`: the pilot approves its own plan for low-risk tickets and works them up to `tested` without waiting (`core/autonomy.md`, "Working while the user is away") |
 | `unattended.low_risk` | the criteria a ticket must all meet to be low-risk, taken from the list in `core/autonomy.md`; dropping one makes the rule looser, and only listed criteria are understood |
 | `unattended.types`, `max_files` | ticket types and plan size that can be low-risk |
 | `unattended.max_ready` | tickets at `tested` waiting for shipping, beyond which nothing new starts |
-| `unattended.max_ticks_per_day`, `max_tickets_per_day` | daily caps that bound the cost of a long absence |
+| `unattended.max_ticks_per_day`, `max_tickets_per_day` | daily caps that bound the cost of a long absence; `null` means no cap on that count |
 
 ## `repos.md`
 

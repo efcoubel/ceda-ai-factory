@@ -53,8 +53,8 @@ the recap can show its evidence.
 1. **Repositories**: every git repository at the root or up to two levels below. For each:
    remotes (forge and host), default branch (`git symbolic-ref refs/remotes/origin/HEAD`), branches
    that look protected or for staging (`main`, `master`, `prod`, `production`, `develop`, `staging`,
-   `recette`), last 50 commit subjects (language, format: conventional or not, ticket keys and their
-   pattern), branch name pattern of the last 30 branches.
+   `recette`), last 50 commit subjects (language, format, ticket keys and their pattern; keep two
+   or three real subjects as examples), branch name pattern of the last 30 branches.
 2. **Stack**: manifests (`package.json`, `composer.json`, `pubspec.yaml`, `pyproject.toml`,
    `go.mod`, `Cargo.toml`, `pom.xml`, `build.gradle`, `Gemfile`, `*.csproj`), language versions,
    frameworks, test and lint tools in dependencies, `Dockerfile*`, `docker-compose*.yml`, CI files
@@ -72,6 +72,11 @@ the recap can show its evidence.
 6. **Ticketing details**, if a ticketing tool is in reach and the user's identity resolves: the
    projects or databases the user's recent tickets belong to, their types, their statuses and the
    transitions between them.
+7. **A backlog kept in files**: markdown, YAML, CSV or spreadsheet files whose lines look like
+   tickets or user stories (`US-3.2`, `#12`, `- [ ] …`, headings with an id and a title, a
+   `backlog`, `roadmap`, `stories` or `todo` file name). For each, note its path, how many items it
+   holds, their id pattern, whether ids are hierarchical (epic `US-3`, story `US-3.2`), and whether
+   the same ids already appear in branches, commits or ticket titles in the tool.
 
 Never print secrets, env values or personal data from what you read.
 
@@ -89,7 +94,14 @@ call:
    discovery was unsure.
 3. **Tickets**: which tool and which project/board/database; is there a support queue (requests
    from users) distinct from development work; which statuses mean "new", "in progress", "in
-   review", "done"; what is "urgent".
+   review", "done"; what is "urgent". **Keys**: if the ids that branches and commits carry are not
+   the tool's own (a file backlog's `US-3.2` against GitHub's `#42`), say which ones were found and
+   ask where the key lives from now on: at the start of the ticket title (recommended when the
+   tool has no custom key field), in a custom field, or the tool's own number for new tickets only.
+   This fills `tools.ticketing.config.key` (`adapters/ticketing/contract.md`, "Ticket keys").
+   **A backlog in files**, when step 2 found one: migrate it to the tool, keeping its ids as keys
+   (recommended), keep the file as the ticketing (`none` adapter pointed at it), or leave it as an
+   archive and start fresh in the tool.
 4. **Review and chat**: how many approvals a MR/PR needs and who gives them (solo: the fresh-agent
    review stands in); which chat tool and which channels announce reviews, if any.
 5. **Environments**: which environments exist, their URLs, where non-production data lives and how
@@ -123,7 +135,17 @@ page): one table per profile file, each value with its source ("found in `pubspe
 answer"). Then the list of what will be written and where, including any change outside
 `.ai-factory/`. Ask for a go, or for corrections; apply corrections and show only what changed.
 
-## 5. Write the profile
+## 5. Migrate a file backlog
+
+Only if the user chose to migrate. Read every item of the file; map each to a ticket: its key
+(written where `config.key.source` says), title, type (from its wording or the file's sections),
+status (done items are created closed, or skipped if the user prefers), description, parent
+(an epic for a hierarchical id). Skip items whose key already exists in the tool (`find_by_key`).
+Show the mapping as a tree with counts (to create, already in the tool, skipped), then create the
+tickets **as one outward batch** after the user's go, parents first. Add to the file, at its top,
+one line saying where its items now live; never delete it.
+
+## 6. Write the profile
 
 From `<plugin root>/templates/profile/`:
 
@@ -137,7 +159,7 @@ From `<plugin root>/templates/profile/`:
 Touch nothing outside `.ai-factory/` unless the recap listed it and the user agreed (for example a
 short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
 
-## 6. Create the validation queue
+## 7. Create the validation queue
 
 - `artifact` adapter: publish `<plugin root>/templates/validation-page.html` as a new private
   artifact titled "<project name> validation", with `capabilities: {db: {rules: [{path: "", read:
@@ -145,7 +167,7 @@ short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
   `adapters/queue/artifact.md`.
 - `file` adapter: create `state/pilot/queue.md` with its header.
 
-## 7. Check and hand over
+## 8. Check and hand over
 
 Run `/ai-factory:doctor`. Then tell the user, in a few lines:
 

@@ -89,7 +89,8 @@ Any doubt on one criterion makes the plan a normal one, queued for approval.
   left alone; 3 failed ticks in a row, or a doctor check the pilot depends on turning broken, stop
   the pilot until the user restarts it.
 - **Daily cap**: at most `unattended.max_ticks_per_day` ticks and `unattended.max_tickets_per_day`
-  tickets started per day.
+  tickets started per day. A cap set to `null` does not apply; the other caps and the circuit breaker
+  still do.
 - **Return report**: the first view of the validation page sums up what happened since the user's
   last decision: tickets ready to ship, plans approved by the pilot, tickets blocked and why,
   plans waiting for the user.

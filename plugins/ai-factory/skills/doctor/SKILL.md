@@ -20,6 +20,7 @@ Run them in parallel where independent. For each tool in `profile.json` → `too
 | 1 | Profile | `profile.json` missing a required field, an adapter file that does not exist, `onboarding.done` false |
 | 2 | Repositories | a `repos[].path` missing, not a git repo, or its `remote` differs from `git remote get-url origin` |
 | 3 | Ticketing | the adapter's check fails, or the dev queue query returns an error |
+| 3b | Ticket keys | the key of the current branch, or of the last commit carrying one (matched with `config.key.pattern`), does not lead to exactly one ticket through `find_by_key`; or `next_key` cannot compute a next key |
 | 4 | Forge | not authenticated, or a repo not reachable |
 | 5 | Chat | a configured channel not found |
 | 6 | Data | per non-production environment: the adapter's check fails; **and** a production environment is configured as reachable (that is broken, not a warning) |

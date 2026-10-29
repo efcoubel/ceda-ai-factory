@@ -8,18 +8,44 @@ A `github.com` remote and the `gh` CLI (`gh auth status`).
 
 ## Profile config
 
-`{"repo": "<owner>/<name>", "labels": {"bug": "bug", "task": "task", "feature": "enhancement"}, "project": null}`
-— types and statuses are labels (or a GitHub Project's status field if `project` is set).
+```json
+{
+  "repo": "<owner>/<name>",
+  "labels": { "bug": "bug", "task": "task", "feature": "enhancement" },
+  "project": { "owner": "<owner>", "number": 1, "status_field": "Status" },
+  "key": { "source": "native" }
+}
+```
+
+- **Types** are labels on a personal account (`labels` maps the engine's types to the label
+  names), issue types on an organization.
+- **Statuses**: with `project` set, the status is the value of `status_field` on the issue's item in
+  that GitHub Project, and the status map in `workflow.md` uses those option names. Without
+  `project`, statuses are open/closed plus labels.
+- **Keys**: `native` uses the issue number (`#42`); `title_prefix` uses a key at the start of the
+  title (`US-3.2 — Offline mode`), see "Ticket keys" in `contract.md`.
 
 ## Check
 
 `gh auth status`, then `gh issue list -R <repo> --limit 1`.
 
+## Check (keys)
+
+With `title_prefix`: `find_by_key` on the key of the current branch (or of the last commit that
+carries one) returns exactly one issue.
+
 ## Operations
 
-- `list`: `gh issue list -R <repo> --search "<query>" --json number,title,labels,state,assignees,createdAt,updatedAt`.
+- `list`: with `project`, `gh project item-list <number> --owner <owner> --format json --limit 500`
+  (each item carries its fields, `Status` among them; keep items whose content is an issue of
+  `repo`); without, `gh issue list -R <repo> --search "<query>" --json number,title,labels,state,assignees,createdAt,updatedAt`.
 - `read`: `gh issue view <n> -R <repo> --json title,body,labels,state,assignees,comments`.
-- `statuses` / `transition`: open/closed plus status labels; `gh issue edit --add-label/--remove-label`, `gh issue close`.
+- `statuses`: with `project`, the options of `status_field`: `gh project field-list <number> --owner <owner> --format json`
+  (keep the field id and each option id); without, open/closed plus status labels.
+- `transition`: with `project`, `gh project item-edit --project-id <project node id> --id <item id> --field-id <field id> --single-select-option-id <option id>`
+  (the project node id from `gh project view <number> --owner <owner> --format json --jq .id`;
+  the item id from `item-list`); close the issue too when the target maps to `done`. Without
+  `project`, `gh issue edit --add-label/--remove-label` and `gh issue close`.
 - `comment`: `gh issue comment <n> --body-file <file>`.
 - `assign`: `gh issue edit <n> --add-assignee <login>`.
 - `create`: `gh issue create --title … --body-file … --label …`. With a `parent`: create the issue,
@@ -27,6 +53,10 @@ A `github.com` remote and the `gh` CLI (`gh auth status`).
   `<id>` is the new issue's numeric `id` (not its number: `gh api repos/<owner>/<name>/issues/<n> --jq .id`).
 - `link`: a `Refs #n` line in the body.
 - `me`: `gh api user --jq .login`.
+- `find_by_key`: `native`: the number; `title_prefix`: `gh issue list -R <repo> --state all --search "\"<key>\" in:title" --json number,title`,
+  then the issue whose title starts with the key followed by ` — `, `: ` or a space.
+- `next_key`: list all titles (`--state all --limit 1000`), extract keys with `pattern`, take the
+  highest under the parent (`per_parent`) or overall (`sequential`), add one.
 - `setup`: labels for types (`gh label create bug|task|feature --force`), then a Project:
   `gh project create --owner <owner> --title <name>`, its "Status" field options matching the
   status map, and `gh project link` to each repository. Issue types (instead of labels) exist only

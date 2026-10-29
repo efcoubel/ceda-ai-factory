@@ -97,10 +97,11 @@ merge or reorder, then create it **as one outward batch** after their go (ticket
 
 ## 5. Write the profile and hand over
 
-Write `.ai-factory/` exactly as the onboarding's step 5 does, from what this skill decided (no
+Write `.ai-factory/` exactly as the onboarding's step 6 does, from what this skill decided (no
 discovery needed: the skill knows the repos, commands, branches and tools it created), including
-step 7 of the onboarding's questions (working while the user is away). Create the validation queue
-(onboarding step 6) and run `/ai-factory:doctor`.
+the onboarding's question block 7 (working while the user is away) and `tools.ticketing.config.key`
+(`native` unless the user wants their own key format). Create the validation queue (onboarding
+step 7) and run `/ai-factory:doctor`.
 
 Close with: what was created and where (links), what remains for the user (the pending console
 tasks), and how to start: the first plumbing ticket by hand with `/ai-factory:ticket <KEY>`, then
