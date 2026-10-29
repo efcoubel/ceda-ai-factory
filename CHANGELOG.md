@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.1
+
+- The dev pilot refreshes the dashboard first, at every tick, in a background agent, instead of
+  at the end and at most hourly: the dashboard shows the state the tick starts from without
+  delaying the tickets.
+- The dashboard uploads only the datasets that changed (hashes in `~/.ai-factory/dashboard.json`),
+  writes all its documents in one batch, reads the projects' tools in parallel, and takes a lock
+  so two refreshes never overlap. Called by the pilot, it asks nothing and never rewrites a page.
+
 ## 0.3.0
 
 - The dev pilot, `dev`: one tick, made for `/loop 30m /ai-factory:dev`. It carries out the

@@ -1,7 +1,7 @@
 ---
 name: dashboard
 description: Refreshes the ai-factory dashboard - a private claude.ai page with one tab per project registered on this machine, showing what waits for the user (validation queue, blocked tickets, staging), the tickets by step of the chain, open MRs/PRs, lead time, review rounds, approvals accepted unchanged, health, and a daily trend. Reads local files and the tools in read-only mode; writes only the dashboard. Use for "/ai-factory:dashboard", "refresh the dashboard", "show me the factory", "where are my projects at".
-argument-hint: "[register | page]"
+argument-hint: "[register | page | pilot]"
 ---
 
 # /ai-factory:dashboard
@@ -12,6 +12,9 @@ Read-only toward the projects: this skill changes no ticket, MR/PR, branch or pr
 the dashboard, `~/.ai-factory/` (the registry, the history, the dashboard's address) and the two
 `dashboard-*.json` snapshots in each project's `state/pilot/`.
 
+While it runs, `~/.ai-factory/dashboard.lock` holds its start time; it is removed at the end,
+whatever happens. A lock less than 15 minutes old means a refresh is running: stop and say so.
+
 ## 1. The projects
 
 `~/.ai-factory/projects.json` lists the project roots of this machine. The current project (found
@@ -21,7 +24,8 @@ broken health row; say so and offer to remove it from the registry.
 
 ## 2. Live snapshots, per project
 
-What the script cannot read from files, written beforehand in `<root>/.ai-factory/state/pilot/`:
+What the script cannot read from files, written beforehand in `<root>/.ai-factory/state/pilot/`,
+all the calls of all projects in parallel:
 
 - `dashboard-backlog.json`: the tickets of the development queue (`workflow.md`, "Dev queue"; the
   ticketing adapter's `list`), as `[{key, title, type, priority, created_at}]`. The script drops
@@ -57,17 +61,22 @@ tool's quickstart (`intent: "other"`), create the dashboard from it titled "ai-f
 its address. Follow the type's own instructions for everything below; this section only says what
 goes where.
 
-- **Datasets** `projects`, `tickets`, `backlog`, `queue`, `prs`, `health`, `history`: each an attached file.
-  Upload each JSON file as an asset, then update its dataset document with the new `url`, `name`
-  and `updated` (`{at: now, by: "ai-factory dashboard"}`), `schedule` and `staleAfterHours: 48`.
-  The titles: "Projects", "Tickets", "Development queue", "Validation queue", "Open MRs/PRs", "Health checks", "Daily
-  snapshots", each with a one-line description of its source. Then delete the asset each dataset
-  pointed to before, if no other document names it.
+- **Datasets** `projects`, `tickets`, `backlog`, `queue`, `prs`, `health`, `history`: each an
+  attached file. **Only what changed is uploaded**: `~/.ai-factory/dashboard.json` keeps
+  `uploaded: {<dataset>: <sha256 of the file>}`. A file whose hash is unchanged is not uploaded
+  again; only its document's `updated` is moved to now, so it does not show as stale. A changed
+  file is uploaded as an asset, then its dataset document gets the new `url`, `name` and `updated`
+  (`{at: now, by: "ai-factory dashboard"}`), `schedule` and `staleAfterHours: 48`, and its hash is
+  saved. All the document writes of a refresh go in **one** batch.
+  The titles: "Projects", "Tickets", "Development queue", "Validation queue", "Open MRs/PRs",
+  "Health checks", "Daily snapshots", each with a one-line description of its source. Then delete
+  the asset each replaced dataset pointed to before, if no other document names it.
 - **Page** `files/index.html`: the text of `<plugin root>/templates/dashboard/index.html`. Written
   when the dashboard has no page, or when the page's `<meta name="ai-factory-dashboard">` version is
   older than the template's (argument `page`: rewrite it whatever its version). The user may have
   edited the page by hand: before replacing an older one, say so and ask, unless the argument is
-  `page`.
+  `page`. With `pilot` (called by the dev pilot), ask nothing: write the page only if there is
+  none, and say in the report that a newer template is available.
 - **Language**: the page speaks the language of the onboarding. `~/.ai-factory/dashboard.json`
   keeps it as `language`, set at creation from the current project's `onboarding.language` (else
   `project.working_language`); when registered projects use different languages, ask once which
@@ -77,7 +86,7 @@ goes where.
   translate code, classes, `data-*` attributes, dataset ids or column names, and leave data values
   (ticket states, statuses) as they are: the page shows them as stored. A page whose `data-lang`
   differs from `language` is rewritten like an older one.
-- Then the type's check of the page, as its instructions say.
+- Then the type's check of the page, as its instructions say (only after writing the page).
 
 ## 5. Report
 

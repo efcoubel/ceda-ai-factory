@@ -41,6 +41,15 @@ Stop at the first that holds, with one line saying why (and nothing in the journ
 the tick only carries out approved actions (section 1) and stops. Nothing new starts, nothing is
 posted in chat.
 
+## 0b. Dashboard first
+
+If `~/.ai-factory/dashboard.json` exists, start `/ai-factory:dashboard pilot` in a **background**
+agent (`Agent` tool, `run_in_background: true`) before touching any ticket, at every tick, quiet
+hours included (it only reads the projects). The dashboard then shows the state the tick starts
+from: the previous tick's work and the user's latest decisions. Do not wait for it; at the end of
+the tick, say whether it finished, and if it failed, its error. A refresh still running
+(`~/.ai-factory/dashboard.lock` less than 15 minutes old) is not started again.
+
 ## 1. Carry out what the user decided
 
 Queue rows `pilot = dev` in `ok` or `changed`, and `rejected` ones without `handled_at`
@@ -122,8 +131,6 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
    `PushNotification` for the tick, under 200 characters, leading with what to act on:
    `Lima: 2 to approve (plan #21, ship #19), #14 blocked`. The ids already notified are in
    `notified.json`: never notify twice for the same row or block. Nothing new: no notification.
-5. **Dashboard**: if `~/.ai-factory/dashboard.json` exists and `cadences.json` → `dashboard` is
-   more than an hour old, run `/ai-factory:dashboard` in an agent and note the time.
-6. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
+5. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
    the queue (its link); blocks with their reason; tickets started by hand; what was left for the
    next tick for lack of budget. Remove `dev.lock`.
