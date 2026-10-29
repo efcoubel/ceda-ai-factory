@@ -1,6 +1,10 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.1
+
+- Onboarding asks the conversation language first.
+
+## 0.1.0
 
 - Onboarding and doctor skills.
 - Adapter contracts for ticketing, forge, chat, database, logs and the validation queue.
