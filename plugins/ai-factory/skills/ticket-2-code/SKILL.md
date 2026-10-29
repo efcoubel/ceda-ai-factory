@@ -27,9 +27,14 @@ Check every repository of the plan is on the ticket's branch.
 - Before writing a service, a function, a constant or a component: look for the existing one.
 - Write the unit tests of what you change, in the style of the neighbouring tests. For a bug, the
   test that reproduces it comes first and fails before the fix.
-- After each change, run the repository's static analysis (and the formatter, if it has one) on the
-  changed files (`repos.md`). Fix before moving on.
+- After each change, run the repository's static analysis on the changed files (`repos.md`). Fix
+  before moving on. Run the formatter only if `repos.md` says the repository follows it; if it
+  rewrites lines you did not change, undo those lines.
 - No refactoring outside the plan, no comment that paraphrases the code.
+- A fix the work needs but the ticket is not about (a tool's configuration, a missing environment
+  variable, a broken script): in manual mode, ask before making it; in pilot mode, make it only if
+  it stays local and changes no behaviour of the application, else `blocked:`. Either way it is its
+  own commit, listed in `plan.md` under "Outside the ticket" so `ticket-5-ship` shows it.
 - A user-facing change follows the user-facing rules of `core/review-rules.md`, with the
   components the repository already has.
 

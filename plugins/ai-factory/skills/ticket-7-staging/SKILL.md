@@ -17,7 +17,7 @@ thread left to handle, no draft. Not ready: stop and say what is missing.
 
 ## 2. Prepare, per repository
 
-From `repos[].staging`:
+From `repos[].staging` (one entry, or each entry of a list in order):
 
 - `branch`: `git fetch origin <staging branch> <branch>`, then
   `git merge-tree --write-tree origin/<staging branch> origin/<branch>` to detect a conflict without

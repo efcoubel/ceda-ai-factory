@@ -14,4 +14,6 @@
   - static analysis: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
   - lint: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
   - build: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
+  - end-to-end tests: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no> — takes: <duration>
 - **Conventions**:
+  - formatter: `<command>`, followed by the repository: <yes/no>

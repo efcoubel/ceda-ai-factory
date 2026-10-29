@@ -29,7 +29,7 @@ Its prompt stands alone and holds:
 - the repositories and their default branches, with the instruction to read
   `git diff origin/<default>...HEAD` and uncommitted changes, then **every changed file in full**;
 - the rules: `<plugin root>/core/review-rules.md`, the repositories' `CLAUDE.md` and linters'
-  config, `.ai-factory/repos.md` ("Conventions") and `.ai-factory/learnings.md`;
+  config, `.ai-factory/repos.md` ("Conventions") and `.ai-factory/learnings.md` (with `state/learnings-pending.md`);
 - the instruction to check every acceptance criterion of the plan against the code;
 - the instruction to verify before asserting (callers, an existing helper), to modify nothing, and
   not to re-open a decision recorded in `plan.md`;

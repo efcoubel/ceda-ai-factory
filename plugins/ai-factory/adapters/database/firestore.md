@@ -44,7 +44,8 @@ the repository (`*seed*`, `emulator-data/`, `firestore-export/`).
 The Firebase CLI starts the emulator and selects projects, but has no command that reads
 documents: reads go through a short Node script with `firebase-admin`, kept in the ticket folder.
 
-- `query`:
+- `query`: through `<plugin root>/scripts/firestore-read.mjs`, which refuses any project the
+  profile marks as production before connecting (copy it to the ticket folder to adapt the query):
   - **emulator** (the default for diagnosis): `firebase emulators:exec --project <emulator_project> --only firestore "<seed> && node read.mjs"`;
     the script sees `FIRESTORE_EMULATOR_HOST` and never reaches the cloud;
   - **a non-production project**: `GOOGLE_CLOUD_PROJECT=<project id> node read.mjs` with
@@ -62,6 +63,15 @@ documents: reads go through a short Node script with `firebase-admin`, kept in t
 - The emulator holds only what the seed puts in it: a defect that depends on real data cannot be
   reproduced there. Say so, and diagnose on the `dev` or `staging` project if it holds realistic
   data.
+- A parameter declared with `defineString`, `defineInt`… and absent from `functions/.env.local`
+  (or `.env.<project>`) makes the Functions emulator **ask for it on the terminal**, even with
+  `--non-interactive`: an unattended run waits forever. Every parameter needs a value for the
+  emulator; the doctor's check 10b catches it.
+- `setGlobalOptions` (region, memory) applies only to the functions defined **after** it runs.
+  Functions in a module imported before the call keep the defaults (`us-central1`): the app then
+  gets `not-found`. Call it in a module imported first, or set the options on each function.
+- The Auth emulator shows a "Running in emulator mode" banner at the bottom of web pages: it hides
+  what is drawn there (snackbars, bottom bars) in screenshots.
 - Many solo Firebase apps have **only** a production project. Then there is no copy to diagnose
   on: the database category stays `none` for diagnosis, or the onboarding proposes the emulator
   with a seed.

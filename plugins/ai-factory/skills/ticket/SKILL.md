@@ -41,6 +41,11 @@ After each step, read `state.md` again and go on without asking. Stop, saying wh
 
 In manual or `chain` mode, once the user answers a checkpoint, resume the chain.
 
+A round of fixes after a review with blocking findings is two invocations, not a shortcut: call
+`ticket-2-code` (it handles only those findings), then `ticket-3-review` again with a fresh agent.
+The same after `ticket-4-test` committed a fix beyond a few lines. Following the steps' rules from
+memory instead skips what they check.
+
 In **pilot mode with `unattended.auto_plan`**, `ticket-1-frame` may approve its own plan for a
 low-risk ticket (`planned (auto)`): continue to `ticket-2-code` in the same run, up to `tested`.
 

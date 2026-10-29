@@ -59,9 +59,17 @@ criterion: this is not the case.
 
 **Otherwise**, before writing code or creating any branch:
 
-- manual / `chain`: present the plan, the assignment (if the ticket has no assignee) and the
-  transition to the "start work" status of `workflow.md`, and the open questions; wait for the
-  user's answer, then write the answers into `plan.md`;
+- manual / `chain`, in the conversation itself (a file the user has not opened is not shown):
+  1. **the plan**: the summary, the repositories, the acceptance criteria, the steps, "Watch out"
+     and "Risk", in full or close to it;
+  2. **what will be done after the go**, one line each: the branch created in each repository, the
+     assignment (if the ticket has no assignee, and to whom), the transition to the "start work"
+     status of `workflow.md`;
+  3. the open questions, with `AskUserQuestion` if there are any.
+
+  Answering the questions is **not** approval of the plan. Write the answers into `plan.md`, show
+  what they changed in the plan, and wait for an explicit go on the plan and on the lines of point
+  2. Nothing of point 2 is done before it;
 - `pilot`: add a `plan` action to `actions.json` (summary: the ticket and the main repository in
   one line; content: the plan, the assignment, the transition, the questions; files: `plan.md`),
   set `state.md` to `framing`, return. Called again with `pilot approved`, go to step 5; a
@@ -82,7 +90,7 @@ is.
 ## 6. The ticket and the end
 
 Assign the ticket to the user if it has no assignee, and move it to the "start work" status
-(ticketing adapter, `assign`, `transition`). Both were part of the approved plan; for a plan
+(ticketing adapter, `assign`, `transition`), exactly as the approved checkpoint listed them; for a plan
 approved by the pilot itself, they follow the matrix of `core/autonomy.md` ("Any other public
 answer or ticket transition": queued, unless the profile loosened it).
 

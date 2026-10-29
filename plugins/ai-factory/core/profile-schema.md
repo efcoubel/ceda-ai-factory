@@ -2,7 +2,7 @@
 
 `/ai-factory:onboarding` writes these files under `<project root>/.ai-factory/`. Templates are in
 `templates/profile/`. Every skill reads them; only the onboarding (and the user) rewrites them.
-`learnings.md` is the exception: pilots append to it.
+`learnings.md` is the exception: pilots add findings to it, as "`learnings.md`" below says.
 
 ## `profile.json`
 
@@ -64,7 +64,7 @@
 | `tools.<category>.adapter` | a file name in `adapters/<category>/` without `.md`, or `none` |
 | `tools.<category>.config` | what that adapter's "Profile config" section asks for. **Never a secret**: secrets are named by reference (env var, file and section, vault path) |
 | `repos[].path` | relative to the project root |
-| `repos[].staging` | how a change reaches testers: `branch`, `release`, `deploy` or `none` (`core/staging.md`) |
+| `repos[].staging` | how a change reaches testers: `branch`, `release`, `deploy` or `none`, or a list of them run in order (`core/staging.md`) |
 | `tools.forge.config.mr_options` | options applied when opening a MR/PR: `squash`, `delete_branch`, `draft`, `reviewers`, `labels` |
 | `repos[].protected_branches` | branches no skill ever merges into or pushes to; the hook enforces it |
 | `repos[].commit_format` | `conventional`, or the repository's own convention in words (`US-<epic>.<n>: <subject>, or Fix: <subject>`) |
@@ -87,8 +87,10 @@ One `## <repo name>` section per repository:
 - **Talks to**: the other repositories or services it calls and is called by.
 - **Commands**: install, run locally, unit tests, static analysis, lint, build. Each with where it
   runs (host, container name, emulator) and `unattended: yes` when a pilot can run it with nobody
-  around (no device to plug, no login to type, no emulator to start by hand).
-- **Conventions**: what a reviewer would flag (from the repo's own rules files and history).
+  around (no device to plug, no login to type, no emulator to start by hand), and `takes:` for any
+  command longer than a minute (`core/chain.md`, "Long commands").
+- **Conventions**: what a reviewer would flag (from the repo's own rules files and history), and
+  whether the repository follows its language's formatter (`dart format`, `prettier`, `black`…).
 
 ## `environments.md`
 
@@ -117,3 +119,9 @@ Starts as a copy of `core/priorities.md`; the user edits it. The dev pilot reads
 
 `- <date> — <topic> : <finding>` lines, grouped under `## <topic>` headings. A pilot that finds
 the table, screen, cause or convention behind a family of tickets adds one line.
+
+When `.ai-factory/` lives inside a repository a ticket changes, a finding is **not** written there:
+it would be committed on the ticket's branch and ship in a functional MR/PR. It goes to
+`state/learnings-pending.md` (same format, ignored by git), which every skill reads with
+`learnings.md`; the user moves its lines into `learnings.md` in a commit of their own (the ship
+recap reminds them when it is not empty). Outside a repository, `learnings.md` is written directly.

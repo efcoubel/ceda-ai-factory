@@ -9,12 +9,16 @@ argument-hint: "[update <section>]"
 **Plugin root**: two directories above this skill's base directory. Read
 `<plugin root>/core/architecture.md` and `core/profile-schema.md` first.
 
-Write the profile files in English, except free text the user dictates. Everything said to the
-user follows the language chosen in step 0.
+Write `profile.json` keys, headings and the template's fixed labels in English, so every skill
+finds them. The prose (purposes, conventions, notes) is in English unless the user asks for their
+language; then all prose is in that language. Everything said to the user follows the language
+chosen in step 0.
 
 ## 0. Language
 
-Before anything else, settle the language of the conversation. Guess it, in this order: the
+Before anything else, settle the language of the conversation. If `profile.json` already holds
+`onboarding.language` (a completed or resumed onboarding, an `update`), use it without asking.
+Otherwise guess it, in this order: the
 `language` setting of Claude Code (`~/.claude/settings.json`, then the project's
 `.claude/settings.json`), the language of the user's message if they wrote more than the command,
 the system locale (`$LANG`, `$LC_ALL`, or `defaults read -g AppleLanguages` on macOS). Then ask one
@@ -24,8 +28,8 @@ guess first marked "(Recommended)", English second if different, the user can ty
 Use the answer for every message, question and recap from then on, and propose it as
 `project.working_language` in block 1 (the language pilots use for plans, answers and ticket
 comments); the user may choose a different working language there, for a team that writes tickets
-in another language. Save it in `onboarding.answers.language`, so a resumed onboarding does not ask
-again.
+in another language. Save it in `onboarding.language`, which stays when the onboarding is done, so
+neither a resumed onboarding nor a later `update` asks again.
 
 ## 1. Where am I
 
@@ -41,7 +45,7 @@ again.
   is empty or holds only notes (text, markdown, PDFs, images). Say so, and ask: start a new project
   together (recommended), or point to where the existing repositories are. For a new project,
   invoke `/ai-factory:new-project` with the `Skill` tool, after saving the chosen language in
-  `onboarding.answers.language`; this onboarding stops there.
+  `onboarding.language`; this onboarding stops there.
 - Keep progress in `.ai-factory/profile.json` → `"onboarding": {"done": false, "phase": "<n>", "answers": {…}}`
   after each phase, so a stop loses nothing.
 
@@ -61,7 +65,9 @@ the recap can show its evidence.
    (`.gitlab-ci.yml`, `.github/workflows/`), `Makefile` targets. From CI and scripts, infer the
    commands to install, test, analyse, lint, build.
 3. **Conventions**: `CLAUDE.md`, `AGENTS.md`, `CONTRIBUTING.md`, `.editorconfig`, linters'
-   config. Note the rules a reviewer would enforce.
+   config. Note the rules a reviewer would enforce, and whether the code follows the language's
+   formatter (run it in check mode on a few files: `dart format --output=none --set-exit-if-changed`,
+   `prettier --check`, `black --check`).
 4. **Tools in reach**: the MCP connectors available in this session (by their tool names:
    Atlassian, Notion, Linear, GitHub, Slack, Microsoft 365, Sentry, Grafana, Firebase…) and the CLIs
    on the machine (`gh`, `glab`, `docker`, `psql`, `mysql`, `mariadb`, `firebase`, `gcloud`,
@@ -128,7 +134,8 @@ call:
      `max_tickets_per_day` 6);
    - for each test command found in step 2, whether it can run with nobody around
      (`unattended: yes/no` in `repos.md`); propose `yes` for unit tests and static analysis, and
-     ask for anything that needs a device, an emulator or a login.
+     ask for anything that needs a device, an emulator or a login. A command that starts
+     services gets `yes` only once doctor's check 10b passed on it.
 
 Save the answers after each block (step 1, "keep progress").
 
@@ -158,7 +165,7 @@ From `<plugin root>/templates/profile/`:
   scope filled in;
 - `.ai-factory/state/tickets/` and `.ai-factory/state/pilot/`, and the template `gitignore` as
   `.ai-factory/.gitignore`;
-- set `"onboarding": {"done": true, "at": "<ISO date>", "plugin_version": "<plugin.json version>"}`.
+- set `"onboarding": {"done": true, "at": "<ISO date>", "plugin_version": "<plugin.json version>", "language": "<step 0>"}`.
 
 Touch nothing outside `.ai-factory/` unless the recap listed it and the user agreed (for example a
 short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).

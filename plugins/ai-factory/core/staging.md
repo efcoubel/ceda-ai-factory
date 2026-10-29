@@ -1,13 +1,19 @@
 # Staging: putting a change in front of testers
 
-What "staging" means differs per repository, so `repos[].staging` in `profile.json` says it:
+What "staging" means differs per repository, so `repos[].staging` in `profile.json` says it,
+as one entry or as a list run in order (a monorepo that deploys its backend, then releases its
+app):
 
 ```json
 "staging": { "kind": "branch", "branch": "staging" }
 "staging": { "kind": "release", "how": "firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk --app <app id> --groups testers", "build": "flutter build apk --release --flavor staging", "target": "Firebase App Distribution, group testers", "unattended": false }
 "staging": { "kind": "deploy", "how": "firebase deploy --only functions,firestore:rules --project lima-staging-ec", "target": "lima-staging-ec", "unattended": false }
 "staging": { "kind": "none" }
+"staging": [{ "kind": "deploy", … }, { "kind": "release", … }]
 ```
+
+In a list, each entry is prepared, shown and approved on its own line of the checkpoint; one that
+fails stops the ones after it.
 
 | Kind | What `ticket-7-staging` does, after approval |
 |---|---|

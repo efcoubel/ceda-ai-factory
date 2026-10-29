@@ -1,5 +1,32 @@
 # Changelog
 
+## 0.2.1
+
+From the first ticket run end to end on a real project.
+
+- Frame: the plan and every write that follows its approval (branches, assignment, transition)
+  are shown in the conversation; answering the plan's questions is not approving it.
+- Ship: the recap shows, word for word, everything that will leave the machine, automatic lines
+  included; commits outside the ticket are listed apart; the MR/PR title describes the whole
+  ticket; the ticket comment is a file of the ticket folder.
+- Chain: a round of fixes invokes `ticket-2-code` then `ticket-3-review` again; long commands are
+  announced, bounded without `timeout` (absent on macOS) and never left waiting on a prompt.
+- Code: the formatter runs only where the repository follows it; a fix outside the ticket is
+  asked for and committed on its own.
+- Doctor: check 10b starts each unattended command that starts services, to catch prompts and
+  busy ports.
+- Firestore: `scripts/firestore-read.mjs`, which refuses production projects; pitfalls on
+  parameters missing from `.env.local`, `setGlobalOptions` and the Auth emulator banner.
+- Ticket keys: `legacy` key rules recognized when reading, epics carried by a label; a complete
+  GitHub Project transition example.
+- Staging: a list of entries per repository (deploy the backend, then release the app).
+- Ticket folder: journal times from the clock; no file outside the listed ones; findings go to
+  `state/learnings-pending.md` when the profile lives in a repository the ticket changes.
+- Test: tips for Flutter web and two users in one browser, the build the tester needs in the first
+  step, seed accounts in `test-data.md`.
+- Onboarding: the language is kept in `onboarding.language` and never asked again; the profile's
+  prose can be in the user's language; the formatter is checked during discovery.
+
 ## 0.2.0
 
 - The ticket chain: `ticket` and `ticket-1-frame` to `ticket-7-staging`, with manual, chain, pilot

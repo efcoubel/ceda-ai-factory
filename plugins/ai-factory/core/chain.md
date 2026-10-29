@@ -13,7 +13,7 @@ the action (`pilot`).
 
 1. **Profile**: find `.ai-factory/profile.json` (`core/architecture.md`). None: stop and suggest
    `/ai-factory:onboarding`. Read `profile.json`, `repos.md`, `workflow.md`, and the lines of
-   `learnings.md` about the repositories involved.
+   `learnings.md` and `state/learnings-pending.md` about the repositories involved.
 2. **Doctor**: if `state/pilot/doctor.json` reports broken a check this step needs (ticketing,
    forge, the repository's commands), stop and say so.
 3. **Key**: the argument; else the key found in the current branch name with
@@ -56,6 +56,21 @@ it is asked instead.
   run only those marked `unattended: yes`; the others become steps for the user in `test.md`.
 - A repository's own rules (`CLAUDE.md`, linters, "Conventions" in `repos.md`) win over anything
   general in these steps.
+
+## Long commands
+
+Emulators, end-to-end tests, builds: a command that may take more than a minute.
+
+- **Announce it** before starting: what it runs and how long it should take (`repos.md`, "takes";
+  otherwise your estimate). The user who sees nothing for ten minutes cannot tell a slow run from a
+  stuck one.
+- **Bound it** with the session's own command timeout or a background run checked later, never
+  with the `timeout` command: macOS does not have it (`gtimeout` only with coreutils installed).
+- **Never let it wait for an answer.** Close its input (`< /dev/null`) and use the tool's
+  non-interactive flag. Output that ends on a question (`? Enter …`, `[y/N]`, `Password:`) means
+  the command is stuck: stop it, find what it asks for (a missing variable, a login, a choice),
+  and fix that cause instead of running it again. Note the cause in the learnings (`core/ticket-folder.md`).
+- A command that failed is not run again unchanged: read the error first.
 
 ## The circuit breaker
 

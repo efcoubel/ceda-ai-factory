@@ -12,7 +12,9 @@ argument-hint: "<KEY> [chain | pilot [dry]]"
 
 Read `state.md`, `plan.md`, `review.md`. For each repository of the ticket, run the commands of
 `repos.md`: static analysis, unit tests (those of the changed code, then the whole suite if it is
-reasonable), lint, build if cheap. In pilot mode, only those marked `unattended: yes`.
+reasonable), lint, build if cheap, end-to-end tests if `repos.md` has them (`core/chain.md`,
+"Long commands"). In pilot mode, only those marked `unattended: yes`. A command not run again since
+the last commit that touches what it covers is said in `test.md`, with why.
 
 A failure clearly due to the branch is fixed on the spot with a local commit; a fix beyond a few
 lines goes back through `ticket-3-review`. A pre-existing failure (it also fails on
@@ -27,7 +29,13 @@ When the branch changes something a user sees or triggers, play the test procedu
 write it first) on the local environment of `environments.md`:
 
 - **web**: with the browser tools of the session, if any. Compare each screen to the expected
-  result; collect console errors and failed network calls;
+  result; collect console errors and failed network calls. Set the window to a fixed size first,
+  so screenshot coordinates stay the same. Two users at once: two origins (`localhost` and
+  `127.0.0.1`) keep two separate sessions in one browser;
+- **Flutter web** draws on a canvas: the page tools see nothing until the accessibility tree is
+  on (click the hidden `flt-semantics-placeholder` element, or start the app with semantics
+  enabled). A download may stop the page from repainting in the session's browser: what follows a
+  download is checked again after a reload, or left for the tester;
 - **mobile**: integration tests on an emulator or simulator (`repos.md`), only if marked
   `unattended: yes` or the user is in the conversation; the backend on its emulator
   (`adapters/database/<adapter>.md`), never a production project;
@@ -66,9 +74,12 @@ Write for them, in the working language, as a user manual:
   result fits on one line; the obvious (logging in works, a page opens) is not written.
 - Labels shown on screen in straight quotes; never a class, table, field or constant name, nor a
   local URL: use the staging URL of `environments.md`.
-- What the tester needs to replay it (which account, in which state) is in the first step. An
-  account in a given state is looked up in non-production data (database adapter); its business
-  identifier goes in the procedure, the query that found it in `test-data.md`.
+- What the tester needs to replay it (which account, in which state, **which build** and where to
+  get it) is in the first step. When no build reaches testers yet (`repos[].staging` is `none` or
+  not in place), the first step says how the tester runs the branch. An account in a given state
+  is looked up in non-production data (database adapter); its business identifier goes in the
+  procedure, the query that found it in `test-data.md`. Accounts from a seed: `test-data.md` names
+  the seed file and the accounts used, no query.
 - Steps truly out of the tester's reach (a command to run, a date to simulate) start with "A
   developer …".
 - Format for where it will be pasted (`workflow.md`, "Transitions": a ticketing field, a comment, a
