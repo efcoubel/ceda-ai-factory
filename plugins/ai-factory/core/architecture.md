@@ -36,6 +36,10 @@ Several profiles can coexist on one machine, one per project root.
   state/              runtime state, never committed: tickets/, pilot/ (journal, cadences, queue)
 ```
 
+Outside the projects, `~/.ai-factory/` holds what belongs to the machine: `projects.json` (the
+registered project roots), `history/` (one snapshot per project and day) and `dashboard.json` (the
+dashboard's address).
+
 `profile.json`, the `.md` files and `learnings.md` can be committed and shared with a team: they hold
 **no secret**, only references to where secrets live (an env var name, a `~/.my.cnf` section, a
 vault path). `state/` is git-ignored.
@@ -60,6 +64,7 @@ Every ticketing tool has its own status names; `workflow.md` maps them to these:
 |---|---|---|
 | `onboarding` | Discover the project, ask what is missing, write the profile | v0.1 |
 | `doctor` | Check every access the profile relies on | v0.1 |
+| `dashboard` | One page, one tab per project of this machine: what waits for the user, the flow of tickets, MRs/PRs, lead time, health, a daily trend | v0.2.3 |
 | `new-project` | Start a project from an empty folder: framing, stack, repositories, ticketing, backlog, profile | v0.1.2 |
 | `ticket` and `ticket-1-frame` … `ticket-7-staging` | The development chain for one ticket (`core/chain.md`) | v0.2 |
 | `support` and `support-*` | The support pilot (N1): triage, answer, export, fix data, import, escalate | planned |

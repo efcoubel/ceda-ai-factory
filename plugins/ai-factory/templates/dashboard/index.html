@@ -1,0 +1,515 @@
+<meta name="dash-one-writer">
+<meta name="ai-factory-dashboard" content="0.2.3" data-lang="en">
+<style>
+  .af { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+  .af-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
+  .af-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
+  .af-lede { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
+  .af-lede b { color: var(--color-fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .af-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); padding-bottom: var(--cds-pad-sm); }
+  .af-tabs button { font: inherit; font-size: var(--cds-font-size-body); padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); cursor: pointer; }
+  .af-tabs button[aria-selected="true"] { border-color: var(--color-fg); font-weight: 600; }
+  .af-tabs button:focus-visible { outline: 2px solid var(--color-fg); outline-offset: 2px; }
+  .af-tiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); gap: var(--cds-gap-md); }
+  .af-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md) var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-xs); min-width: 0; }
+  .af-tile.af-alert { border-color: var(--color-warn); }
+  .af-label { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .af-value { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; line-height: 1.1; }
+  .af-note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); margin: 0; }
+  .af-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: var(--cds-gap-md); }
+  .af-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); display: flex; flex-direction: column; gap: var(--cds-gap-sm); min-width: 0; }
+  .af-card h2 { margin: 0; font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); }
+  .af-wide { grid-column: 1 / -1; }
+  .af-scroll { overflow: auto; max-height: 22rem; }
+  .af-table { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+  .af-table th { text-align: left; font-weight: var(--cds-font-weight-medium); color: var(--color-fg-muted); padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); position: sticky; top: 0; background: var(--color-panel); }
+  .af-table td { padding: var(--cds-pad-xs) var(--cds-pad-sm); border-bottom: 1px solid var(--color-border-line); vertical-align: top; }
+  .af-table td.af-num, .af-table th.af-num { text-align: right; }
+  .af-empty { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+  .af-pill { display: inline-block; padding: 0 var(--cds-pad-xs); border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); white-space: nowrap; }
+  .af-ok { color: var(--color-ok); }
+  .af-warn { color: var(--color-warn); }
+  .af-bad { color: var(--color-bad); }
+  .af-wf { min-height: 9.5rem; position: relative; }
+  .af-wf svg { display: block; overflow: visible; }
+  .af-wf .af-node { cursor: pointer; outline: none; }
+  .af-wf .af-node .af-disc { fill: var(--color-bg); stroke: var(--color-border-line); stroke-width: 1.5; transition: stroke var(--cds-dur-slow), fill var(--cds-dur-slow); }
+  .af-wf .af-node.af-live .af-disc { stroke-width: 2.5; }
+  .af-wf .af-node:hover .af-disc, .af-wf .af-node:focus-visible .af-disc { stroke: var(--color-fg); }
+  .af-wf .af-node.af-picked .af-disc { stroke-width: 3.5; }
+  .af-wf .af-count { font-family: var(--font-anthropic-serif); font-variant-numeric: tabular-nums; fill: var(--color-fg); }
+  .af-wf .af-node.af-zero .af-count { fill: var(--color-fg-muted); }
+  .af-wf .af-name { font-size: 12px; fill: var(--color-fg-muted); }
+  .af-wf .af-node.af-picked .af-name { fill: var(--color-fg); font-weight: 600; }
+  .af-wf .af-link { fill: none; stroke: var(--color-border-line); stroke-width: 2; stroke-linecap: round; }
+  .af-wf .af-link.af-moving { stroke-dasharray: 2 8; }
+  .af-wf .af-badge circle { fill: var(--cds-chart-status-critical); }
+  .af-wf .af-badge text { fill: var(--color-bg); font-size: 11px; font-weight: 600; }
+  @media (prefers-reduced-motion: no-preference) {
+    .af-wf .af-link.af-moving { animation: af-flow 1.4s linear infinite; }
+    @keyframes af-flow { to { stroke-dashoffset: -20; } }
+  }
+  .af-stage { display: flex; flex-direction: column; gap: var(--cds-gap-sm); }
+  .af-stage h3 { margin: 0; font-size: var(--cds-font-size-body); font-weight: var(--cds-font-weight-medium); }
+  .af-chips { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13rem), 1fr)); gap: var(--cds-gap-sm); }
+  .af-chip { font-size: var(--cds-font-size-caption); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-xs) var(--cds-pad-sm); display: flex; flex-direction: column; gap: 2px; }
+  .af-chip.af-blocked { border-color: var(--color-bad); }
+  .af-chip b { font-weight: 600; }
+  .af-chip span { color: var(--color-fg-muted); overflow: hidden; text-overflow: ellipsis; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+  .af-chart { min-height: 11rem; position: relative; }
+  .af-tip { position: absolute; pointer-events: none; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); white-space: nowrap; }
+  .af-tip div:first-child { color: var(--cds-text-secondary); }
+  [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+  [data-dash-source-state=empty] { color: transparent; }
+</style>
+
+<div class="af">
+  <header class="af-head">
+    <h1 class="af-title" id="top">ai-factory</h1>
+    <p class="af-lede"><b data-draw="lede-waiting" data-source="summary" data-field="waiting">—</b> actions wait for you, <b data-draw="lede-blocked" data-source="summary" data-field="blocked">—</b> tickets are blocked and <b data-draw="lede-staging" data-source="summary" data-field="in_staging">—</b> are in staging to test.</p>
+  </header>
+
+  <nav class="af-tabs" role="tablist" aria-label="Projects" data-draw="tabs" data-source="projects"></nav>
+
+  <section class="af-card" id="chain" aria-label="The chain">
+    <h2>Where the tickets are</h2>
+    <p class="af-note">From the development queue to the merge. Pick a step to see its tickets; a red badge counts the blocked ones.</p>
+    <div class="af-wf" data-draw="workflow" data-source="tickets backlog"></div>
+    <div class="af-stage" data-draw="stage-list" data-source="tickets backlog"></div>
+  </section>
+
+  <section class="af-tiles" id="figures" aria-label="Key figures">
+    <div class="af-tile" data-alert="waiting"><span class="af-label">Waiting for you</span><span class="af-value" data-draw="tile-waiting" data-source="summary" data-field="waiting">—</span><p class="af-note">Validation queue, pending</p></div>
+    <div class="af-tile" data-alert="blocked"><span class="af-label">Blocked</span><span class="af-value" data-draw="tile-blocked" data-source="summary" data-field="blocked">—</span><p class="af-note">Open tickets stopped on a reason</p></div>
+    <div class="af-tile"><span class="af-label">In progress</span><span class="af-value" data-draw="tile-open" data-source="summary" data-field="open">—</span><p class="af-note">From framing to staging</p></div>
+    <div class="af-tile"><span class="af-label">Done</span><span class="af-value" data-draw="tile-done" data-source="summary" data-field="done">—</span><p class="af-note">MR/PR merged</p></div>
+    <div class="af-tile"><span class="af-label">Median lead time</span><span class="af-value" data-draw="tile-lead" data-source="summary" data-field="median_lead_hours">—</span><p class="af-note">First journal line to merge</p></div>
+    <div class="af-tile"><span class="af-label">Review passed first time</span><span class="af-value" data-draw="tile-firstpass" data-source="summary" data-field="first_pass_rate">—</span><p class="af-note">Tickets with one review round</p></div>
+    <div class="af-tile"><span class="af-label">Approved unchanged</span><span class="af-value" data-draw="tile-autonomy" data-source="summary" data-field="approved_unchanged_rate">—</span><p class="af-note">Decided actions you accepted as proposed</p></div>
+  </section>
+
+  <section class="af-grid" aria-label="Needs you">
+    <div class="af-card" id="queue">
+      <h2>Waiting for you</h2>
+      <p class="af-note">Actions in the validation queue, oldest first. Answer them on the validation page.</p>
+      <div class="af-scroll">
+        <table class="af-table" data-source="queue" data-row-key="project,id">
+          <thead><tr><th data-field="ticket">Ticket</th><th data-field="type">Action</th><th data-field="summary">Summary</th><th data-field="created_at">Since</th></tr></thead>
+          <tbody data-draw="queue-rows"></tbody>
+        </table>
+      </div>
+      <p class="af-empty" data-empty="queue" hidden>Nothing waits for you.</p>
+    </div>
+    <div class="af-card" id="blocked">
+      <h2>Blocked tickets</h2>
+      <p class="af-note">The reason is the last line of the ticket's journal. Only you lift a block.</p>
+      <div class="af-scroll">
+        <table class="af-table" data-source="tickets" data-row-key="project,key">
+          <thead><tr><th data-field="key">Ticket</th><th data-field="state">State</th><th data-field="blocked_reason">Reason</th></tr></thead>
+          <tbody data-draw="blocked-rows"></tbody>
+        </table>
+      </div>
+      <p class="af-empty" data-empty="blocked" hidden>No ticket is blocked.</p>
+    </div>
+  </section>
+
+  <section class="af-grid" aria-label="Reviews and trends">
+    <div class="af-card" id="prs">
+      <h2>Open MRs/PRs</h2>
+      <p class="af-note">As read from the forge when the dashboard was refreshed.</p>
+      <div class="af-scroll">
+        <table class="af-table" data-source="prs" data-row-key="project,id">
+          <thead><tr><th data-field="id">MR/PR</th><th data-field="ticket">Ticket</th><th class="af-num" data-field="age_days">Age (days)</th><th class="af-num" data-field="unresolved_threads">Open threads</th><th class="af-num" data-field="approvals">Approvals</th></tr></thead>
+          <tbody data-draw="pr-rows"></tbody>
+        </table>
+      </div>
+      <p class="af-empty" data-empty="prs" hidden>No MR/PR is open.</p>
+    </div>
+    <div class="af-card" id="trend">
+      <h2>Tickets in progress and blocked, per day</h2>
+      <p class="af-note">One snapshot per day the dashboard was refreshed.</p>
+      <div class="af-chart" data-draw="trend" data-source="history"></div>
+    </div>
+  </section>
+
+  <section class="af-card" id="tickets" aria-label="All tickets">
+    <h2>All tickets</h2>
+    <p class="af-note">Lead time runs from the ticket's first journal line to its merge.</p>
+    <div class="af-scroll">
+      <table class="af-table" data-source="tickets" data-row-key="project,key">
+        <thead><tr><th data-field="key">Ticket</th><th data-field="title">Title</th><th data-field="state">State</th><th class="af-num" data-field="review_rounds">Review rounds</th><th class="af-num" data-field="lead_hours">Lead time (h)</th><th data-field="last_at">Last activity</th></tr></thead>
+        <tbody data-draw="ticket-rows"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="af-card" id="health" aria-label="Health">
+    <h2>Health</h2>
+    <p class="af-note">The last doctor report, and the findings waiting to be moved to learnings.md.</p>
+    <div class="af-scroll">
+      <table class="af-table" data-source="health" data-row-key="project,check">
+        <thead><tr><th data-field="check">Check</th><th data-field="status">Status</th><th data-field="detail">Detail</th></tr></thead>
+        <tbody data-draw="health-rows"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+  const STAGES = [
+    { id: 'todo', label: 'To do', states: null },
+    { id: 'framing', label: 'Framing', states: ['framing'] },
+    { id: 'dev', label: 'In development', states: ['planned', 'planned (auto)', 'coded', 'reviewed'] },
+    { id: 'ready', label: 'Ready to ship', states: ['tested'] },
+    { id: 'review', label: 'In review', states: ['shipped', 'feedback'] },
+    { id: 'test', label: 'In test', states: ['staging'] },
+    { id: 'done', label: 'Done', states: ['done'] },
+  ];
+  const STAGE_TEXT = { list: 'Tickets in {stage}: {n}', none: 'No ticket at this step.', more: 'more' };
+  const TIP_TEXT = { open: 'In progress', blocked: 'Blocked' };
+  const LOCALE = 'en';
+  const OPEN = ['framing', 'planned', 'planned (auto)', 'coded', 'reviewed', 'tested', 'shipped', 'feedback', 'staging'];
+  const PENDING = ['pending', 'changed'];
+
+  dash.calc('summary', {
+    inputs: ['tickets', 'queue', 'prs'],
+    title: 'Figures per project',
+    description: 'Counts and rates per project from the tickets, the validation queue and the open MRs/PRs.',
+    fn: (tickets, queue, prs) => {
+      const projects = [...new Set([...tickets, ...queue, ...prs].map((r) => r.project))];
+      const median = (xs) => {
+        if (!xs.length) return null;
+        const s = [...xs].sort((a, b) => a - b);
+        const m = Math.floor(s.length / 2);
+        return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
+      };
+      return projects.map((project) => {
+        const t = tickets.filter((r) => r.project === project);
+        const q = queue.filter((r) => r.project === project && r.type !== 'human_task');
+        const reviewed = t.filter((r) => Number(r.review_rounds) > 0);
+        const decided = q.filter((r) => ['ok', 'done', 'rejected', 'changed', 'failed'].includes(r.status));
+        const open = t.filter((r) => ['framing', 'planned', 'planned (auto)', 'coded', 'reviewed', 'tested', 'shipped', 'feedback', 'staging'].includes(r.state));
+        return {
+          project,
+          waiting: queue.filter((r) => r.project === project && ['pending', 'changed'].includes(r.status)).length,
+          blocked: open.filter((r) => r.blocked === 'yes').length,
+          open: open.length,
+          in_staging: t.filter((r) => r.state === 'staging').length,
+          done: t.filter((r) => r.state === 'done').length,
+          median_lead_hours: median(t.map((r) => r.lead_hours).filter((h) => h !== null && h !== undefined).map(Number)),
+          first_pass_rate: reviewed.length ? reviewed.filter((r) => Number(r.review_rounds) === 1).length / reviewed.length : null,
+          approved_unchanged_rate: decided.length ? decided.filter((r) => ['ok', 'done'].includes(r.status)).length / decided.length : null,
+          open_prs: prs.filter((r) => r.project === project).length,
+        };
+      });
+    },
+  });
+
+  window.afProject = () => {
+    const p = dash.data('projects');
+    const slugs = p.status === 'ok' ? p.data.map((r) => r.project) : [];
+    const wanted = dash.params().project;
+    return slugs.includes(wanted) ? wanted : (slugs[0] ?? null);
+  };
+  window.afRows = (id) => {
+    const d = dash.data(id);
+    const project = window.afProject();
+    return d.status === 'ok' ? d.data.filter((r) => r.project === project) : null;
+  };
+  window.afWhen = (iso) => (iso ? new Intl.DateTimeFormat(LOCALE, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(iso)) : '');
+  window.afDay = (d) => new Intl.DateTimeFormat(LOCALE, { month: 'short', day: 'numeric' }).format(d);
+  window.afHours = (h) => {
+    if (h === null || h === undefined || h === '') return '';
+    const n = Number(h);
+    return n >= 48 ? `${d3.format('.1f')(n / 24)} d` : `${d3.format('.1f')(n)} h`;
+  };
+  window.afCell = (tr, text, cls) => {
+    const td = document.createElement('td');
+    td.textContent = text ?? '';
+    if (cls) td.className = cls;
+    tr.appendChild(td);
+    return td;
+  };
+  window.afKey = (...parts) => parts.map((p) => encodeURIComponent(p ?? '')).join(',');
+
+  const tabSelect = (slug) => {
+    dash.setParams({ project: slug });
+    dash.setLink(slug);
+  };
+  const hash = location.hash.slice(1);
+  if (hash && !['top', 'chain', 'figures', 'queue', 'blocked', 'prs', 'trend', 'tickets', 'health'].includes(hash)) {
+    dash.setParams({ project: hash });
+  }
+
+  dash.draw('tabs', (nav) => {
+    const p = dash.data('projects');
+    if (p.status !== 'ok') { nav.replaceChildren(); return; }
+    const current = window.afProject();
+    nav.replaceChildren(...p.data.map((r) => {
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(r.project === current));
+      b.textContent = r.name || r.project;
+      b.addEventListener('click', () => tabSelect(r.project));
+      return b;
+    }));
+  });
+
+  const figure = (name, field, format) => dash.draw(name, (el) => {
+    const s = dash.data('summary');
+    const project = window.afProject();
+    const row = s.status === 'ok' ? s.data.find((r) => r.project === project) : null;
+    el.dataset.where = `project=${encodeURIComponent(project ?? '')}`;
+    const v = row ? row[field] : null;
+    el.textContent = row && v !== null && v !== undefined ? format(v) : '—';
+  });
+  const count = (v) => d3.format(',')(v);
+  const share = (v) => d3.format('.0%')(v);
+  figure('lede-waiting', 'waiting', count);
+  figure('lede-blocked', 'blocked', count);
+  figure('lede-staging', 'in_staging', count);
+  figure('tile-waiting', 'waiting', count);
+  figure('tile-blocked', 'blocked', count);
+  figure('tile-open', 'open', count);
+  figure('tile-done', 'done', count);
+  figure('tile-lead', 'median_lead_hours', window.afHours);
+  figure('tile-firstpass', 'first_pass_rate', share);
+  figure('tile-autonomy', 'approved_unchanged_rate', share);
+
+
+  const table = (name, id, filter, sort, cells, key) => {
+    dash.draw(name, (tbody) => {
+      const rows = window.afRows(id);
+      if (!rows) { tbody.replaceChildren(); return; }
+      const shown = rows.filter(filter).sort(sort);
+      tbody.replaceChildren(...shown.map((r) => {
+        const tr = document.createElement('tr');
+        tr.dataset.key = key(r);
+        cells(tr, r);
+        return tr;
+      }));
+    });
+  };
+
+  table('queue-rows', 'queue',
+    (r) => PENDING.includes(r.status),
+    (a, b) => String(a.created_at).localeCompare(String(b.created_at)),
+    (tr, r) => { window.afCell(tr, r.ticket); window.afCell(tr, r.type); window.afCell(tr, r.summary); window.afCell(tr, window.afWhen(r.created_at)); },
+    (r) => window.afKey(r.project, r.id));
+  table('blocked-rows', 'tickets',
+    (r) => r.blocked === 'yes' && OPEN.includes(r.state),
+    (a, b) => String(b.last_at).localeCompare(String(a.last_at)),
+    (tr, r) => { window.afCell(tr, r.key); window.afCell(tr, r.state); window.afCell(tr, r.blocked_reason, 'af-bad'); },
+    (r) => window.afKey(r.project, r.key));
+  table('pr-rows', 'prs',
+    () => true,
+    (a, b) => Number(b.age_days) - Number(a.age_days),
+    (tr, r) => {
+      const td = window.afCell(tr, '');
+      const a = document.createElement('a');
+      a.href = r.url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = r.id;
+      td.appendChild(a);
+      window.afCell(tr, r.ticket);
+      window.afCell(tr, d3.format('.0f')(Number(r.age_days)), 'af-num');
+      window.afCell(tr, d3.format(',')(Number(r.unresolved_threads)), Number(r.unresolved_threads) > 0 ? 'af-num af-warn' : 'af-num');
+      window.afCell(tr, `${r.approvals}/${r.approvals_needed}`, 'af-num');
+    },
+    (r) => window.afKey(r.project, r.id));
+  table('ticket-rows', 'tickets',
+    () => true,
+    (a, b) => String(b.last_at).localeCompare(String(a.last_at)),
+    (tr, r) => {
+      window.afCell(tr, r.key);
+      window.afCell(tr, r.title);
+      window.afCell(tr, r.blocked === 'yes' ? `${r.state}, blocked` : r.state, r.blocked === 'yes' ? 'af-bad' : '');
+      window.afCell(tr, r.review_rounds ? d3.format(',')(Number(r.review_rounds)) : '', 'af-num');
+      window.afCell(tr, r.lead_hours === null ? '' : d3.format('.1f')(Number(r.lead_hours)), 'af-num');
+      window.afCell(tr, window.afWhen(r.last_at));
+    },
+    (r) => window.afKey(r.project, r.key));
+  table('health-rows', 'health',
+    () => true,
+    (a, b) => ['broken', 'warning', 'ok'].indexOf(a.status) - ['broken', 'warning', 'ok'].indexOf(b.status),
+    (tr, r) => {
+      window.afCell(tr, r.check);
+      window.afCell(tr, r.status, r.status === 'ok' ? 'af-ok' : r.status === 'warning' ? 'af-warn' : 'af-bad');
+      window.afCell(tr, r.detail);
+    },
+    (r) => window.afKey(r.project, r.check));
+
+  dash.onData(() => {
+    const project = window.afProject();
+    const empty = (sel, id, filter) => {
+      const d = dash.data(id);
+      const rows = d.status === 'ok' ? d.data.filter((r) => r.project === project).filter(filter) : null;
+      document.querySelectorAll(`[data-empty="${sel}"]`).forEach((el) => { el.hidden = !rows || rows.length > 0; });
+    };
+    empty('queue', 'queue', (r) => PENDING.includes(r.status));
+    empty('blocked', 'tickets', (r) => r.blocked === 'yes' && OPEN.includes(r.state));
+    empty('prs', 'prs', () => true);
+    const s = dash.data('summary');
+    const row = s.status === 'ok' ? s.data.find((r) => r.project === project) : null;
+    document.querySelectorAll('[data-alert]').forEach((el) => {
+      el.classList.toggle('af-alert', Boolean(row && row[el.dataset.alert] > 0));
+    });
+  });
+
+  window.afStageItems = () => {
+    const tickets = window.afRows('tickets');
+    const backlog = window.afRows('backlog');
+    if (!tickets || !backlog) return null;
+    return STAGES.map((stage) => {
+      const items = stage.states
+        ? tickets.filter((r) => stage.states.includes(r.state)).sort((a, b) => String(b.last_at).localeCompare(String(a.last_at)))
+        : backlog.map((r) => ({ key: r.key, title: r.title, blocked: 'no' }));
+      return { ...stage, items, blocked: stage.id === 'done' ? 0 : items.filter((r) => r.blocked === 'yes').length };
+    });
+  };
+  window.afPicked = null;
+  const pickStage = (id) => {
+    window.afPicked = id;
+    dash.draw('workflow');
+    dash.draw('stage-list');
+  };
+
+  dash.draw('workflow', (el) => {
+    const stages = window.afStageItems();
+    el.replaceChildren();
+    if (!stages) return;
+    const picked = window.afPicked ?? (stages.find((s) => s.id === 'dev' && s.items.length) ?? stages.find((s) => s.items.length) ?? stages[0]).id;
+    window.afPicked = picked;
+    const width = el.clientWidth || 640;
+    const wide = width >= 720;
+    const n = stages.length;
+    const r = wide ? Math.max(26, Math.min(46, width / n / 2 - 16)) : 24;
+    const rowH = 64;
+    const height = wide ? r * 2 + 44 : n * rowH;
+    const pos = stages.map((_, i) => (wide
+      ? { x: (width / n) * (i + 0.5), y: r + 6, lx: (width / n) * (i + 0.5), ly: r * 2 + 30, anchor: 'middle' }
+      : { x: r + 6, y: rowH * i + rowH / 2, lx: r * 2 + 22, ly: rowH * i + rowH / 2 + 5, anchor: 'start' }));
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${height}`).attr('role', 'group');
+    const live = (s) => s.items.length > 0;
+    svg.append('g').selectAll('line').data(stages.slice(1)).join('line')
+      .attr('class', (s, i) => (live(stages[i]) || live(s) ? 'af-link af-moving' : 'af-link'))
+      .attr('x1', (_, i) => pos[i].x + (wide ? r + 6 : 0)).attr('y1', (_, i) => pos[i].y + (wide ? 0 : r + 6))
+      .attr('x2', (_, i) => pos[i + 1].x - (wide ? r + 6 : 0)).attr('y2', (_, i) => pos[i + 1].y - (wide ? 0 : r + 6))
+      .style('stroke', (s, i) => (live(stages[i]) || live(s) ? dash.colors[0] : null));
+    const node = svg.append('g').selectAll('g').data(stages).join('g')
+      .attr('class', (s) => ['af-node', live(s) ? 'af-live' : 'af-zero', s.id === picked ? 'af-picked' : ''].join(' '))
+      .attr('tabindex', 0).attr('role', 'button')
+      .attr('aria-pressed', (s) => String(s.id === picked))
+      .attr('aria-label', (s) => `${s.label}: ${s.items.length}`)
+      .on('click', (_, s) => pickStage(s.id))
+      .on('keydown', (event, s) => { if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); pickStage(s.id); } });
+    node.append('circle').attr('class', 'af-disc')
+      .attr('cx', (_, i) => pos[i].x).attr('cy', (_, i) => pos[i].y).attr('r', r)
+      .style('stroke', (s) => (live(s) ? (s.id === 'done' ? 'var(--color-ok)' : dash.colors[0]) : null))
+      .style('fill', (s) => (s.id === picked ? 'var(--color-panel)' : null));
+    node.append('text').attr('class', 'af-count')
+      .attr('x', (_, i) => pos[i].x).attr('y', (_, i) => pos[i].y)
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'central')
+      .attr('font-size', wide ? Math.round(r * 0.72) : 18)
+      .text((s) => d3.format(',')(s.items.length));
+    node.append('text').attr('class', 'af-name')
+      .attr('x', (_, i) => pos[i].lx).attr('y', (_, i) => pos[i].ly).attr('text-anchor', (_, i) => pos[i].anchor)
+      .text((s) => s.label);
+    const badge = node.filter((s) => s.blocked > 0).append('g').attr('class', 'af-badge');
+    badge.append('circle').attr('cx', (s) => pos[stages.indexOf(s)].x + r * 0.72).attr('cy', (s) => pos[stages.indexOf(s)].y - r * 0.72).attr('r', 9);
+    badge.append('text').attr('x', (s) => pos[stages.indexOf(s)].x + r * 0.72).attr('y', (s) => pos[stages.indexOf(s)].y - r * 0.72)
+      .attr('text-anchor', 'middle').attr('dominant-baseline', 'central').text((s) => s.blocked);
+  });
+
+  dash.draw('stage-list', (el) => {
+    const stages = window.afStageItems();
+    el.replaceChildren();
+    if (!stages) return;
+    const stage = stages.find((s) => s.id === window.afPicked) ?? stages[0];
+    const h = document.createElement('h3');
+    h.textContent = STAGE_TEXT.list.replace('{stage}', stage.label).replace('{n}', d3.format(',')(stage.items.length));
+    el.appendChild(h);
+    if (!stage.items.length) {
+      const p = document.createElement('p');
+      p.className = 'af-empty';
+      p.textContent = STAGE_TEXT.none;
+      el.appendChild(p);
+      return;
+    }
+    const limit = 12;
+    const grid = document.createElement('div');
+    grid.className = 'af-chips';
+    stage.items.slice(0, limit).forEach((r) => {
+      const chip = document.createElement('div');
+      chip.className = r.blocked === 'yes' && stage.id !== 'done' ? 'af-chip af-blocked' : 'af-chip';
+      const k = document.createElement('b');
+      k.textContent = r.blocked === 'yes' && stage.id !== 'done' ? `${r.key} · ${r.state}` : r.key;
+      const t = document.createElement('span');
+      t.textContent = r.blocked === 'yes' && stage.id !== 'done' ? `${r.title} — ${r.blocked_reason}` : r.title;
+      chip.append(k, t);
+      grid.appendChild(chip);
+    });
+    el.appendChild(grid);
+    if (stage.items.length > limit) {
+      const p = document.createElement('p');
+      p.className = 'af-empty';
+      p.textContent = `+ ${stage.items.length - limit} ${STAGE_TEXT.more}`;
+      el.appendChild(p);
+    }
+  });
+
+  dash.draw('trend', (el) => {
+    const rows = window.afRows('history');
+    el.replaceChildren();
+    if (!rows || !rows.length) return;
+    const data = rows.map((r) => ({ day: new Date(`${String(r.day).slice(0, 10)}T00:00:00`), open: Number(r.open), blocked: Number(r.blocked) }))
+      .sort((a, b) => a.day - b.day);
+    const width = el.clientWidth || 360;
+    const height = 176;
+    const svg = d3.select(el).append('svg').attr('width', '100%').attr('viewBox', `0 0 ${width} ${height}`);
+    const yMax = Math.max(1, d3.max(data, (d) => d.open));
+    const probe = svg.append('text').attr('font-size', 11).text(d3.format(',')(yMax));
+    const left = Math.ceil(probe.node().getComputedTextLength()) + 10;
+    probe.remove();
+    const m = { top: 8, right: 8, bottom: 22, left };
+    const x = d3.scaleBand(data.map((d) => d.day), [m.left, width - m.right]).padding(0.3);
+    const y = d3.scaleLinear([0, yMax], [height - m.bottom, m.top]).nice();
+    svg.append('g').selectAll('line').data(y.ticks(Math.min(4, yMax))).join('line')
+      .attr('x1', m.left).attr('x2', width - m.right).attr('y1', (d) => y(d)).attr('y2', (d) => y(d))
+      .attr('stroke', 'var(--cds-chart-grid)');
+    svg.append('g').attr('transform', `translate(${m.left},0)`)
+      .call(d3.axisLeft(y).ticks(Math.min(4, yMax)).tickFormat(d3.format('d')).tickSize(0))
+      .attr('font-size', null).attr('font-family', null)
+      .call((g) => g.select('.domain').remove())
+      .call((g) => g.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11));
+    const every = Math.ceil(data.length / Math.max(1, Math.floor((width - m.left) / 56)));
+    svg.append('g').attr('transform', `translate(0,${height - m.bottom})`)
+      .call(d3.axisBottom(x).tickValues(data.filter((_, i) => i % every === 0).map((d) => d.day)).tickFormat(window.afDay).tickSize(0))
+      .attr('font-size', null).attr('font-family', null)
+      .call((g) => g.select('.domain').attr('stroke', 'var(--cds-chart-axis)'))
+      .call((g) => g.selectAll('text').attr('fill', 'var(--color-fg-muted)').attr('font-size', 11).attr('dy', '1.2em'));
+    const bw = Math.min(32, x.bandwidth());
+    const off = (x.bandwidth() - bw) / 2;
+    svg.append('g').selectAll('rect').data(data).join('rect')
+      .attr('x', (d) => x(d.day) + off).attr('width', bw)
+      .attr('y', (d) => y(d.open)).attr('height', (d) => y(0) - y(d.open))
+      .attr('rx', 3).attr('fill', dash.colors[0]);
+    svg.append('g').selectAll('rect').data(data).join('rect')
+      .attr('x', (d) => x(d.day) + off).attr('width', bw)
+      .attr('y', (d) => y(d.blocked)).attr('height', (d) => y(0) - y(d.blocked))
+      .attr('rx', 3).attr('fill', 'var(--cds-chart-status-critical)');
+    const tip = d3.select(el).append('div').attr('class', 'af-tip').style('opacity', 0);
+    svg.append('g').selectAll('rect').data(data).join('rect')
+      .attr('x', (d) => x(d.day)).attr('width', x.bandwidth()).attr('y', m.top).attr('height', height - m.top - m.bottom)
+      .attr('fill', 'transparent')
+      .on('mousemove', (event, d) => {
+        tip.replaceChildren();
+        tip.append('div').text(window.afDay(d.day));
+        tip.append('div').text(`${TIP_TEXT.open}: ${d.open}`);
+        tip.append('div').text(`${TIP_TEXT.blocked}: ${d.blocked}`);
+        const [px] = d3.pointer(event, el);
+        const w = tip.node().offsetWidth;
+        tip.style('left', `${Math.max(0, Math.min(px + 12, el.clientWidth - w))}px`).style('top', '8px').style('opacity', 1);
+      })
+      .on('mouseleave', () => tip.style('opacity', 0));
+  });
+</script>

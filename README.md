@@ -18,6 +18,9 @@ profile. The engine stays the same; the profile makes it yours.
   writes `.ai-factory/` in your project, creates the validation queue, runs the doctor.
 - **`/ai-factory:doctor`** — checks every access the profile relies on, with the fix for each
   broken one.
+- **`/ai-factory:dashboard`** — one claude.ai page with a tab per project of your machine: what
+  waits for you, the tickets by step, open MRs/PRs, lead time, review rounds, health, a daily
+  trend.
 - **`/ai-factory:new-project`** — starts a project from an empty folder with you: frames the
   product (light, or `full` with personas, journeys and risks), chooses the stack together, creates
   the repositories with the stack's official generator, the remote, branch protection and CI, sets
@@ -74,10 +77,10 @@ claude --plugin-dir /path/to/ceda-ai-factory/plugins/ai-factory
 ## Roadmap
 
 - 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page; new projects (0.1.2).
-- 0.2 — the ticket chain.
+- 0.2 — the ticket chain; the dashboard (0.2.3).
 - 0.3 — the dev pilot and the review skills for teams.
 - 0.4 — the support pilot.
-- 0.5 — earned autonomy and a dashboard of what the pilots did.
+- 0.5 — earned autonomy, with its figures on the dashboard.
 
 ## License
 

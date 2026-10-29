@@ -172,6 +172,8 @@ From `<plugin root>/templates/profile/`:
   scope filled in;
 - `.ai-factory/state/tickets/` and `.ai-factory/state/pilot/`, and the template `gitignore` as
   `.ai-factory/.gitignore`;
+- register the project on this machine for the dashboard:
+  `python3 <plugin root>/scripts/dashboard-data.py --register <project root> --out <scratch dir>`;
 - set `"onboarding": {"done": true, "at": "<ISO date>", "plugin_version": "<plugin.json version>", "language": "<step 0>"}`.
 
 Touch nothing outside `.ai-factory/` unless the recap listed it and the user agreed (for example a
@@ -192,4 +194,5 @@ Run `/ai-factory:doctor`. Then tell the user, in a few lines:
 - what was written, and that the profile can be committed (no secrets) while `state/` is ignored;
 - what doctor found broken, with the fix;
 - how to start: one ticket by hand with `/ai-factory:ticket <KEY>`, then a pilot in a loop, for
-  example `/loop 30m /ai-factory:dev pilot dry`.
+  example `/loop 30m /ai-factory:dev pilot dry`;
+- `/ai-factory:dashboard` for the view of every project on this machine, one tab each.

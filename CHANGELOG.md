@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.2.3
+
+- New `dashboard` skill: one claude.ai Dashboard page, one tab per project registered on the
+  machine, in the language of the onboarding. On top, the chain as a flow of steps (to do, framing,
+  development, ready to ship, review, test, done) with a count per step and the blocked ones; pick
+  a step to list its tickets. Then what waits for the user (pending actions, blocked tickets), open
+  MRs/PRs, every ticket with its review rounds and lead time,
+  health (doctor and pending learnings) and a daily trend.
+- `scripts/dashboard-data.py` builds its datasets from local files only and keeps one snapshot per
+  project and day in `~/.ai-factory/history/`; the onboarding registers each project in
+  `~/.ai-factory/projects.json`.
+
 ## 0.2.2
 
 From the second ticket run, shipped, staged and merged.

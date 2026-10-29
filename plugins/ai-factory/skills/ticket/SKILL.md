@@ -39,6 +39,7 @@ Say in one line where you resume from.
    (`pilot`: a `cleanup` action).
 3. Locally, free: switch each repository back to its default branch, pull it, and delete the
    ticket's local branch if `git branch -d` accepts it (merged). Never `-D`.
+4. If `~/.ai-factory/dashboard.json` exists, suggest `/ai-factory:dashboard` to refresh it.
 
 ## 2. Run the steps
 
