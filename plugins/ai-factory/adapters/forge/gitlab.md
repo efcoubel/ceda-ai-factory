@@ -26,6 +26,14 @@ A remote on a GitLab host; the `glab` CLI (`glab auth status`).
 - `reply`: `POST .../discussions/<id>/notes` with a JSON body (`glab api --input <file> -H "Content-Type: application/json"`).
 - `resolve`: `PUT .../discussions/<id>?resolved=true`, then check `resolved` is `true`.
 - `approve`: `glab mr approve <n>`.
+- `list_open`: `glab api "projects/<p>/merge_requests?state=opened&updated_after=<ISO>&per_page=100"`.
+- `diff`: `glab api "projects/<p>/merge_requests/<n>/diffs?per_page=100"`, and `diff_refs` from the MR.
+- `file_at`: `glab api "projects/<p>/repository/files/<url-encoded path>/raw?ref=<sha>"`.
+- `comment`: `POST .../merge_requests/<n>/discussions` with a JSON body; on a line, with
+  `position: {position_type: "text", base_sha, start_sha, head_sha, new_path, old_path, new_line | old_line}`
+  from `diff_refs`. Sent as `-f "position[...]"` fields the position is silently ignored and a
+  general comment is created: send JSON (`--input <file> -H "Content-Type: application/json"`) and
+  check the created note is a `DiffNote`.
 - `create_repo`: `glab repo create <namespace>/<name> --private|--public --description …`.
 - `protect_branch`: `glab api -X POST "projects/<p>/protected_branches" -f name=main -f push_access_level=0 -f merge_access_level=40`.
 

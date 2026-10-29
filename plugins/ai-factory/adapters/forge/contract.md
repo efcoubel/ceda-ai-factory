@@ -8,6 +8,10 @@
 | `reply` | thread, text | — |
 | `resolve` | thread | — |
 | `approve` | MR/PR | — |
+| `list_open` | repo, since | open MRs/PRs with author, title, source branch, draft, created and updated dates |
+| `diff` | MR/PR | the changed files and their diff, and the head commit |
+| `file_at` | repo, commit, path | the file's content at that commit |
+| `comment` | MR/PR, text, optional file and line (new or old side) | comment link; a line refused by the forge falls back to a general comment starting with `file:line` |
 | `me` | — | the user's handle |
 | `create_repo` | owner, name, visibility, description | remote URL (new projects only) |
 | `protect_branch` | repo, branch | no direct push, status checks required (new projects only) |

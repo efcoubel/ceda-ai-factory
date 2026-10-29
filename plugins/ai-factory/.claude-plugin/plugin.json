@@ -1,6 +1,6 @@
 {
   "name": "ai-factory",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Onboards a project (repos, stack, ticketing, forge, chat, environments), then runs tickets through a frame → code → review → test → ship chain and two pilots (support, dev) that loop on their own and queue every outward action for approval.",
   "author": {
     "name": "Erwan Coubel"

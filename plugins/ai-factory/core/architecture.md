@@ -68,8 +68,8 @@ Every ticketing tool has its own status names; `workflow.md` maps them to these:
 | `new-project` | Start a project from an empty folder: framing, stack, repositories, ticketing, backlog, profile | v0.1.2 |
 | `ticket` and `ticket-1-frame` … `ticket-7-staging` | The development chain for one ticket (`core/chain.md`) | v0.2 |
 | `support` and `support-*` | The support pilot (N1): triage, answer, export, fix data, import, escalate | planned |
-| `dev` | The development pilot (N2): runs the chain in priority order | planned |
-| `review-peers`, `follow-reviews` | Review teammates' MRs/PRs; follow and nudge one's own | planned, team profiles only |
+| `dev` | The development pilot: one tick of the chain in priority order, made for `/loop` | v0.3 |
+| `review-peers`, `follow-reviews` | Review teammates' MRs/PRs; follow and nudge one's own | v0.3, team profiles only |
 
 Skills are invoked with the plugin prefix: `/ai-factory:onboarding`.
 

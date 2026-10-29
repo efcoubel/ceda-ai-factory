@@ -41,7 +41,13 @@
     },
     "dev": {
       "enabled": true,
-      "max_in_chain": 3
+      "max_in_chain": 3,
+      "notify": true,
+      "quiet_hours": {
+        "enabled": false,
+        "from": "22:00",
+        "to": "07:00"
+      }
     }
   },
   "autonomy": {

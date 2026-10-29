@@ -127,7 +127,10 @@ call:
 6. **Pilots and autonomy**: enable the support pilot, the dev pilot, or both; scope of the dev
    pilot (which projects, which are background only); start in `dry` mode (recommended: everything
    waits for approval) or `normal`; validation queue on an artifact page (if available) or a local
-   file.
+   file; a notification when something new waits for approval (`pilots.dev.notify`, recommended:
+   yes; it reaches the phone when Remote Control is connected). Quiet hours are not asked: they
+   stay off, and the user turns them on in `profile.json` if they want them. With `project.team:
+   solo`, say that the team appointments (reviewing teammates, nudging reviewers) will not run.
 7. **When you are away** (only if the dev pilot is enabled). Explain in two sentences that without
    answers the pilot would stop at the plans, and that local work (branch, code, review, tests)
    never leaves the machine. Then ask:
@@ -194,5 +197,5 @@ Run `/ai-factory:doctor`. Then tell the user, in a few lines:
 - what was written, and that the profile can be committed (no secrets) while `state/` is ignored;
 - what doctor found broken, with the fix;
 - how to start: one ticket by hand with `/ai-factory:ticket <KEY>`, then a pilot in a loop, for
-  example `/loop 30m /ai-factory:dev pilot dry`;
+  example `/loop 30m /ai-factory:dev` (it starts in the profile's `start_mode`);
 - `/ai-factory:dashboard` for the view of every project on this machine, one tab each.

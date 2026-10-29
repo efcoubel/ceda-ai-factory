@@ -9,8 +9,8 @@ It works with the tools you already use. An onboarding discovers your repositori
 ticketing, forge, chat, data and logs, asks only what it could not find, and writes a project
 profile. The engine stays the same; the profile makes it yours.
 
-> Status: **0.2, early**. The onboarding, the doctor, new projects and the ticket chain are
-> written; the pilots are being ported from a production setup. See [the roadmap](#roadmap).
+> Status: **0.3, early**. The onboarding, the doctor, new projects, the ticket chain, the dashboard
+> and the dev pilot are written; the support pilot is being ported from a production setup. See [the roadmap](#roadmap).
 
 ## What it does
 
@@ -30,8 +30,13 @@ profile. The engine stays the same; the profile makes it yours.
   `ticket-4-test` → `ticket-5-ship` → `ticket-6-feedback` → `ticket-7-staging` (a staging branch,
   a release to testers or a staging deploy), or `/ai-factory:ticket <KEY>` end to end, stopping
   only at its checkpoints.
-- **The pilots** *(coming)* — `support` triages and answers support requests; `dev` moves
-  development tickets in priority order. Both run in a loop (`/loop 30m /ai-factory:dev pilot`).
+- **The dev pilot** — `/ai-factory:dev` is one tick: it carries out what you approved, moves
+  tickets forward in your priority order up to their next checkpoint, queues what needs you and
+  notifies you. Run it in a loop: `/loop 30m /ai-factory:dev`.
+- **Team reviews** — on team profiles, `review-peers` reviews teammates' MRs/PRs in Conventional
+  Comments and approves the clean ones; `follow-reviews` follows yours and nudges reviewers once a
+  day at most. The dev pilot runs both on a schedule.
+- **The support pilot** *(coming)* — triages and answers support requests.
 
 ## Supported tools
 

@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.0
+
+- The dev pilot, `dev`: one tick, made for `/loop 30m /ai-factory:dev`. It carries out the
+  approved queue actions, runs the team appointments, then moves tickets forward in the order of
+  `priorities.md` (feedback, staging, close-out of merged tickets, urgent, in progress, new bugs,
+  tasks, features) by running the chain in pilot mode in agents, within its budget, the chain and
+  ready limits and the daily caps. Guards: a lock, the doctor's report, the circuit breaker.
+- Notifications: one per tick when something new waits (pending actions, a task for the user, a
+  new block, the breaker), never twice for the same thing; pushed to the phone when Remote Control
+  is connected. `pilots.dev.notify`, on by default.
+- Quiet hours (`pilots.dev.quiet_hours`), off unless turned on by hand: only approved actions run.
+- `review-peers` and `follow-reviews`, for team profiles only (`project.team`): review teammates'
+  MRs/PRs in Conventional Comments in the working language and approve the clean ones; follow
+  one's own, propose the approved transition, nudge reviewers at most once per MR/PR per day.
+- Forge contract: `list_open`, `diff`, `file_at`, `comment` (GitHub and GitLab).
+- The dashboard is refreshed by the pilot at most once an hour.
+
 ## 0.2.3
 
 - New `dashboard` skill: one claude.ai Dashboard page, one tab per project registered on the

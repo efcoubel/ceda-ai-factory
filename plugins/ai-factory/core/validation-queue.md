@@ -11,7 +11,7 @@ with buttons, or a local markdown file when artifacts are not available.
 | `id` | `<KEY>-<type>-<YYYYMMDDHHMM>` |
 | `ticket` | Ticket key |
 | `pilot` | `support` or `dev` |
-| `type` | `comment`, `transition`, `assign`, `create_ticket`, `human_task`, `plan`, `ship`, `review_answers`, `merge_staging`, `cleanup` |
+| `type` | `comment`, `transition`, `assign`, `create_ticket`, `human_task`, `plan`, `ship`, `review_answers`, `merge_staging`, `cleanup`, `review_comments`, `nudge` |
 | `summary` | One line: what will be done |
 | `content` | Exactly what will be sent or run |
 | `files` | Paths in the ticket folder worth reading |

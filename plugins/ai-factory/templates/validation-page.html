@@ -88,7 +88,7 @@ details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
 </div>
 
 <script>
-const TYPES = { comment: "Answer", transition: "Status change", assign: "Assignment", create_ticket: "New ticket", human_task: "Task for you", plan: "Plan", ship: "Push and MR/PR", review_answers: "Review answers", merge_staging: "Merge to staging", cleanup: "Clean-up" };
+const TYPES = { comment: "Answer", transition: "Status change", assign: "Assignment", create_ticket: "New ticket", human_task: "Task for you", plan: "Plan", ship: "Push and MR/PR", review_answers: "Review answers", merge_staging: "Merge to staging", cleanup: "Clean-up", review_comments: "Review comments", nudge: "Nudge reviewers" };
 const STATUSES = { pending: "Pending", ok: "Approved", rejected: "Rejected", changed: "To redo", done: "Done", failed: "Failed" };
 let rows = [], filter = "all", col = null;
 const busy = new Set(), editing = new Set();

@@ -34,6 +34,12 @@ merge-time option of `mr_options` does not match the repository's settings (see 
 - `reply`: `gh api repos/<owner>/<name>/pulls/<n>/comments/<id>/replies -f body=…`.
 - `resolve`: GraphQL `resolveReviewThread`.
 - `approve`: `gh pr review <n> --approve`.
+- `list_open`: `gh pr list -R <owner>/<name> --state open --json number,url,title,author,headRefName,isDraft,createdAt,updatedAt`.
+- `diff`: `gh pr diff <n> -R <owner>/<name>` and `gh pr view <n> --json files,headRefOid`.
+- `file_at`: `gh api "repos/<owner>/<name>/contents/<path>?ref=<sha>" -H "Accept: application/vnd.github.raw"`.
+- `comment`: general, `gh pr comment <n> --body-file <file>`; on a line, `gh api -X POST repos/<owner>/<name>/pulls/<n>/comments`
+  with a JSON body `{body, commit_id: <head sha>, path, line, side: "RIGHT"}` (`"LEFT"` for a removed
+  line). Write the body to a file: passed inline, newlines and backticks arrive escaped.
 - `create_repo`: `gh repo create <owner>/<name> --private|--public --description … --source . --remote origin`
   (no `--push`: the push is its own step). Pushing through `gh` credentials without changing the
   user's global git config: `git -c credential.helper= -c 'credential.helper=!gh auth git-credential' push`.

@@ -16,6 +16,7 @@ never taken over.
 | 1 | Approved queue actions | queue rows `pilot = dev` in `ok` or `changed` | the step that queued them |
 | 2 | Review feedback on my MRs/PRs | a thread whose last message is not mine | `ticket-6-feedback` |
 | 3 | Approved MRs/PRs | every MR/PR has its approvals (`workflow.md`), no thread to handle | `ticket-7-staging` |
+| 3b | Merged | every MR/PR of a ticket at `staging` (or `shipped` with no staging) is merged | `ticket` (close-out) |
 
 ## B. Finish before starting
 
@@ -46,8 +47,11 @@ Equal rank: tool priority, then oldest first. Projects or boards listed as "back
 
 | What | Skill | When |
 |---|---|---|
-| Review teammates' MRs/PRs | `review-peers` | 09:00 and 14:00 (team profiles only) |
-| Follow my MRs/PRs, nudge reviewers | `follow-reviews` | every 2 hours (team profiles only) |
+| Review teammates' MRs/PRs | `review-peers` | 09:00 and 14:00 |
+| Follow my MRs/PRs, nudge reviewers | `follow-reviews` | every 2 hours |
+
+Block D runs only when `project.team` is `team`: on a solo profile there is nobody to review or
+nudge, and the fresh-agent review of the chain stands in.
 
 The pilot has no clock: a slot is **due** when the tick time is past the slot and the last run in
 `state/pilot/cadences.json` is earlier. A due slot runs once on the next tick, even if several were

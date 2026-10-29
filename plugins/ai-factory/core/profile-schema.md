@@ -41,7 +41,7 @@
   ],
   "pilots": {
     "support": { "enabled": false },
-    "dev": { "enabled": true, "max_in_chain": 3 }
+    "dev": { "enabled": true, "max_in_chain": 3, "notify": true, "quiet_hours": { "enabled": false, "from": "22:00", "to": "07:00" } }
   },
   "autonomy": { "start_mode": "dry" },
   "production_targets": ["lima-prod-ec"],
@@ -73,6 +73,8 @@
 | `repos[].commit_examples` | two or three real subjects from the history; the code step writes commits that look like them |
 | `repos[].branch_format` | the branch name pattern, with `<KEY>` for the ticket key (`tools.ticketing.config.key`) |
 | `tools.ticketing.config.key` | where a ticket's key lives and how new keys are numbered (`adapters/ticketing/contract.md`, "Ticket keys"); absent means `native` |
+| `pilots.dev.notify` | `true` (default): one desktop notification per tick when something new waits for the user, pushed to the phone when Remote Control is connected; `false`: none |
+| `pilots.dev.quiet_hours` | off by default; when `enabled`, between `from` and `to` (local time) a tick only carries out approved actions: nothing new starts, nothing is posted |
 | `autonomy.start_mode` | `dry` (everything queued) or `normal` (delegated actions run) |
 | `unattended.auto_plan` | `true`: the pilot approves its own plan for low-risk tickets and works them up to `tested` without waiting (`core/autonomy.md`, "Working while the user is away") |
 | `unattended.low_risk` | the criteria a ticket must all meet to be low-risk, taken from the list in `core/autonomy.md`; dropping one makes the rule looser, and only listed criteria are understood |
