@@ -94,7 +94,8 @@ Queue rows `pilot = dev` in `ok` or `changed`, and `rejected` ones without `hand
 
 A `rejected` row is written in the ticket's `state.md` and gets `handled_at` (a rejected `plan`
 takes the ticket out of the pilot). A row carried out becomes `done` with `handled_at`; a step that
-fails makes it `failed` with the error. An `ok` row whose `requires` is not all `done` is left as it
+fails makes it `failed` with the error; a write the session refuses follows `core/chain.md`,
+"Refused by the session". An `ok` row whose `requires` is not all `done` is left as it
 is. The `answers` of an `ok` on a `plan` go in `plan.md` as decisions before the step runs; an `ok`
 that leaves a question marked "needs your answer" unanswered goes back to `pending` with a `reply`
 (`core/chain.md`, "Open questions"). A row sent back to `pending` always gets its `reply`, and is

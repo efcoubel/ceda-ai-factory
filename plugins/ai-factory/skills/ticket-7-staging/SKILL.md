@@ -27,7 +27,8 @@ From `repos[].staging` (one entry, or each entry of a list in order):
   target is not production. List **what the command deploys**, not only what the branch changed:
   `firebase deploy --only firestore` sends the rules and the indexes, `--only functions` every
   function of the codebase (unchanged ones are skipped). Each item says whether the branch changed
-  it;
+  it. If no item is something the branch changed, testers would get nothing of this ticket: the
+  checkpoint opens with that (in pilot mode, `watch`), and with the entry `repos[].staging` lacks;
 - `none`: nothing to do; skip to step 4.
 
 ## 3. Checkpoint

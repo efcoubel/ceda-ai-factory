@@ -93,6 +93,10 @@ One `## <repo name>` section per repository:
   runs (host, container name, emulator) and `unattended: yes` when a pilot can run it with nobody
   around (no device to plug, no login to type, no emulator to start by hand), and `takes:` for any
   command longer than a minute (`core/chain.md`, "Long commands").
+- **Worktree**: what a fresh worktree needs before the commands run there: the ignored files to
+  copy (dependencies, a local env file, a build the tests expect), the ignored folders to link, and
+  the command that serves the branch, or "not possible". What holds code is copied: a link would
+  run the main checkout's. A project with no pilot worktrees can leave it out.
 - **Conventions**: what a reviewer would flag (from the repo's own rules files and history), and
   whether the repository follows its language's formatter (`dart format`, `prettier`, `black`…).
 

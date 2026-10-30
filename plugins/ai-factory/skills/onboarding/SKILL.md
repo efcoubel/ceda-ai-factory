@@ -149,7 +149,10 @@ call:
    - for each test command found in step 2, whether it can run with nobody around
      (`unattended: yes/no` in `repos.md`); propose `yes` for unit tests and static analysis, and
      ask for anything that needs a device, an emulator or a login. A command that starts
-     services gets `yes` only once doctor's check 10b passed on it.
+     services gets `yes` only once doctor's check 10b passed on it;
+   - for each repository, what a fresh worktree needs (the **Worktree** entry of `repos.md`): propose
+     the ignored files the commands use, and ask how the branch can be served beside the main
+     checkout.
 
 Save the answers after each block (step 1, "keep progress").
 
@@ -204,6 +207,8 @@ short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
 Run `/ai-factory:doctor`. Then tell the user, in a few lines:
 
 - what was written, and that the profile can be committed (no secrets) while `state/` is ignored;
+  committed, it belongs on the default branch: ticket branches start there, and on any other branch
+  it is missing from them;
 - what doctor found broken, with the fix;
 - how to start: one ticket by hand with `/ai-factory:ticket <KEY>`, then a pilot in a loop, for
   example `/loop 30m /ai-factory:dev` (it starts in the profile's `start_mode`);

@@ -30,8 +30,9 @@ Rules:
   not re-litigated.
 - At the end of a step: new state on the first line, one journal line, exactly:
   `2026-10-30 14:05 — ship: PR #52 opened`, with no bullet, and for `<step>` one of `frame`, `code`,
-  `review`, `test`, `ship`, `feedback`, `staging`, `close-out`. The dashboard and the doctor read
-  this format. Every date a skill writes (journal, queue ids, `handled_at`) comes from running
+  `review`, `test`, `ship`, `feedback`, `staging`, `close-out`, `pilot` for the pilot's own lines,
+  or the user's name for a decision of theirs. The dashboard and the doctor read this format. Every
+  date a skill writes (journal, queue ids, `handled_at`) comes from running
   `date '+%Y-%m-%d %H:%M'` at that moment, never from memory or an estimate.
 - No other file in the folder: a working file a command needs (a body for `--body-file`) is one of
   the files above.
