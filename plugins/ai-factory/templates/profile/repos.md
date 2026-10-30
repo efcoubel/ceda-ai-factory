@@ -15,5 +15,9 @@
   - lint: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
   - build: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no>
   - end-to-end tests: `<command>` — runs on: <host / container / emulator> — unattended: <yes/no> — takes: <duration>
+- **Worktree**:
+  - copy: <ignored files a fresh checkout lacks>
+  - link: <ignored folders shared with the main checkout>
+  - serve: `<command>`, or: not possible
 - **Conventions**:
   - formatter: `<command>`, followed by the repository: <yes/no>

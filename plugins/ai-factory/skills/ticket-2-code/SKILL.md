@@ -48,6 +48,8 @@ Local commits on the ticket's branch are free: one commit per intent, not per fi
   rules say otherwise.
 - Never a filled `.env`, a credential, a dump or a build artefact: check `git status --short` and
   the staged diff before each commit.
+- Stage by named paths, never `git add -A` or `git add .`: a worktree holds untracked links, and
+  `.ai-factory/` may be untracked on the ticket's branch.
 - No push: it belongs to `ticket-5-ship`, after approval.
 
 ## 4. End

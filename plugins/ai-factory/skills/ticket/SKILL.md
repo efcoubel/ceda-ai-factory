@@ -41,9 +41,11 @@ Say in one line where you resume from.
    `workflow.md` if the forge's automation did not make it, the testing label left on a closed
    ticket, the remote branches the forge did not delete. Done after the user's go
    (`pilot`: a `cleanup` action).
-3. Locally, free: remove the ticket's worktrees (`git worktree remove`, without `--force`), switch
-   each repository back to its default branch, pull it, and delete the ticket's local branch if
-   `git branch -d` accepts it (merged). Never `-D`.
+3. Locally, free: remove the ticket's worktrees: first `rm` the links listed in the repository's
+   **Worktree** entry (`rm <worktree>/node_modules`, no trailing slash), which `git worktree remove`
+   counts as untracked files, then `git worktree remove`, without `--force`. If it still refuses,
+   leave the worktree and say what is in it. Switch each repository back to its default branch,
+   pull it, and delete the ticket's local branch if `git branch -d` accepts it (merged). Never `-D`.
 
 ## 2. Run the steps
 

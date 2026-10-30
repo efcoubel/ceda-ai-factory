@@ -69,7 +69,9 @@ to `pending` with a `reply` saying so (`core/validation-queue.md`).
 - **Never touch the user's uncommitted work.** A dirty working tree in a repository the ticket
   needs: in manual mode show `git status --short` and ask; in pilot mode, work in a worktree of
   that repository under `.ai-factory/state/worktrees/<KEY>/<repo>` if the repository's commands can
-  run there (`repos.md`), else `blocked:`.
+  run there (`repos.md`), else `blocked:`. A new worktree lacks every ignored file: prepare it from
+  the repository's **Worktree** entry before running anything. With no entry, find what the
+  commands need, and note it in the learnings.
 - Branches start from a freshly fetched `origin/<default_branch>`, never from local HEAD or the
   staging branch, with `--no-track` (a bare `git push` must not target the default branch).
 - Commits are local and free. Push only in `ticket-5-ship` and `ticket-6-feedback`, after approval.
@@ -81,6 +83,18 @@ to `pending` with a `reply` saying so (`core/validation-queue.md`).
   run only those marked `unattended: yes`; the others become steps for the user in `test.md`.
 - A repository's own rules (`CLAUDE.md`, linters, "Conventions" in `repos.md`) win over anything
   general in these steps.
+
+## Refused by the session
+
+The session has its own permissions (a rule, the auto mode's classifier). An `ok` in the queue does
+not bind them: a write the user approved can still be refused. A refusal is not an error to work
+around:
+
+- never run the command again, split or reworded, and never reach the same effect another way;
+- in manual mode, give the user the exact command and stop there;
+- in pilot mode, the action being carried out becomes `failed` with the refusal, a `human_task`
+  gives the user the exact commands, and the ticket gets a `blocked:` line until it is done. Never
+  queue the same action again: a second `ok` would be refused the same way.
 
 ## Long commands
 

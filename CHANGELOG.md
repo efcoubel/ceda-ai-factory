@@ -1,5 +1,22 @@
 # Changelog
 
+## 0.3.7
+
+From the 21 findings waiting on three projects.
+
+- Close-out: the links of a worktree are removed first, or `git worktree remove` refused it without
+  `--force`.
+- A write the session refuses, even after an `ok` in the queue, is not retried or worked around: the
+  action becomes `failed`, a `human_task` gives the exact commands, and the ticket is `blocked:`.
+- Code: staging by named paths, never `git add -A` or `git add .`.
+- `repos.md` gains a **Worktree** entry (what to copy, what to link, how to serve the branch), asked
+  during onboarding and read by the chain and the test step.
+- Doctor check 9c: a warning for a profile committed outside the default branch, where it is
+  missing from every ticket branch. The onboarding says where it belongs.
+- Staging: the checkpoint says when the command delivers nothing the branch changed.
+- Journal: `pilot` and the user's name are listed as step names, as the dashboard already read them.
+- Test: service workers refused by the session's browser, and a reload on the Auth emulator.
+
 ## 0.3.6
 
 - Dashboard banner: much smaller type, it no longer takes over the page.

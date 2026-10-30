@@ -31,7 +31,8 @@ write it first) on the local environment of `environments.md`:
 - **web**: with the browser tools of the session, if any. Compare each screen to the expected
   result; collect console errors and failed network calls. Set the window to a fixed size first,
   so screenshot coordinates stay the same. Two users at once: two origins (`localhost` and
-  `127.0.0.1`) keep two separate sessions in one browser;
+  `127.0.0.1`) keep two separate sessions in one browser. The session's browser may refuse every
+  service worker, even a one-line file: web push and offline then stay for the tester;
 - **Flutter web** draws on a canvas: the page tools see nothing until the accessibility tree is
   on (click the hidden `flt-semantics-placeholder` element, or start the app with semantics
   enabled). A download may stop the page from repainting in the session's browser: what follows a
@@ -39,14 +40,18 @@ write it first) on the local environment of `environments.md`:
   while it animates out: wait a second, or click through the accessibility tree. Screenshot
   coordinates may be in physical pixels (twice the viewport on a high-density screen): compare the
   screenshot's size with the viewport before clicking by coordinates. The Firebase Auth emulator's
-  banner covers the bottom of the page: reach what is under it by URL, or hide the banner;
+  banner covers the bottom of the page: reach what is under it by URL, or hide the banner. A reload
+  with a kept session calls Google's Auth before `useAuthEmulator` and loses the session silently:
+  serve `index.html` with `fetch` rewritten to the emulator's port, or leave the reload to the
+  tester;
 - **mobile**: integration tests on an emulator or simulator (`repos.md`), only if marked
   `unattended: yes` or the user is in the conversation; the backend on its emulator
   (`adapters/database/<adapter>.md`), never a production project;
 - **no interface** (job, command, consumer, function): run it locally, or its test harness.
 
 - **Worktrees**: a local site usually serves the main checkout, not a pilot's worktree. Run the
-  branch's own server from the worktree on a free port if `repos.md` allows it; otherwise the step
+  branch's own server from the worktree on a free port with the `serve` command of the repository's
+  **Worktree** entry, if `repos.md` allows it; otherwise the step
   is not played, and `test.md` says so rather than testing the wrong code.
 - **Logins**: you have no passwords. In manual mode, ask the user to log in where needed, then go
   on; in pilot mode, the steps that need a login stay for the user.
