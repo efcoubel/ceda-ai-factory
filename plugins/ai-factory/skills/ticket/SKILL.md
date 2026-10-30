@@ -34,11 +34,16 @@ Say in one line where you resume from.
 **Close-out**, once every MR/PR of the ticket is merged (forge adapter, `state`):
 
 1. Set `state.md` to `done`, with a journal line giving each merge commit and the ticket's status.
-2. Propose, as one recap, the outward clean-up: the testing label or status of `workflow.md` left
-   on a closed ticket, the remote branches the forge did not delete. Done after the user's go
+   A merge gate still open (its `check` prints something on the default branch, or a condition in
+   words not confirmed) or a test not confirmed: add a `human_task` saying so, once, and go on:
+   the merge is the user's call and nothing is undone.
+2. Propose, as one recap, the outward clean-up: the ticket's transition to the "Done" status of
+   `workflow.md` if the forge's automation did not make it, the testing label left on a closed
+   ticket, the remote branches the forge did not delete. Done after the user's go
    (`pilot`: a `cleanup` action).
-3. Locally, free: switch each repository back to its default branch, pull it, and delete the
-   ticket's local branch if `git branch -d` accepts it (merged). Never `-D`.
+3. Locally, free: remove the ticket's worktrees (`git worktree remove`, without `--force`), switch
+   each repository back to its default branch, pull it, and delete the ticket's local branch if
+   `git branch -d` accepts it (merged). Never `-D`.
 4. If `~/.ai-factory/dashboard.json` exists, suggest `/ai-factory:dashboard` to refresh it.
 
 ## 2. Run the steps

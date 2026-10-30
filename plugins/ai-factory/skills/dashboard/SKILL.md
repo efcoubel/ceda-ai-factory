@@ -15,6 +15,10 @@ the dashboard, `~/.ai-factory/` (the registry, the history, the dashboard's addr
 While it runs, `~/.ai-factory/dashboard.lock` holds its start time; it is removed at the end,
 whatever happens. A lock less than 15 minutes old means a refresh is running: stop and say so.
 
+**`pilot <datasets>`** (called by the dev tick): skip steps 1 to 3, the tick already built the
+files in `.ai-factory/state/pilot/dashboard-out`. Read no tool, no project file: do step 4 for
+those datasets only, and report in one line.
+
 ## 1. The projects
 
 `~/.ai-factory/projects.json` lists the project roots of this machine. The current project (found
@@ -63,7 +67,7 @@ goes where.
 
 - **Datasets** `projects`, `tickets`, `backlog`, `queue`, `prs`, `health`, `history`: each an
   attached file. **Only what changed is uploaded**: `~/.ai-factory/dashboard.json` keeps
-  `uploaded: {<dataset>: <sha256 of the file>}`. A file whose hash is unchanged is not uploaded
+  `uploaded: {<dataset>: <its hash in the script's hashes.json>}` and `uploaded_at`. A file whose hash is unchanged is not uploaded
   again; only its document's `updated` is moved to now, so it does not show as stale. A changed
   file is uploaded as an asset, then its dataset document gets the new `url`, `name` and `updated`
   (`{at: now, by: "ai-factory dashboard"}`), `schedule` and `staleAfterHours: 48`, and its hash is

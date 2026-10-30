@@ -41,14 +41,25 @@ Stop at the first that holds, with one line saying why (and nothing in the journ
 the tick only carries out approved actions (section 1) and stops. Nothing new starts, nothing is
 posted in chat.
 
-## 0b. Dashboard first
+## 0b. Is the profile up to date
 
-If `~/.ai-factory/dashboard.json` exists, start `/ai-factory:dashboard pilot` in a **background**
-agent (`Agent` tool, `run_in_background: true`) before touching any ticket, at every tick, quiet
-hours included (it only reads the projects). The dashboard then shows the state the tick starts
-from: the previous tick's work and the user's latest decisions. Do not wait for it; at the end of
-the tick, say whether it finished, and if it failed, its error. A refresh still running
-(`~/.ai-factory/dashboard.lock` less than 15 minutes old) is not started again.
+`onboarding.plugin_version` older than the plugin's version, and `priorities.md` lacking lines of
+`core/priorities.md`: add one `human_task` proposing `/ai-factory:onboarding update priorities`
+(once per plugin version). The tick goes on with the profile's copy.
+
+## 0c. Dashboard first
+
+If `~/.ai-factory/dashboard.json` exists, before touching any ticket, quiet hours included, run
+the **dashboard refresh** below. It runs again at the end of the tick, so the page shows both the
+user's latest decisions and the tick's work.
+
+1. Write this project's `dashboard-queue.json` (`skills/dashboard/SKILL.md`, step 2) from the rows
+   of the queue; the tick needs them anyway.
+2. `python3 <plugin root>/scripts/dashboard-data.py --out .ai-factory/state/pilot/dashboard-out --changed`.
+3. It prints nothing: stop, no agent, no cost. Otherwise, unless `~/.ai-factory/dashboard.lock` is
+   less than 15 minutes old, start `/ai-factory:dashboard pilot` with the printed datasets in a
+   **background** agent (`Agent` tool, `model: "haiku"`, `run_in_background: true`). Do not wait
+   for it; the report says if it failed.
 
 ## 1. Carry out what the user decided
 
@@ -68,7 +79,9 @@ Queue rows `pilot = dev` in `ok` or `changed`, and `rejected` ones without `hand
 
 A `rejected` row is written in the ticket's `state.md` and gets `handled_at` (a rejected `plan`
 takes the ticket out of the pilot). A row carried out becomes `done` with `handled_at`; a step that
-fails makes it `failed` with the error.
+fails makes it `failed` with the error. An `ok` row whose `requires` is not all `done` is left as it
+is. An `ok` on a `plan` with a question marked "needs your answer": back to `pending`, asking for
+it (`core/chain.md`, "Open questions"). Dates come from the clock (`core/ticket-folder.md`).
 
 ## 2. Take stock
 
@@ -79,6 +92,12 @@ In parallel:
 - for tickets at `shipped`, `feedback` or `staging`: their MRs/PRs (forge adapter, `state`):
   approvals, threads whose last message is not the user's, merged or not;
 - `cadences.json`, `dev.json`.
+
+Write what was read as `dashboard-backlog.json` and `dashboard-prs.json`
+(`skills/dashboard/SKILL.md`, step 2), so the refresh reads no tool itself.
+
+A ticket of the dev queue the pilot cannot take because it has no key (no `key.fallback`) or no
+type: one `human_task` per ticket, once, saying what to fix; it never just stays aside.
 
 Rank each ticket on the first line of `priorities.md` that applies. Leave out a ticket with a
 pending queue action, a rejected plan, or a `blocked:` line with nothing changed on it since. A
@@ -107,6 +126,8 @@ In <project root>, invoke with the Skill tool `ai-factory:<skill>` with the argu
 "<KEY> pilot[ approved][ dry]". Ask no question: follow the pilot mode of the steps
 (<plugin root>/core/chain.md). Do not write to the validation queue: proposed actions go to
 .ai-factory/state/tickets/<KEY>/actions.json.
+Every date you write comes from `date '+%Y-%m-%d %H:%M'`, and journal lines follow
+<plugin root>/core/ticket-folder.md exactly.
 Answer in five lines at most: the state reached in state.md, the actions added to actions.json,
 any blocked: line, the commits made.
 ```
@@ -114,12 +135,13 @@ any blocked: line, the commits made.
 Without the `Agent` tool, run the ticket in the tick itself, one code ticket per tick.
 
 After each ticket, add to the queue (queue adapter, `add`) the actions of its `actions.json` not
-yet there (same ticket, type and content), with `pilot: dev`, `status: pending`. A ticket that
+yet there (same ticket, type and content), with `pilot: dev`, `status: pending`, then empty the
+file. A ticket that
 failed the same step three times in a row is `blocked:` by the circuit breaker (`core/chain.md`).
 
 ## 5. Close the tick
 
-1. **Cleanup**, once a day (`cadences.json` → `cleanup`): archive then delete the handled rows
+1. **Cleanup**, once per calendar day (`cadences.json` → `cleanup`): archive then delete the handled rows
    older than 7 days (`core/validation-queue.md`, "Cleanup").
 2. **Counters** in `dev.json`: `ticks_today` (`{date, n}`), `tickets_started_today`,
    `failed_ticks` (reset by a tick that ends without an error). Three failed ticks in a row:
@@ -130,7 +152,11 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
    `human_task`s, newly blocked a ticket, or tripped the circuit breaker, send **one**
    `PushNotification` for the tick, under 200 characters, leading with what to act on:
    `Lima: 2 to approve (plan #21, ship #19), #14 blocked`. The ids already notified are in
-   `notified.json`: never notify twice for the same row or block. Nothing new: no notification.
-5. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
+   `notified.json` (a rewritten row is `<id>@<rewritten_at>`, so it counts as new): never notify
+   twice for the same row or block. Nothing new: no notification. If the tool answers that the
+   phone was not reached (Remote Control inactive), say it once in the report and in
+   `notified.json`, so the user knows a long absence will not reach them.
+5. **Dashboard**: the refresh of section 0c, unless the tick changed nothing.
+6. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
    the queue (its link); blocks with their reason; tickets started by hand; what was left for the
    next tick for lack of budget. Remove `dev.lock`.

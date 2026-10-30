@@ -44,7 +44,11 @@ where the problem comes from, or where the change plugs in.
 - **Steps**: the changes, repository by repository, each with the test that will cover it.
 - **Watch out**: data migration, a long operation on a large table, a deployment note to foresee,
   existing data to fix, an error behaviour that changes, a dependency change.
-- **Questions**: what remains ambiguous.
+- **Questions**: what remains ambiguous, each with a proposed answer (`core/chain.md`, "Open
+  questions").
+- **Merge gate**, if the ticket must not reach the default branch as is: one line per condition,
+  in words, and when it can be checked, `check: <command>` that prints nothing once it holds
+  (`check: git grep -n a-completer`).
 - **Risk**: for each criterion of `unattended.low_risk` (`core/autonomy.md`), "holds" or "does not
   hold: why". Compute it even when unattended mode is off: it tells the user how much to look.
 

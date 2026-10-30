@@ -29,6 +29,10 @@ a foreseeable conflict); `git status --short` clean; no secret, credential or fi
   sibling MRs/PRs). On a forge that closes tickets from the description (GitHub: `Closes #<n>`),
   add that line when the ticketing tool is the same forge. File: `ship-<repo>.md` in the ticket
   folder.
+- **Merge gate**: the conditions of `plan.md`, copied to `ship.md` and stated at the top of the
+  description.
+- **What else the branch brings**: commits that are not this ticket's (a branch built on another
+  ticket's), with their migrations and deployment notes. The notes written here cover all of it.
 - **Title**: what the ticket delivers as a whole, in the repository's commit format (often the
   ticket's title, rephrased), not the subject of whichever commit came first.
 - **Options**: those of `tools.forge.config.mr_options` the adapter applies at opening (draft,
@@ -38,7 +42,8 @@ a foreseeable conflict); `git status --short` clean; no secret, credential or fi
 - **Ticket**: the transition to the "ask for review" status of `workflow.md` and its required
   fields (test procedure, deployment notes, links), in the format each field expects.
 - **Ticket comment**, if `workflow.md` puts the test procedure or the notes in a comment: its
-  text, in `ship-comment.md`. A link known only after opening (the MR/PR's) is written as
+  text, in `ship-comment.md`. They are posted here, at shipping, unless `workflow.md` says another
+  moment. A link known only after opening (the MR/PR's) is written as
   `<MR/PR link>` and filled in at sending time.
 - **Announcement**: if a chat tool is configured, the message for the review channel
   (`adapters/chat/<adapter>.md`), one line per MR/PR.

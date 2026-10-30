@@ -66,6 +66,7 @@ carries one) returns exactly one issue.
 - `me`: `gh api user --jq .login`.
 - `find_by_key`: `native`: the number; `title_prefix`: `gh issue list -R <repo> --state all --search "\"<key>\" in:title" --json number,title`,
   then the issue whose title starts with the key followed by ` — `, `: ` or a space.
+- With `key.fallback: native`, an issue whose title has no key is `#<n>`.
 - `next_key`: list all titles (`--state all --limit 1000`), extract keys with `pattern`, take the
   highest under the parent (`per_parent`) or overall (`sequential`), add one.
 - `setup`: labels for types (`gh label create bug|task|feature --force`), then a Project:

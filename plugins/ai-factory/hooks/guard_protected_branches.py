@@ -15,9 +15,19 @@ PUSH_OPTIONS_WITH_VALUE = {"-o", "--push-option", "--repo", "--receive-pack", "-
 GIT_OPTIONS_WITH_VALUE = {"-c", "--git-dir", "--work-tree", "--namespace", "--exec-path"}
 MERGE_CLI_OPTIONS_WITH_VALUE = {"-m", "--message", "--squash-message", "--sha", "-R", "--repo", "-b", "--body", "-t", "--subject"}
 SEPARATORS = {"&&", "||", ";", "|", "&", "(", ")"}
+HEREDOC = re.compile(r"(?P<head>^[^\n]*<<-?\s*(?P<quote>['\"]?)(?P<tag>\w+)(?P=quote)[^\n]*)\n.*?\n[ \t]*(?P=tag)[ \t]*(?=\n|$)", re.MULTILINE | re.DOTALL)
+SHELL_LINE = re.compile(r"(?:^|[\s|&;(/])(?:ba|z|da)?sh(?:\s|$)")
+
+
+def strip_heredocs(command):
+    """A heredoc body is data, unless it is fed to a shell."""
+    def replace(match):
+        return match.group(0) if SHELL_LINE.search(match.group("head")) else match.group("head") + "\n"
+    return HEREDOC.sub(replace, command)
 
 
 def tokenize(command):
+    command = strip_heredocs(command)
     try:
         lexer = shlex.shlex(command, posix=True, punctuation_chars=True)
         lexer.whitespace_split = True

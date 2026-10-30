@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.2
+
+From nine real ticks on a solo Symfony site.
+
+- Dashboard data: journal variants are read, unreadable lines and future dates become `journal`
+  warnings in Health instead of a silently empty page; a block is a line starting with `blocked:`.
+- Clock and format: every date comes from `date`, an exact journal example, and a doctor check.
+- Queue: `requires` to order actions, absolute paths, `rewritten_at` so a rewritten row is notified
+  again, and the queue as the only source of status (`actions.json` is emptied once queued).
+- Open questions: each carries a proposed answer an `ok` accepts; a pilot never answers in the
+  user's place.
+- Merge gates in `plan.md`, stated in the MR/PR and checked at close-out; a `human_task` confirms
+  the test on staging; a merge with either open raises a `human_task`, and undoes nothing.
+- Staging: tests run on the merged tree before the push; what else a merge brings is listed, with
+  its migrations and deployment notes.
+- Tickets with no key or type are raised once in the queue; `key.fallback: native`.
+- A profile older than the plugin is raised once; `onboarding update priorities` merges new lines.
+- Close-out: Done transition, worktrees removed.
+- Dashboard cost: the pilot refreshes at the start and the end of a tick, only when a dataset
+  changed, in a small background agent that reads no tool; nothing changed costs nothing.
+- Hook: heredoc bodies are data unless fed to a shell.
+- Test: a worktree is not the local site; the step is run from the worktree or said not played.
+- Dashboard wording: no plural to get wrong, lead time named after what it measures.
+
 ## 0.3.1
 
 - The dev pilot refreshes the dashboard first, at every tick, in a background agent, instead of

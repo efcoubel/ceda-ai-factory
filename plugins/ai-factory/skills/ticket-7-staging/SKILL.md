@@ -21,7 +21,8 @@ From `repos[].staging` (one entry, or each entry of a list in order):
 
 - `branch`: `git fetch origin <staging branch> <branch>`, then
   `git merge-tree --write-tree origin/<staging branch> origin/<branch>` to detect a conflict without
-  touching anything;
+  touching anything. List what the merge brings besides this ticket, with its migrations and
+  deployment notes;
 - `release` / `deploy`: the exact `build` and `how` commands, the target, and a check that the
   target is not production. List **what the command deploys**, not only what the branch changed:
   `firebase deploy --only firestore` sends the rules and the indexes, `--only functions` every
@@ -43,7 +44,10 @@ From `repos[].staging` (one entry, or each entry of a list in order):
 ## 4. Stage
 
 - `branch`: in a temporary worktree on `origin/<staging branch>` (never in the user's working
-  tree): `git merge --no-ff origin/<branch>`, push to `<staging branch>`, remove the worktree. A
+  tree): `git merge --no-ff origin/<branch>`; **run the repository's unit tests and static analysis
+  on the merged tree** (`repos.md`, commands marked `unattended: yes`): each branch passed alone,
+  the combination did not yet. A failure stops here, nothing pushed, `blocked:`. Then push to
+  `<staging branch>` and remove the worktree. A
   conflict stops everything for that repository: show it, do not resolve it without approval.
 - `release` / `deploy`: run `build` then `how` on the ticket's branch; keep the output's link or
   build number.
@@ -51,7 +55,11 @@ From `repos[].staging` (one entry, or each entry of a list in order):
   `workflow.md` asks for at that point (a label, a comment) in the form it states (part of the
   approved action). A form it does not state is asked, not guessed.
 
-Set `state.md` to `staging`, write what was done in `ship.md`.
+Set `state.md` to `staging`, write what was done in `ship.md`. Add a `human_task` "Confirm the
+test on staging" with the tester's procedure: when the user ticks it, `ship.md` records the
+confirmation. A chain that goes on through several tickets does not take a merged staging for a
+tested one.
 
 The merge into the **default branch** stays with the user: the hook blocks it. Give them the
-command, or the MR/PR link to merge from the forge.
+command, or the MR/PR link to merge from the forge, with the merge gate and whether the test was
+confirmed.

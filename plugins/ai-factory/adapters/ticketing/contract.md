@@ -37,6 +37,7 @@ a ticketing tool keeps those numbers. Every adapter reads `config.key`:
 | `pattern` | the regular expression a key matches, used to find it in a title, a branch or a commit |
 | `numbering` | for new tickets when `source` is not `native`: `sequential` (next free number after `prefix`) or `per_parent` (an epic is `US-<n>`, its sub-issues `US-<n>.<m>`) |
 | `prefix` | the fixed start of new keys |
+| `fallback` | `native`: a ticket with no key under the main rule uses the tool's own key (`title_prefix` or `field` only). Without it, such a ticket cannot be taken, and the pilot says so once |
 | `legacy` | optional list of older key rules, each `{"source", "pattern"}`, recognized when reading (branches, commits, titles) but never used for new tickets. A project whose stories were `US-3.2` in a file and are now native issues keeps `{"source": "title_prefix", "pattern": "US-\\d+\\.\\d+"}` here |
 | `parent` | how a ticket's epic is found: `native` (the tool's parent link, the default) or `label` with `label_pattern` (a label such as `E1 · Account` is the epic) |
 

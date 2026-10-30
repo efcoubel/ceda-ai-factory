@@ -1,5 +1,5 @@
 <meta name="dash-one-writer">
-<meta name="ai-factory-dashboard" content="0.2.3" data-lang="en">
+<meta name="ai-factory-dashboard" content="0.3.2" data-lang="en">
 <style>
   .af { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
   .af-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
@@ -66,7 +66,7 @@
 <div class="af">
   <header class="af-head">
     <h1 class="af-title" id="top">ai-factory</h1>
-    <p class="af-lede"><b data-draw="lede-waiting" data-source="summary" data-field="waiting">—</b> actions wait for you, <b data-draw="lede-blocked" data-source="summary" data-field="blocked">—</b> tickets are blocked and <b data-draw="lede-staging" data-source="summary" data-field="in_staging">—</b> are in staging to test.</p>
+    <p class="af-lede">Waiting for you: <b data-draw="lede-waiting" data-source="summary" data-field="waiting">—</b> · Blocked: <b data-draw="lede-blocked" data-source="summary" data-field="blocked">—</b> · In staging: <b data-draw="lede-staging" data-source="summary" data-field="in_staging">—</b></p>
   </header>
 
   <nav class="af-tabs" role="tablist" aria-label="Projects" data-draw="tabs" data-source="projects"></nav>
@@ -83,7 +83,7 @@
     <div class="af-tile" data-alert="blocked"><span class="af-label">Blocked</span><span class="af-value" data-draw="tile-blocked" data-source="summary" data-field="blocked">—</span><p class="af-note">Open tickets stopped on a reason</p></div>
     <div class="af-tile"><span class="af-label">In progress</span><span class="af-value" data-draw="tile-open" data-source="summary" data-field="open">—</span><p class="af-note">From framing to staging</p></div>
     <div class="af-tile"><span class="af-label">Done</span><span class="af-value" data-draw="tile-done" data-source="summary" data-field="done">—</span><p class="af-note">MR/PR merged</p></div>
-    <div class="af-tile"><span class="af-label">Median lead time</span><span class="af-value" data-draw="tile-lead" data-source="summary" data-field="median_lead_hours">—</span><p class="af-note">First journal line to merge</p></div>
+    <div class="af-tile"><span class="af-label">Median lead time</span><span class="af-value" data-draw="tile-lead" data-source="summary" data-field="median_lead_hours">—</span><p class="af-note">First journal line to close-out</p></div>
     <div class="af-tile"><span class="af-label">Review passed first time</span><span class="af-value" data-draw="tile-firstpass" data-source="summary" data-field="first_pass_rate">—</span><p class="af-note">Tickets with one review round</p></div>
     <div class="af-tile"><span class="af-label">Approved unchanged</span><span class="af-value" data-draw="tile-autonomy" data-source="summary" data-field="approved_unchanged_rate">—</span><p class="af-note">Decided actions you accepted as proposed</p></div>
   </section>
@@ -134,7 +134,7 @@
 
   <section class="af-card" id="tickets" aria-label="All tickets">
     <h2>All tickets</h2>
-    <p class="af-note">Lead time runs from the ticket's first journal line to its merge.</p>
+    <p class="af-note">Lead time runs from the ticket's first journal line to its close-out.</p>
     <div class="af-scroll">
       <table class="af-table" data-source="tickets" data-row-key="project,key">
         <thead><tr><th data-field="key">Ticket</th><th data-field="title">Title</th><th data-field="state">State</th><th class="af-num" data-field="review_rounds">Review rounds</th><th class="af-num" data-field="lead_hours">Lead time (h)</th><th data-field="last_at">Last activity</th></tr></thead>

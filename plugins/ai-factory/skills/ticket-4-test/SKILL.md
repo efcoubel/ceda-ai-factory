@@ -45,6 +45,9 @@ write it first) on the local environment of `environments.md`:
   (`adapters/database/<adapter>.md`), never a production project;
 - **no interface** (job, command, consumer, function): run it locally, or its test harness.
 
+- **Worktrees**: a local site usually serves the main checkout, not a pilot's worktree. Run the
+  branch's own server from the worktree on a free port if `repos.md` allows it; otherwise the step
+  is not played, and `test.md` says so rather than testing the wrong code.
 - **Logins**: you have no passwords. In manual mode, ask the user to log in where needed, then go
   on; in pilot mode, the steps that need a login stay for the user.
 - **Shared data**: if the local environment points to data other people use (`environments.md`),

@@ -35,7 +35,10 @@ neither a resumed onboarding nor a later `update` asks again.
 
 - From the current directory, look for `.ai-factory/profile.json` upwards (`core/architecture.md`).
   - **Found, complete**: say what it covers and offer to update one section (`update repos`,
-    `update tools`, `update environments`, `update workflow`, `update autonomy`) or to start over.
+    `update tools`, `update environments`, `update workflow`, `update autonomy`, `update priorities`)
+    or to start over. `update priorities` adds to the profile's `priorities.md` the lines of
+    `core/priorities.md` it lacks, keeps the user's edits, shows the difference before writing, and
+    sets `onboarding.plugin_version`.
   - **Found, with `"onboarding": {"done": false, …}`**: resume at the recorded phase; with
     `"path": "new-project"`, hand over to `/ai-factory:new-project`, which resumes itself.
   - **Not found**: the project root is the current directory, unless it is inside a git repository

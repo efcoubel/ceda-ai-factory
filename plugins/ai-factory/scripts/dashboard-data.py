@@ -6,19 +6,27 @@ plus the live snapshots the dashboard skill writes beforehand (development queue
 open MRs/PRs).
 Writes one JSON array per dataset in --out and records today's snapshot in the history.
 
-Usage: dashboard-data.py --out <dir> [--register <project root>]
+Usage: dashboard-data.py --out <dir> [--register <project root>] [--changed]
+With --changed, prints the datasets to upload: those whose content differs from the last upload
+recorded in ~/.ai-factory/dashboard.json, or all of them once a day so none shows as stale.
 """
 import argparse
+import hashlib
 import json
 import re
 import statistics
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from pathlib import Path
 
 HOME = Path.home() / ".ai-factory"
 REGISTRY = HOME / "projects.json"
 HISTORY = HOME / "history"
-JOURNAL_LINE = re.compile(r"^(\d{4}-\d{2}-\d{2} \d{2}:\d{2}) — ([^:]+): (.*)$")
+DASHBOARD = HOME / "dashboard.json"
+JOURNAL_LINE = re.compile(r"^(?:[-*]\s+)?(\d{4}-\d{2}-\d{2})[ T](\d{2}:\d{2})(?::\d{2})?\s+[—–-]\s+([^:]+):\s*(.*)$")
+BLOCKED_LINE = re.compile(r"^(?:[-*]\s+)?blocked:\s*(.*)$", re.IGNORECASE)
+OTHER_LINE = re.compile(r"^(?:[-*]\s+)?(?:rejected|fin|note):", re.IGNORECASE)
+STEP_NAME = re.compile(r"^(?:ticket-\d-)?([\w-]+)")
+TITLE_SUFFIX = re.compile(r"\s*[·—–-]\s*plan\s*$", re.IGNORECASE)
 REVIEW_ROUND = re.compile(r"^#+\s*Round\s+\d+", re.IGNORECASE | re.MULTILINE)
 PENDING_STATES = {"pending", "changed"}
 DECIDED_STATES = {"ok", "rejected", "changed", "done", "failed"}
@@ -48,8 +56,29 @@ def register(root):
         REGISTRY.write_text(json.dumps(registry, indent=2) + "\n", encoding="utf-8")
 
 
-def parse_time(text):
-    return datetime.strptime(text, "%Y-%m-%d %H:%M")
+def parse_time(day, time):
+    return datetime.strptime(f"{day} {time}", "%Y-%m-%d %H:%M")
+
+
+def read_journal(lines, now):
+    """Returns (at, step, text) entries, the current block's reason, and the lines nothing could read."""
+    journal, block, unread = [], None, []
+    for line in lines:
+        match = JOURNAL_LINE.match(line)
+        if match:
+            text = match.group(4)
+            blocked = BLOCKED_LINE.match(text)
+            at = parse_time(match.group(1), match.group(2))
+            if at > now:
+                unread.append(f"future date: {line}")
+                continue
+            journal.append((at, STEP_NAME.match(match.group(3).strip()).group(1), text))
+            block = blocked.group(1).strip() if blocked else None
+        elif BLOCKED_LINE.match(line):
+            block = BLOCKED_LINE.match(line).group(1).strip()
+        elif not OTHER_LINE.match(line):
+            unread.append(line)
+    return journal, block, unread
 
 
 def hours_between(start, end):
@@ -61,9 +90,7 @@ def ticket_row(project, folder):
     if not lines:
         return None
     state = lines[0].removeprefix("#").strip().lower()
-    journal = [(parse_time(m.group(1)), m.group(2).strip(), m.group(3)) for m in map(JOURNAL_LINE.match, lines[1:]) if m]
-    last_line = lines[-1]
-    blocked = "blocked:" in last_line
+    journal, block, unread = read_journal(lines[1:], datetime.now())
     started = journal[0][0] if journal else None
     last = journal[-1][0] if journal else None
     shipped = next((at for at, step, _ in journal if step.startswith("ship")), None)
@@ -74,14 +101,15 @@ def ticket_row(project, folder):
     title = ""
     if plan.is_file():
         heading = next((line for line in plan.read_text(encoding="utf-8").splitlines() if line.startswith("# ")), "")
-        title = heading.removeprefix("# ").strip()
+        title = TITLE_SUFFIX.sub("", heading.removeprefix("# ").strip())
+        title = re.sub(rf"^{re.escape(folder.name)}\s*[·—–:-]\s*", "", title)
     return {
         "project": project,
         "key": folder.name,
         "title": title or folder.name,
         "state": state,
-        "blocked": "yes" if blocked else "no",
-        "blocked_reason": last_line.split("blocked:", 1)[1].strip() if blocked else "",
+        "blocked": "yes" if block is not None else "no",
+        "blocked_reason": block or "",
         "started_at": started.isoformat() if started else None,
         "last_at": last.isoformat() if last else None,
         "shipped_at": shipped.isoformat() if shipped else None,
@@ -90,6 +118,7 @@ def ticket_row(project, folder):
         "frame_to_ship_hours": hours_between(started, shipped) if started and shipped else None,
         "review_rounds": rounds,
         "first_pass": ("yes" if rounds == 1 else "no") if rounds else None,
+        "unread_lines": unread,
     }
 
 
@@ -110,7 +139,7 @@ def queue_rows(project, root, profile):
     return [{"project": project, **{field: row.get(field) for field in fields}} for row in rows]
 
 
-def health_rows(project, root):
+def health_rows(project, root, tickets):
     pilot = root / ".ai-factory" / "state" / "pilot"
     doctor = read_json(pilot / "doctor.json", {})
     rows = [
@@ -119,6 +148,15 @@ def health_rows(project, root):
     ]
     if not rows:
         rows.append({"project": project, "check": "doctor", "status": "warning", "detail": "No doctor report yet: run /ai-factory:doctor"})
+    for ticket in tickets:
+        lines = ticket.pop("unread_lines")
+        if lines:
+            rows.append({
+                "project": project,
+                "check": f"journal {ticket['key']}",
+                "status": "warning",
+                "detail": f"{len(lines)} unreadable line(s) in state.md, dates and lead time may be wrong: {lines[0][:80]}",
+            })
     pending = root / ".ai-factory" / "state" / "learnings-pending.md"
     count = sum(1 for line in pending.read_text(encoding="utf-8").splitlines() if line.startswith("- ")) if pending.is_file() else 0
     rows.append({
@@ -167,7 +205,21 @@ def record_history(slug_name, today):
     return rows
 
 
-def build(out):
+def dataset_hash(rows):
+    stable = [{key: value for key, value in row.items() if key != "updated_at"} for row in rows]
+    return hashlib.sha256(json.dumps(stable, sort_keys=True).encode("utf-8")).hexdigest()
+
+
+def changed_datasets(hashes):
+    dashboard = read_json(DASHBOARD, {})
+    uploaded_at = dashboard.get("uploaded_at")
+    if not uploaded_at or datetime.now() - datetime.fromisoformat(uploaded_at) > timedelta(hours=24):
+        return sorted(hashes)
+    uploaded = dashboard.get("uploaded", {})
+    return sorted(name for name, value in hashes.items() if uploaded.get(name) != value)
+
+
+def build(out, show_changed):
     datasets = {name: [] for name in ("projects", "tickets", "backlog", "queue", "prs", "health", "history")}
     for entry in read_json(REGISTRY, {"projects": []})["projects"]:
         root, project = Path(entry["root"]), entry["slug"]
@@ -180,7 +232,7 @@ def build(out):
         backlog = backlog_rows(project, root, tickets)
         queue = queue_rows(project, root, profile)
         prs = [{"project": project, **pr} for pr in read_json(root / ".ai-factory" / "state" / "pilot" / "dashboard-prs.json", [])]
-        health, doctor_at = health_rows(project, root)
+        health, doctor_at = health_rows(project, root, tickets)
         datasets["projects"].append({
             "project": project,
             "name": profile.get("project", {}).get("name", project),
@@ -198,14 +250,20 @@ def build(out):
     out.mkdir(parents=True, exist_ok=True)
     for name, rows in datasets.items():
         (out / f"{name}.json").write_text(json.dumps(rows, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-        print(f"{name}: {len(rows)} rows")
+        if not show_changed:
+            print(f"{name}: {len(rows)} rows")
+    hashes = {name: dataset_hash(rows) for name, rows in datasets.items()}
+    (out / "hashes.json").write_text(json.dumps(hashes, indent=1) + "\n", encoding="utf-8")
+    if show_changed:
+        print(" ".join(changed_datasets(hashes)))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--out", required=True, type=Path)
     parser.add_argument("--register", help="add this project root to the registry first")
+    parser.add_argument("--changed", action="store_true", help="print only the datasets to upload")
     args = parser.parse_args()
     if args.register:
         register(args.register)
-    build(args.out)
+    build(args.out, args.changed)

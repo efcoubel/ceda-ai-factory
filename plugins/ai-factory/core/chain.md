@@ -41,6 +41,14 @@ What a step cannot settle alone (dirty working tree, conflict, scope change, a c
 run, a ticket taken by someone else) is written in `state.md` as `blocked: <reason>`; in manual mode
 it is asked instead.
 
+## Open questions
+
+Each open question of a plan carries a **proposed answer**: an `ok` on the plan accepts exactly
+those, and the step writes them in `plan.md` as decisions. Where no answer can be proposed, the
+question is marked **needs your answer** and the action's summary says so: an `ok` on that plan
+does not start the work, the row goes back to `pending` asking for the answer through `changed`. A
+pilot never answers a question in the user's place.
+
 ## Working in the repositories
 
 - **Never touch the user's uncommitted work.** A dirty working tree in a repository the ticket
@@ -52,6 +60,8 @@ it is asked instead.
 - Commits are local and free. Push only in `ticket-5-ship` and `ticket-6-feedback`, after approval.
   Never `--force`; `--force-with-lease` only when `ticket-6-feedback` rewrote the branch after
   approval of exactly that.
+- `actions.json` belongs to the step that writes it and to the pilot that queues it: a step adds
+  its own actions and touches no other; decisions are read in the queue, never reported there.
 - Commands come from `repos.md`: run each where it says (host, container, emulator). In pilot mode,
   run only those marked `unattended: yes`; the others become steps for the user in `test.md`.
 - A repository's own rules (`CLAUDE.md`, linters, "Conventions" in `repos.md`) win over anything

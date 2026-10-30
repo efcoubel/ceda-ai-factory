@@ -29,5 +29,7 @@ Rules:
   with the exact commands instead.
 - The target is never production. A `deploy` or `release` whose project, environment or channel the
   profile marks as production is refused.
+- The merge gate of `plan.md` and the test confirmation do not block staging. The dev pilot checks
+  them when a MR/PR gets merged, and raises a `human_task` if it was merged with either open.
 - Merging into the **default branch** is not staging: it stays with the user (protected branch, the
   hook blocks it). After staging, the chain gives the user the merge command or link.
