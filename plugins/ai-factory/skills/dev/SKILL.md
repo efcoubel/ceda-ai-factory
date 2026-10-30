@@ -155,7 +155,7 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
 1. **Cleanup**, once per calendar day (`cadences.json` → `cleanup`): archive then delete the handled rows
    older than 7 days (`core/validation-queue.md`, "Cleanup").
 2. **Counters** in `dev.json`: `ticks_today` (`{date, n}`), `tickets_started_today`,
-   `failed_ticks` (reset by a tick that ends without an error). Three failed ticks in a row:
+   `last_tick_at` (ISO time, from the clock), `failed_ticks` (reset by a tick that ends without an error). Three failed ticks in a row:
    set `stopped` with the last error, and say so in the report and the notification.
 3. **Journal**: one line per action in `journal.md`, `YYYY-MM-DD HH:MM — <KEY> — <action> — <outcome>`,
    the time from the clock.
@@ -167,7 +167,9 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
    twice for the same row or block. Nothing new: no notification. If the tool answers that the
    phone was not reached (Remote Control inactive), say it once in the report and in
    `notified.json`, so the user knows a long absence will not reach them.
-5. **Dashboard**: the refresh of section 0c, unless the tick changed nothing.
+5. **Dashboard**: the refresh of section 0c, always, last of all before the report: its banner is
+   how the user learns the tick ended and what waits for them. A refresh still running blocks this
+   one, so first wait for `~/.ai-factory/dashboard.lock` to go, five minutes at most.
 6. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
    the queue (its link); blocks with their reason; tickets started by hand; what was left for the
    next tick for lack of budget. Remove `dev.lock`.

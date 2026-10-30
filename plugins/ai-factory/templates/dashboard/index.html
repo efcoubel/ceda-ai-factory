@@ -1,11 +1,26 @@
 <meta name="dash-one-writer">
-<meta name="ai-factory-dashboard" content="0.3.2" data-lang="en">
+<meta name="ai-factory-dashboard" content="0.3.4" data-lang="en">
 <style>
   .af { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
   .af-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
   .af-title { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0; }
   .af-lede { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); }
   .af-lede b { color: var(--color-fg); font-weight: 600; font-variant-numeric: tabular-nums; }
+  .af-alarm { display: flex; flex-direction: column; gap: var(--cds-gap-sm); border-radius: var(--cds-radius); border: 1px solid var(--color-ok); background: var(--color-panel); padding: var(--cds-pad-lg); }
+  .af-alarm.af-alarm-on { background: var(--color-bad); border-color: var(--color-bad); color: var(--color-bg); }
+  .af-alarm-main { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--cds-gap-sm) var(--cds-gap-lg); margin: 0; font-family: var(--font-anthropic-serif); font-size: clamp(1.5rem, 4vw, 3rem); line-height: 1.1; }
+  .af-alarm-main b { font-weight: 400; font-size: clamp(3rem, 9vw, 7rem); font-variant-numeric: tabular-nums; }
+  .af-alarm-calm { color: var(--color-ok); }
+  .af-alarm-projects { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); }
+  .af-alarm-projects a, .af-alarm-projects button { font: inherit; font-size: var(--cds-font-size-body); font-weight: 600; padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: var(--cds-radius); border: 1px solid currentColor; background: transparent; color: inherit; cursor: pointer; text-decoration: none; }
+  .af-alarm-ticks { display: flex; flex-direction: column; gap: 2px; font-size: var(--cds-font-size-caption); }
+  .af-alarm:not(.af-alarm-on) .af-alarm-ticks { color: var(--color-fg-muted); }
+  .af-alarm:not(.af-alarm-on) .af-alarm-ticks .af-warn { color: var(--color-warn); }
+  .af-alarm.af-alarm-on .af-alarm-ticks .af-warn { font-weight: 600; color: inherit; }
+  @media (prefers-reduced-motion: no-preference) {
+    .af-alarm.af-alarm-on { animation: af-pulse 2.4s ease-in-out infinite; }
+    @keyframes af-pulse { 50% { opacity: .82; } }
+  }
   .af-tabs { display: flex; flex-wrap: wrap; gap: var(--cds-gap-xs); border-bottom: 1px solid var(--color-border-line); padding-bottom: var(--cds-pad-sm); }
   .af-tabs button { font: inherit; font-size: var(--cds-font-size-body); padding: var(--cds-pad-xs) var(--cds-pad-md); border-radius: var(--cds-radius); border: 1px solid var(--color-border-line); background: var(--color-panel); color: var(--color-fg); cursor: pointer; }
   .af-tabs button[aria-selected="true"] { border-color: var(--color-fg); font-weight: 600; }
@@ -68,6 +83,16 @@
     <h1 class="af-title" id="top">ai-factory</h1>
     <p class="af-lede">Waiting for you: <b data-draw="lede-waiting" data-source="summary" data-field="waiting">—</b> · Blocked: <b data-draw="lede-blocked" data-source="summary" data-field="blocked">—</b> · In staging: <b data-draw="lede-staging" data-source="summary" data-field="in_staging">—</b></p>
   </header>
+
+  <section class="af-alarm" id="alarm" aria-label="What needs you, all projects" aria-live="polite">
+    <p class="af-alarm-main">
+      <span data-alarm="waiting" hidden><b data-draw="alarm-waiting" data-source="totals" data-field="waiting" data-row="0">—</b> to validate</span>
+      <span data-alarm="blocked" hidden><b data-draw="alarm-blocked" data-source="totals" data-field="blocked" data-row="0">—</b> blocked</span>
+      <span class="af-alarm-calm" data-alarm="calm" hidden>Nothing needs you</span>
+    </p>
+    <div class="af-alarm-projects" data-draw="alarm-projects" data-source="summary projects"></div>
+    <div class="af-alarm-ticks" data-draw="alarm-ticks" data-source="projects"></div>
+  </section>
 
   <nav class="af-tabs" role="tablist" aria-label="Projects" data-draw="tabs" data-source="projects"></nav>
 
@@ -167,6 +192,13 @@
   ];
   const STAGE_TEXT = { list: 'Tickets in {stage}: {n}', none: 'No ticket at this step.', more: 'more' };
   const TIP_TEXT = { open: 'In progress', blocked: 'Blocked' };
+  const ALARM_TEXT = {
+    finished: '{project}: last tick finished {when} ({ago} min ago)',
+    silent: '{project}: no finished tick for {ago} min, is the loop running?',
+    never: '{project}: no finished tick yet',
+    stopped: '{project}: pilot stopped, {reason}',
+  };
+  const SILENT_AFTER_MINUTES = 120;
   const LOCALE = 'en';
   const OPEN = ['framing', 'planned', 'planned (auto)', 'coded', 'reviewed', 'tested', 'shipped', 'feedback', 'staging'];
   const PENDING = ['pending', 'changed'];
@@ -205,6 +237,16 @@
     },
   });
 
+  dash.calc('totals', {
+    inputs: ['summary'],
+    title: 'Totals, all projects',
+    description: 'What needs the user across every project.',
+    fn: (summary) => [{
+      waiting: summary.reduce((n, r) => n + r.waiting, 0),
+      blocked: summary.reduce((n, r) => n + r.blocked, 0),
+    }],
+  });
+
   window.afProject = () => {
     const p = dash.data('projects');
     const slugs = p.status === 'ok' ? p.data.map((r) => r.project) : [];
@@ -237,7 +279,7 @@
     dash.setLink(slug);
   };
   const hash = location.hash.slice(1);
-  if (hash && !['top', 'chain', 'figures', 'queue', 'blocked', 'prs', 'trend', 'tickets', 'health'].includes(hash)) {
+  if (hash && !['top', 'alarm', 'chain', 'figures', 'queue', 'blocked', 'prs', 'trend', 'tickets', 'health'].includes(hash)) {
     dash.setParams({ project: hash });
   }
 
@@ -254,6 +296,56 @@
       b.addEventListener('click', () => tabSelect(r.project));
       return b;
     }));
+  });
+
+  const total = (name, field) => dash.draw(name, (el) => {
+    const t = dash.data('totals');
+    el.textContent = t.status === 'ok' && t.data.length ? d3.format(',')(t.data[0][field]) : '—';
+  });
+  total('alarm-waiting', 'waiting');
+  total('alarm-blocked', 'blocked');
+
+  dash.draw('alarm-projects', (el) => {
+    const s = dash.data('summary');
+    const p = dash.data('projects');
+    if (s.status !== 'ok' || p.status !== 'ok') { el.replaceChildren(); return; }
+    el.replaceChildren(...s.data.filter((r) => r.waiting + r.blocked > 0).map((r) => {
+      const project = p.data.find((row) => row.project === r.project);
+      const label = `${project?.name || r.project}: ${r.waiting + r.blocked}`;
+      if (project?.queue_url) {
+        const a = document.createElement('a');
+        a.href = project.queue_url; a.target = '_blank'; a.rel = 'noopener'; a.textContent = label;
+        return a;
+      }
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.textContent = label;
+      b.addEventListener('click', () => tabSelect(r.project));
+      return b;
+    }));
+  });
+
+  const drawTicks = (el) => {
+    const p = dash.data('projects');
+    if (p.status !== 'ok') { el.replaceChildren(); return; }
+    const fill = (text, values) => Object.entries(values).reduce((t, [k, v]) => t.replace(`{${k}}`, v), text);
+    el.replaceChildren(...p.data.map((r) => {
+      const line = document.createElement('span');
+      const name = r.name || r.project;
+      const ago = r.last_tick_at ? Math.max(0, Math.round((Date.now() - new Date(r.last_tick_at)) / 60000)) : null;
+      const alert = Boolean(r.pilot_stopped) || ago === null || ago > SILENT_AFTER_MINUTES;
+      line.className = alert ? 'af-warn' : '';
+      if (r.pilot_stopped) line.textContent = fill(ALARM_TEXT.stopped, { project: name, reason: r.pilot_stopped });
+      else if (ago === null) line.textContent = fill(ALARM_TEXT.never, { project: name });
+      else if (ago > SILENT_AFTER_MINUTES) line.textContent = fill(ALARM_TEXT.silent, { project: name, ago });
+      else line.textContent = fill(ALARM_TEXT.finished, { project: name, when: window.afWhen(r.last_tick_at), ago });
+      return line;
+    }));
+  };
+  dash.draw('alarm-ticks', {
+    mount: (el) => setInterval(() => drawTicks(el), 60000),
+    update: (el) => drawTicks(el),
+    unmount: (el, timer) => clearInterval(timer),
   });
 
   const figure = (name, field, format) => dash.draw(name, (el) => {
@@ -348,6 +440,11 @@
     empty('queue', 'queue', (r) => PENDING.includes(r.status));
     empty('blocked', 'tickets', (r) => r.blocked === 'yes' && OPEN.includes(r.state));
     empty('prs', 'prs', () => true);
+    const t = dash.data('totals');
+    const totals = t.status === 'ok' && t.data.length ? t.data[0] : null;
+    const shown = { waiting: totals?.waiting > 0, blocked: totals?.blocked > 0, calm: totals?.waiting === 0 && totals?.blocked === 0 };
+    document.querySelectorAll('[data-alarm]').forEach((el) => { el.hidden = !shown[el.dataset.alarm]; });
+    document.querySelectorAll('#alarm').forEach((el) => { el.classList.toggle('af-alarm-on', Boolean(shown.waiting || shown.blocked)); });
     const s = dash.data('summary');
     const row = s.status === 'ok' ? s.data.find((r) => r.project === project) : null;
     document.querySelectorAll('[data-alert]').forEach((el) => {

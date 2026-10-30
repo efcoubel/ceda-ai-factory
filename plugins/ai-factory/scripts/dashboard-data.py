@@ -233,12 +233,16 @@ def build(out, show_changed):
         queue = queue_rows(project, root, profile)
         prs = [{"project": project, **pr} for pr in read_json(root / ".ai-factory" / "state" / "pilot" / "dashboard-prs.json", [])]
         health, doctor_at = health_rows(project, root, tickets)
+        pilot = read_json(root / ".ai-factory" / "state" / "pilot" / "dev.json", {})
         datasets["projects"].append({
             "project": project,
             "name": profile.get("project", {}).get("name", project),
             "team": profile.get("project", {}).get("team"),
             "plugin_version": profile.get("onboarding", {}).get("plugin_version"),
             "doctor_at": doctor_at,
+            "last_tick_at": pilot.get("last_tick_at"),
+            "pilot_stopped": pilot.get("stopped"),
+            "queue_url": profile.get("tools", {}).get("queue", {}).get("config", {}).get("url"),
             "updated_at": datetime.now().isoformat(timespec="minutes"),
         })
         datasets["tickets"] += tickets

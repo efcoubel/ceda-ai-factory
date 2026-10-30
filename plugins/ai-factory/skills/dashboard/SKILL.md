@@ -85,8 +85,8 @@ goes where.
   keeps it as `language`, set at creation from the current project's `onboarding.language` (else
   `project.working_language`); when registered projects use different languages, ask once which
   one the page uses. The template is in English: before writing it, translate every text a reader
-  sees — the HTML's text and `aria-label`s, and the constants `STAGES[].label`, `STAGE_TEXT` and
-  `TIP_TEXT` — and set `LOCALE` and the `data-lang` of its `<meta>` to the language code. Never
+  sees — the HTML's text and `aria-label`s, and the constants `STAGES[].label`, `STAGE_TEXT`,
+  `TIP_TEXT` and `ALARM_TEXT` (keeping its `{placeholders}`) — and set `LOCALE` and the `data-lang` of its `<meta>` to the language code. Never
   translate code, classes, `data-*` attributes, dataset ids or column names, and leave data values
   (ticket states, statuses) as they are: the page shows them as stored. A page whose `data-lang`
   differs from `language` is rewritten like an older one.

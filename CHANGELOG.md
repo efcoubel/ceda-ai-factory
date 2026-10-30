@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.3.4
+
+- Dashboard banner for a screen left open: across all projects, in large type, what waits for
+  validation and what is blocked, red until it is cleared, with a link to each validation page; one
+  line per project says when the last tick finished, or that the pilot stopped or went silent.
+- The dev tick records `last_tick_at` and always refreshes the page last, waiting for a refresh
+  still running.
+
 ## 0.3.3
 
 - Dashboard: a tick stopped by its cap, the circuit breaker or the doctor still refreshes the page;
