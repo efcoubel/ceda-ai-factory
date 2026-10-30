@@ -49,6 +49,10 @@ posted in chat.
 `core/priorities.md`: add one `human_task` proposing `/ai-factory:onboarding update priorities`
 (once per plugin version). The tick goes on with the profile's copy.
 
+`tools.queue.config.page_version` older than the `<meta name="ai-factory-validation">` of
+`templates/validation-page.html`: the same, proposing `/ai-factory:onboarding update page`, once per
+page version. The old page still shows the queue.
+
 ## 0c. Dashboard first
 
 If `~/.ai-factory/dashboard.json` exists, before touching any ticket, quiet hours included, run
@@ -91,8 +95,11 @@ Queue rows `pilot = dev` in `ok` or `changed`, and `rejected` ones without `hand
 A `rejected` row is written in the ticket's `state.md` and gets `handled_at` (a rejected `plan`
 takes the ticket out of the pilot). A row carried out becomes `done` with `handled_at`; a step that
 fails makes it `failed` with the error. An `ok` row whose `requires` is not all `done` is left as it
-is. An `ok` on a `plan` with a question marked "needs your answer": back to `pending`, asking for
-it (`core/chain.md`, "Open questions"). Dates come from the clock (`core/ticket-folder.md`).
+is. The `answers` of an `ok` on a `plan` go in `plan.md` as decisions before the step runs; an `ok`
+that leaves a question marked "needs your answer" unanswered goes back to `pending` with a `reply`
+(`core/chain.md`, "Open questions"). A row sent back to `pending` always gets its `reply`, and is
+rewritten for the reader (`core/validation-queue.md`). Dates come from the clock
+(`core/ticket-folder.md`).
 
 ## 2. Take stock
 
@@ -136,7 +143,8 @@ most, so the pilot's own context stays light. Its prompt stands alone:
 In <project root>, invoke with the Skill tool `ai-factory:<skill>` with the arguments
 "<KEY> pilot[ approved][ dry]". Ask no question: follow the pilot mode of the steps
 (<plugin root>/core/chain.md). Do not write to the validation queue: proposed actions go to
-.ai-factory/state/tickets/<KEY>/actions.json.
+.ai-factory/state/tickets/<KEY>/actions.json, written for the reader as
+<plugin root>/core/validation-queue.md says.
 Every date you write comes from `date '+%Y-%m-%d %H:%M'`, and journal lines follow
 <plugin root>/core/ticket-folder.md exactly.
 Answer in five lines at most: the state reached in state.md, the actions added to actions.json,
@@ -147,7 +155,9 @@ Without the `Agent` tool, run the ticket in the tick itself, one code ticket per
 
 After each ticket, add to the queue (queue adapter, `add`) the actions of its `actions.json` not
 yet there (same ticket, type and content), with `pilot: dev`, `status: pending`, then empty the
-file. A ticket that
+file. An action with no `why` where one is required, or a `summary` that names a branch or an action
+id, is rewritten first (`core/validation-queue.md`, "Written for the reader"): it is the last look
+before the user's. A ticket that
 failed the same step three times in a row is `blocked:` by the circuit breaker (`core/chain.md`).
 
 ## 5. Close the tick

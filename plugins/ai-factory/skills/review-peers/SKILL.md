@@ -15,7 +15,7 @@ Comments are published under the user's name. A wrong or vague one costs them mo
 one: publish only what you checked in the code. Beyond comments, this skill only approves and
 proposes the ticket's transition; it resolves no thread, changes no MR/PR, posts nothing in chat.
 
-Proposed actions: in `pilot` mode they go to `state/pilot/actions-review-peers.json`,
+Proposed actions, written for the reader (`core/validation-queue.md`): in `pilot` mode they go to `state/pilot/actions-review-peers.json`,
 which the dev tick adds to the queue; alone, to the queue directly (queue adapter, `add`), or
 asked in the conversation.
 

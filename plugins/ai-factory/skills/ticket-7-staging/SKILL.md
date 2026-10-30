@@ -37,8 +37,10 @@ From `repos[].staging` (one entry, or each entry of a list in order):
 | `<repo>` | `<branch>` | `<names or "solo review">` | `0` | `<branch> → <staging branch>` / `release to <target>` / `deploy to <target>`, or "conflict" |
 
 - manual / `chain`: **wait for approval**;
-- `pilot`: add a `merge_staging` action to `actions.json` with this table and the exact commands;
-  a step marked `unattended: false` becomes a `human_task` with those commands instead. Return.
+- `pilot`: add a `merge_staging` action to `actions.json` with this table and the exact commands
+  as `content`, `summary`, `why` and `effects` as `core/validation-queue.md`, "Written for the
+  reader", says, `effects` naming who will see it; a step marked `unattended: false` becomes a
+  `human_task` with those commands instead. Return.
   Called again with `pilot approved`, go to step 4.
 
 ## 4. Stage

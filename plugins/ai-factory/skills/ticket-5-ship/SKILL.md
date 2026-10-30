@@ -67,8 +67,10 @@ requires, a link) are part of that text and are shown. A summary of a text is no
 - manual / `chain`: **wait for approval.** It covers exactly this recap: nothing is sent that it did
   not show, word for word. A requested change is made, then the recap is shown again.
 - `pilot`: add a `ship` action to `actions.json` whose content is this recap and everything below
-  it, as is; return. Called again with `pilot approved`, go to step 4 without changing anything of
-  the approved content.
+  it, as is, with `summary`, `why` and `effects` as `core/validation-queue.md`, "Written for the
+  reader", says, and in `watch` the "to consider" findings that need a person and any conflict to
+  come; return. Called again with `pilot approved`, go to step 4 without changing anything of the
+  approved content.
 
 ## 4. Ship
 

@@ -83,7 +83,7 @@ claude --plugin-dir /path/to/ceda-ai-factory/plugins/ai-factory
 
 - 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page; new projects (0.1.2).
 - 0.2 — the ticket chain; the dashboard (0.2.3).
-- 0.3 — the dev pilot and the review skills for teams.
+- 0.3 — the dev pilot and the review skills for teams; a validation page written for its reader (0.3.5).
 - 0.4 — the support pilot.
 - 0.5 — earned autonomy, with its figures on the dashboard.
 
