@@ -25,7 +25,9 @@ State, in `.ai-factory/state/pilot/`: `dev.json` (counters and the circuit break
 
 ## 0. May the tick run
 
-Stop at the first that holds, with one line saying why (and nothing in the journal but that line):
+Stop at the first that holds, with one line saying why (and nothing in the journal but that line).
+A tick stopped by 2, 4 or 5 still runs the dashboard refresh of section 0c first: the page must not
+freeze because the pilot paused.
 
 1. No profile, or `pilots.dev.enabled` is not true.
 2. `dev.json` has `stopped` (the circuit breaker tripped): repeat its reason; only the user clears
@@ -51,15 +53,24 @@ posted in chat.
 
 If `~/.ai-factory/dashboard.json` exists, before touching any ticket, quiet hours included, run
 the **dashboard refresh** below. It runs again at the end of the tick, so the page shows both the
-user's latest decisions and the tick's work.
+user's latest decisions and the tick's work. If it does not exist, nothing is refreshed: say so in
+the report, with `/ai-factory:dashboard` as the fix.
 
 1. Write this project's `dashboard-queue.json` (`skills/dashboard/SKILL.md`, step 2) from the rows
    of the queue; the tick needs them anyway.
 2. `python3 <plugin root>/scripts/dashboard-data.py --out .ai-factory/state/pilot/dashboard-out --changed`.
 3. It prints nothing: stop, no agent, no cost. Otherwise, unless `~/.ai-factory/dashboard.lock` is
-   less than 15 minutes old, start `/ai-factory:dashboard pilot` with the printed datasets in a
-   **background** agent (`Agent` tool, `model: "haiku"`, `run_in_background: true`). Do not wait
-   for it; the report says if it failed.
+   less than 15 minutes old, start a **background** agent (`Agent` tool,
+   `subagent_type: "general-purpose"`, `model: "haiku"`, `run_in_background: true`). Do not wait for
+   it. Its prompt stands alone:
+
+   ```
+   In <project root>, invoke with the Skill tool `ai-factory:dashboard` with the arguments
+   "pilot <printed datasets>". Ask no question. If it fails, write the error to
+   .ai-factory/state/pilot/dashboard-error.txt, otherwise delete that file.
+   ```
+
+   `dashboard-error.txt` present at the start of a tick: repeat it in the report, once per error.
 
 ## 1. Carry out what the user decided
 

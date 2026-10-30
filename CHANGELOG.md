@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.3
+
+- Dashboard: a tick stopped by its cap, the circuit breaker or the doctor still refreshes the page;
+  the `/ai-factory:ticket` chain refreshes it when it stops, outside pilot mode; the background
+  agent gets a standalone prompt and leaves its error for the next report; a missing dashboard
+  address is reported instead of skipped silently.
+
 ## 0.3.2
 
 From nine real ticks on a solo Symfony site.

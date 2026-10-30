@@ -44,11 +44,12 @@ Say in one line where you resume from.
 3. Locally, free: remove the ticket's worktrees (`git worktree remove`, without `--force`), switch
    each repository back to its default branch, pull it, and delete the ticket's local branch if
    `git branch -d` accepts it (merged). Never `-D`.
-4. If `~/.ai-factory/dashboard.json` exists, suggest `/ai-factory:dashboard` to refresh it.
 
 ## 2. Run the steps
 
-After each step, read `state.md` again and go on without asking. Stop, saying why, when:
+After each step, read `state.md` again and go on without asking. Outside `pilot` mode, whenever
+the chain stops or a close-out ends, run the dashboard refresh of `skills/dev/SKILL.md`, section 0c,
+if `~/.ai-factory/dashboard.json` exists. Stop, saying why, when:
 
 - a step reached its checkpoint (manual or `chain`: it asked the user; `pilot`: it queued);
 - `state.md` has a new `blocked:` line;
