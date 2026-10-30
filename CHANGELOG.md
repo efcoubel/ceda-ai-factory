@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.6
+
+- Dashboard banner: much smaller type, it no longer takes over the page.
+
 ## 0.3.5
 
 From 76 real actions on three projects, and one approval given to a plan whose open question the
