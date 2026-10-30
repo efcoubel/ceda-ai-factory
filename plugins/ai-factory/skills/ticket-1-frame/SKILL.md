@@ -74,10 +74,12 @@ criterion: this is not the case.
   Answering the questions is **not** approval of the plan. Write the answers into `plan.md`, show
   what they changed in the plan, and wait for an explicit go on the plan and on the lines of point
   2. Nothing of point 2 is done before it;
-- `pilot`: add a `plan` action to `actions.json` (summary: the ticket and the main repository in
-  one line; content: the plan, the assignment, the transition, the questions; files: `plan.md`),
-  set `state.md` to `framing`, return. Called again with `pilot approved`, go to step 5; a
-  `changed` action's instruction is in `plan.md` under "Validation feedback": redo the plan with it.
+- `pilot`: add a `plan` action to `actions.json` (`summary`, `why`, `effects`, `watch` as
+  `core/validation-queue.md`, "Written for the reader", says: the decision, what the plan brings,
+  and the lines of "Watch out" that need a person; `questions` as `core/chain.md` says; content: the
+  plan, the assignment, the transition, the questions; files: `plan.md`), set `state.md` to
+  `framing`, return. Called again with `pilot approved`, go to step 5; a `changed` action's
+  instruction is in `plan.md` under "Validation feedback": redo the plan with it.
 
 ## 5. Create the branches
 

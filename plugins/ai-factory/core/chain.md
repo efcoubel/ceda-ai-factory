@@ -45,9 +45,24 @@ it is asked instead.
 
 Each open question of a plan carries a **proposed answer**: an `ok` on the plan accepts exactly
 those, and the step writes them in `plan.md` as decisions. Where no answer can be proposed, the
-question is marked **needs your answer** and the action's summary says so: an `ok` on that plan
-does not start the work, the row goes back to `pending` asking for the answer through `changed`. A
-pilot never answers a question in the user's place.
+question is marked **needs your answer**. A pilot never answers a question in the user's place.
+
+In pilot mode, the questions also go in the action's `questions`, the ones that need an answer
+first, then by what weighs most:
+
+| Field | Content |
+|---|---|
+| `id` | Stable within the plan: `q1`, `q2` |
+| `text` | The question, in one sentence, without the plan's context |
+| `why` | Optional: what depends on the answer |
+| `proposed` | The proposed answer, in one line; `null` when the user must answer |
+| `options` | Other answers the plan already holds with nothing else to redo, in one line each; may be empty |
+
+The page keeps the `ok` closed while a `proposed: null` question has no answer. An answer taken from
+`options` comes with the `ok`, in `answers`: the step writes it in `plan.md` as a decision and goes
+on. A free answer comes as `changed`, in `note` and `answers`: the step redoes the plan with it. An
+`ok` that leaves a `proposed: null` question unanswered does not start the work: the row goes back
+to `pending` with a `reply` saying so (`core/validation-queue.md`).
 
 ## Working in the repositories
 

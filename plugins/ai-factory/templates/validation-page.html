@@ -1,206 +1,537 @@
 <title>Pilot validation</title>
 <meta name="claude:viewport-fit-sides" content="cover">
+<meta name="ai-factory-validation" content="0.3.5" data-lang="en" data-project="">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
 <style>
-/* Layout: one working column, the summary first, one card per action grouped by state. */
+/* Layout: one reading column. The question comes first, the detail on request, tickets stay whole. */
 :root {
-  --bg: #f3f4f6; --surface: #ffffff; --ink: #1c2230; --muted: #5d6677; --line: #d9dde5;
+  --bg: #f1f3f7; --surface: #ffffff; --sunk: #f6f7fa; --ink: #1a2030; --muted: #566072; --line: #d8dde6;
   --accent: #2f4fb5; --accent-ink: #ffffff;
-  --wait: #9a5b00; --wait-bg: #fdf1dc; --ok: #1d6b45; --ok-bg: #e2f3ea;
-  --bad: #a3262c; --bad-bg: #fbe6e7; --edit: #5a3fa8; --edit-bg: #ede8fa; --info-bg: #e7ecfa;
+  --wait: #8a5100; --wait-bg: #fdf1dc; --ok: #1d6b45; --ok-bg: #e2f3ea;
+  --bad: #a3262c; --bad-bg: #fbe6e7; --edit: #5a3fa8; --edit-bg: #ede8fa;
   --sans: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
   --mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
 }
 @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
-  --bg: #12151c; --surface: #1b1f29; --ink: #e6e9f0; --muted: #9aa3b5; --line: #2e3443;
-  --accent: #7d97f0; --accent-ink: #10131a;
+  --bg: #12151c; --surface: #1b1f29; --sunk: #161a22; --ink: #e8ebf2; --muted: #a0a9ba; --line: #2e3443;
+  --accent: #8ba3f3; --accent-ink: #10131a;
   --wait: #f0b65a; --wait-bg: #3a2a10; --ok: #6fd0a0; --ok-bg: #12301f;
-  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; --info-bg: #1f2740; color-scheme: dark } }
+  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; color-scheme: dark } }
 :root[data-theme="dark"] {
-  --bg: #12151c; --surface: #1b1f29; --ink: #e6e9f0; --muted: #9aa3b5; --line: #2e3443;
-  --accent: #7d97f0; --accent-ink: #10131a;
+  --bg: #12151c; --surface: #1b1f29; --sunk: #161a22; --ink: #e8ebf2; --muted: #a0a9ba; --line: #2e3443;
+  --accent: #8ba3f3; --accent-ink: #10131a;
   --wait: #f0b65a; --wait-bg: #3a2a10; --ok: #6fd0a0; --ok-bg: #12301f;
-  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; --info-bg: #1f2740; color-scheme: dark }
-body { background: var(--bg); color: var(--ink); font: 15px/1.5 var(--sans); }
-.wrap { max-width: 900px; margin: 0 auto; padding-block: 24px 48px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 20px; }
-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 12px; }
-h1 { font-size: 22px; font-weight: 600; margin: 0; letter-spacing: -0.01em; }
-h2 { font-size: 13px; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
-.counts { display: flex; gap: 8px; flex-wrap: wrap; }
-.count { font-size: 13px; padding: 3px 10px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); font-variant-numeric: tabular-nums; }
-.count b { font-weight: 600; }
-.filters { display: flex; gap: 6px; flex-wrap: wrap; }
-.filters button { font: inherit; font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-.filters button[aria-pressed="true"] { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-section { display: flex; flex-direction: column; gap: 10px; }
-.list { display: flex; flex-direction: column; gap: 10px; }
-.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-.card.human { border-left: 4px solid var(--wait); border-radius: 0 10px 10px 0; }
-.top { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.key { font-family: var(--mono); font-weight: 500; color: var(--accent); }
-.chip { font-size: 12px; padding: 1px 8px; border-radius: 6px; background: var(--info-bg); color: var(--ink); }
-.st { font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 6px; }
+  --bad: #f08a8f; --bad-bg: #3a1618; --edit: #b9a5f5; --edit-bg: #2a2045; color-scheme: dark }
+body { background: var(--bg); color: var(--ink); font: 16px/1.55 var(--sans); }
+.wrap { max-width: 760px; margin: 0 auto; padding-block: 28px 64px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); display: flex; flex-direction: column; gap: 32px; }
+header { display: flex; flex-direction: column; gap: 6px; }
+h1 { font-size: 28px; line-height: 1.2; font-weight: 600; margin: 0; letter-spacing: -0.015em; text-wrap: balance; }
+.tally { margin: 0; color: var(--muted); font-variant-numeric: tabular-nums; }
+.tally b { color: var(--ink); font-weight: 600; }
+.filters { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.filters button { font: inherit; font-size: 14px; padding: 3px 12px; border-radius: 999px; border: 1px solid var(--line); background: transparent; color: var(--ink); cursor: pointer; }
+.filters button[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+section { display: flex; flex-direction: column; gap: 12px; min-width: 0; }
+h2 { font-size: 13px; font-weight: 600; margin: 0; text-transform: uppercase; letter-spacing: 0.07em; color: var(--muted); }
+.empty { border: 1px dashed var(--line); border-radius: 10px; padding: 18px 20px; color: var(--muted); }
+.ticket { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.ticket-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 10px; padding-inline: 2px; }
+.key { font-family: var(--mono); font-size: 14px; font-weight: 500; color: var(--accent); text-decoration: none; }
+a.key:hover { text-decoration: underline; }
+.ticket-title { font-weight: 600; min-width: 0; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 10px; padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+.kicker { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); }
+.kicker time { margin-left: auto; font-variant-numeric: tabular-nums; }
+.tag { font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 6px; background: var(--sunk); border: 1px solid var(--line); color: var(--ink); white-space: nowrap; }
+.tag.needs { background: var(--wait-bg); border-color: transparent; color: var(--wait); }
+.st { font-size: 12px; font-weight: 500; padding: 1px 8px; border-radius: 6px; white-space: nowrap; }
 .st-pending { background: var(--wait-bg); color: var(--wait); }
 .st-ok, .st-done { background: var(--ok-bg); color: var(--ok); }
 .st-rejected, .st-failed { background: var(--bad-bg); color: var(--bad); }
 .st-changed { background: var(--edit-bg); color: var(--edit); }
-.date { margin-left: auto; font-size: 12px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.summary { font-weight: 500; margin: 0; }
-pre { margin: 0; font: 13px/1.5 var(--mono); white-space: pre-wrap; word-break: break-word; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; max-height: 320px; overflow: auto; }
-.files { font: 12px var(--mono); color: var(--muted); display: flex; flex-wrap: wrap; gap: 4px 12px; }
-.note { font-size: 13px; color: var(--muted); }
-.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: flex-start; }
-.actions button { font: inherit; font-size: 14px; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
-.actions button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
-.actions button.danger { color: var(--bad); }
-.actions button:disabled { opacity: 0.5; cursor: wait; }
-button:focus-visible, textarea:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-textarea { font: 14px/1.4 var(--sans); width: 100%; min-height: 70px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--bg); color: var(--ink); box-sizing: border-box; }
+.ask { font-size: 19px; line-height: 1.35; font-weight: 600; margin: 0; text-wrap: pretty; letter-spacing: -0.005em; }
+.why { margin: 0; max-width: 66ch; }
+.block { display: flex; flex-direction: column; gap: 4px; }
+.block-label { font-size: 14px; font-weight: 600; }
+.block ul { margin: 0; padding-left: 20px; display: flex; flex-direction: column; gap: 3px; max-width: 66ch; }
+.block.watch { background: var(--wait-bg); border-radius: 8px; padding: 10px 14px; }
+.block.watch .block-label { color: var(--wait); }
+.feedback { background: var(--edit-bg); border-radius: 8px; padding: 10px 14px; display: flex; flex-direction: column; gap: 4px; }
+.feedback b { font-size: 14px; font-weight: 600; color: var(--edit); }
+.feedback p { margin: 0; }
+.waits { margin: 0; font-size: 14px; color: var(--muted); }
+fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.questions { display: flex; flex-direction: column; gap: 16px; }
+.q-text { font-weight: 600; padding: 0; display: flex; flex-wrap: wrap; align-items: baseline; gap: 2px 8px; }
+.q-why { margin: 0; font-size: 15px; color: var(--muted); max-width: 66ch; }
+.choice { display: flex; gap: 10px; align-items: flex-start; padding: 7px 10px; border: 1px solid var(--line); border-radius: 8px; cursor: pointer; background: var(--sunk); }
+.choice:has(input:checked) { border-color: var(--accent); background: transparent; }
+.choice input { margin: 4px 0 0; accent-color: var(--accent); flex: none; }
+.choice span { min-width: 0; }
+.choice small { color: var(--muted); font-size: 13px; }
+.actions { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+button.do { font: inherit; font-size: 15px; font-weight: 500; padding: 7px 16px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+button.do.small { font-size: 14px; padding: 3px 12px; }
+button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+button.danger { color: var(--bad); }
+button.do:disabled { opacity: 0.45; cursor: not-allowed; }
+button:focus-visible, textarea:focus-visible, a:focus-visible, summary:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.hint { flex-basis: 100%; margin: 0; font-size: 14px; color: var(--muted); }
+.hint.must { color: var(--wait); font-weight: 500; }
+textarea { font: 15px/1.45 var(--sans); width: 100%; min-height: 72px; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--line); background: var(--sunk); color: var(--ink); box-sizing: border-box; }
 .edit { display: flex; flex-direction: column; gap: 8px; width: 100%; }
-.empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 10px; padding: 20px; color: var(--muted); }
-.err { color: var(--bad); font-size: 13px; }
-details summary { cursor: pointer; color: var(--muted); font-size: 13px; }
+.err { color: var(--bad); font-size: 14px; margin: 0; }
+details > summary { cursor: pointer; color: var(--muted); font-size: 14px; }
+details[open] > summary { margin-bottom: 10px; }
+.md { display: flex; flex-direction: column; gap: 10px; font-size: 15px; line-height: 1.55; min-width: 0; overflow-wrap: anywhere; }
+.md > * { margin: 0; }
+.md h4, .md h5 { font-size: 15px; font-weight: 600; margin-top: 10px; }
+.md h4:first-child { margin-top: 0; }
+.md ul, .md ol { padding-left: 22px; display: flex; flex-direction: column; gap: 3px; }
+.md code { font: 13.5px var(--mono); background: var(--sunk); border: 1px solid var(--line); border-radius: 4px; padding: 0 3px; }
+.md blockquote { border-left: 2px solid var(--line); padding-left: 12px; color: var(--muted); }
+.md a { color: var(--accent); }
+.code { position: relative; }
+.code pre { margin: 0; font: 13.5px/1.5 var(--mono); background: var(--sunk); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.code button { position: absolute; top: 6px; right: 6px; font: 12px var(--sans); padding: 2px 8px; border-radius: 6px; border: 1px solid var(--line); background: var(--surface); color: var(--muted); cursor: pointer; }
+.scroll { overflow-x: auto; }
+.md table { border-collapse: collapse; font-size: 14px; }
+.md th, .md td { border: 1px solid var(--line); padding: 4px 8px; text-align: left; vertical-align: top; overflow-wrap: normal; }
+.md th { font-weight: 600; background: var(--sunk); }
+.files { margin: 0; font: 12.5px var(--mono); color: var(--muted); overflow-wrap: anywhere; }
+.rows { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: 10px; min-width: 0; }
+.row { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; align-items: center; padding: 9px 14px; border-top: 1px solid var(--line); min-width: 0; }
+.row:first-child { border-top: 0; }
+.row-text { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.row-title { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; min-width: 0; }
+.row-sub { font-size: 14px; color: var(--muted); overflow-wrap: anywhere; }
+.row-do { display: flex; align-items: center; gap: 8px; }
+.section-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; }
+.history { display: flex; flex-direction: column; }
+.history > details { padding: 8px 14px; border-top: 1px solid var(--line); min-width: 0; }
+.history > details:first-child { border-top: 0; }
+.history summary { display: flex; flex-wrap: wrap; gap: 2px 8px; align-items: baseline; color: var(--ink); font-size: 15px; list-style: none; }
+.history summary::-webkit-details-marker { display: none; }
+.history summary time { margin-left: auto; font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.history .body { display: flex; flex-direction: column; gap: 8px; padding-bottom: 6px; }
+.more > summary { font-size: 15px; }
+@media (prefers-reduced-motion: no-preference) { button.do { transition: opacity .12s; } }
 </style>
 
 <div class="wrap">
   <header>
-    <h1>Pilot validation</h1>
-    <div class="counts" id="counts"><span class="count">Loading…</span></div>
+    <h1 id="title"></h1>
+    <p class="tally" id="tally"></p>
+    <div class="filters" id="filters" role="group" hidden></div>
   </header>
-  <div class="filters" role="group" aria-label="Pilot">
-    <button type="button" data-f="all" aria-pressed="true">All</button>
-    <button type="button" data-f="support" aria-pressed="false">Support</button>
-    <button type="button" data-f="dev" aria-pressed="false">Dev</button>
-  </div>
-  <section aria-labelledby="h-pending">
-    <h2 id="h-pending">To approve</h2>
-    <div id="pending" class="empty">The support and dev pilots put here every action that waits for you: an answer to a requester, a status change, a plan, a merge request. OK runs it on the next tick; Change sends it back to the pilot with your instruction.</div>
+  <section id="s-decide" aria-labelledby="h-decide">
+    <h2 id="h-decide"></h2>
+    <div id="decide" class="empty"></div>
   </section>
-  <section aria-labelledby="h-tasks">
-    <h2 id="h-tasks">Tasks for you</h2>
-    <div id="tasks" class="empty">Scripts to run yourself and other manual steps will appear here. Tick Done once it is done: the pilot then sends what follows.</div>
+  <section id="s-routine" aria-labelledby="h-routine" hidden>
+    <div class="section-head"><h2 id="h-routine"></h2><span id="routine-all"></span></div>
+    <p class="hint" id="routine-hint"></p>
+    <div id="routine" class="rows"></div>
   </section>
-  <section aria-labelledby="h-history">
-    <h2 id="h-history">Handled in the last 7 days</h2>
-    <div id="history" class="empty">Nothing yet.</div>
+  <section id="s-moving" aria-labelledby="h-moving" hidden>
+    <h2 id="h-moving"></h2>
+    <div id="moving" class="rows"></div>
+  </section>
+  <section id="s-history" aria-labelledby="h-history" hidden>
+    <details class="more" id="history-box">
+      <summary id="h-history"></summary>
+      <div id="history" class="rows history"></div>
+    </details>
   </section>
 </div>
 
 <script>
-const TYPES = { comment: "Answer", transition: "Status change", assign: "Assignment", create_ticket: "New ticket", human_task: "Task for you", plan: "Plan", ship: "Push and MR/PR", review_answers: "Review answers", merge_staging: "Merge to staging", cleanup: "Clean-up", review_comments: "Review comments", nudge: "Nudge reviewers" };
-const STATUSES = { pending: "Pending", ok: "Approved", rejected: "Rejected", changed: "To redo", done: "Done", failed: "Failed" };
+const TEXT = {
+  en: {
+    locale: "en", colon: ": ", title: "Validation", decide: "To decide", routine: "Routine steps", moving: "Approved, on their way to the pilot", loading: "Loading…",
+    routineHint: "Small steps with no consequence beyond the ticket's status.", approveAll: n => `Approve all (${n})`,
+    empty: "Nothing to decide. Whatever needs you will appear here after the next pilot tick.",
+    tally: { decide: "To decide", answers: "Answers needed", routine: "Routine", moving: "On their way", failed: "Failed" },
+    history: (n, f) => `Handled in the last 7 days: ${n}` + (f ? `, failed: ${f}` : ""),
+    types: { comment: "Answer", transition: "Status change", assign: "Assignment", create_ticket: "New ticket", human_task: "For you to do", plan: "Plan", ship: "Delivery", review_answers: "Review answers", merge_staging: "Send to testing", cleanup: "Clean-up", review_comments: "Review comments", nudge: "Nudge reviewers" },
+    statuses: { pending: "Waiting", ok: "Approved", rejected: "Rejected", changed: "To redo", done: "Done", failed: "Failed" },
+    needsYou: "Needs your answer", ifOk: { plan: "If you approve", human_task: "Once it is done" }, ifOkDefault: "If you approve", watch: "Worth your attention",
+    reply: "The pilot's reply", yourNote: "Your instruction", note: "Note", waits: l => `Waits for: ${l}`, waitsTick: "Next pilot tick", waitsNote: "Instruction sent, the pilot redoes it",
+    questions: "Questions", proposed: "proposed", other: "Another answer", otherPlaceholder: "Your answer", yourAnswer: "Your answer for the pilot",
+    detail: "Full detail", detailRead: m => `Full detail, about ${m} min`, files: "Files",
+    approve: "Approve", approveAnswers: "Approve with my answers", sendAnswers: "Send my answers to the pilot", change: "Ask for a change", reject: "Reject", rejectConfirm: "Confirm the rejection", cancel: "Cancel",
+    done: "It's done", stuck: "It doesn't work", drop: "Drop it", send: "Send to the pilot", undo: "Undo",
+    answerFirst: l => `Answer question ${l} first. The pilot cannot start without it.`, sendHint: "A free answer goes back to the pilot, who redoes the work and asks you again.",
+    notePlaceholder: "What to change", noteMissing: "Write what to change first.", rejectPlaceholder: "Why, optional",
+    rejectPlan: "The ticket leaves the pilot until you restart it.", rejectHint: "The pilot will not propose this again.",
+    copy: "Copy", copied: "Copied", saveFailed: c => `Saving failed (${c}). Try again in a moment.`, unavailable: "The queue cannot be read in this view.", readFailed: c => `Reading stopped (${c}). Reload the page.`,
+    filters: { all: "All", support: "Support", dev: "Dev" },
+  },
+  fr: {
+    locale: "fr", colon: " : ", title: "Validation", decide: "À décider", routine: "Gestes de routine", moving: "Validé, en route vers le pilote", loading: "Chargement…",
+    routineHint: "De petits gestes sans conséquence au-delà du statut du ticket.", approveAll: n => `Tout valider (${n})`,
+    empty: "Rien à décider. Ce qui a besoin de toi apparaîtra ici après le prochain passage du pilote.",
+    tally: { decide: "À décider", answers: "Réponses attendues", routine: "Routine", moving: "En route", failed: "En échec" },
+    history: (n, f) => `Traité ces 7 derniers jours : ${n}` + (f ? `, en échec : ${f}` : ""),
+    types: { comment: "Réponse", transition: "Changement de statut", assign: "Assignation", create_ticket: "Nouveau ticket", human_task: "À faire toi-même", plan: "Plan", ship: "Livraison", review_answers: "Réponses de revue", merge_staging: "Envoi en test", cleanup: "Nettoyage", review_comments: "Commentaires de revue", nudge: "Relance des relecteurs" },
+    statuses: { pending: "En attente", ok: "Validé", rejected: "Refusé", changed: "À refaire", done: "Fait", failed: "En échec" },
+    needsYou: "Attend ta réponse", ifOk: { plan: "Si tu valides", human_task: "Une fois fait" }, ifOkDefault: "Si tu valides", watch: "À regarder",
+    reply: "Réponse du pilote", yourNote: "Ta consigne", note: "Note", waits: l => `Attend : ${l}`, waitsTick: "Prochain passage du pilote", waitsNote: "Consigne envoyée, le pilote refait",
+    questions: "Questions", proposed: "proposé", other: "Autre réponse", otherPlaceholder: "Ta réponse", yourAnswer: "Ta réponse pour le pilote",
+    detail: "Tout le détail", detailRead: m => `Tout le détail, environ ${m} min`, files: "Fichiers",
+    approve: "Valider", approveAnswers: "Valider avec mes réponses", sendAnswers: "Envoyer mes réponses au pilote", change: "Demander un changement", reject: "Refuser", rejectConfirm: "Confirmer le refus", cancel: "Annuler",
+    done: "C'est fait", stuck: "Ça ne marche pas", drop: "Abandonner", send: "Envoyer au pilote", undo: "Annuler",
+    answerFirst: l => `Réponds d'abord à la question ${l} : le pilote ne peut pas démarrer sans.`, sendHint: "Une réponse libre repart au pilote, qui refait le travail et te le présente à nouveau.",
+    notePlaceholder: "Ce qu'il faut changer", noteMissing: "Écris d'abord ce qu'il faut changer.", rejectPlaceholder: "Pourquoi, facultatif",
+    rejectPlan: "Le ticket sort du pilote jusqu'à ce que tu le relances.", rejectHint: "Le pilote ne le proposera plus.",
+    copy: "Copier", copied: "Copié", saveFailed: c => `L'enregistrement a échoué (${c}). Réessaie dans un instant.`, unavailable: "La file ne peut pas être lue dans cette vue.", readFailed: c => `Lecture interrompue (${c}). Recharge la page.`,
+    filters: { all: "Tous", support: "Support", dev: "Dev" },
+  },
+};
+const META = document.querySelector('meta[name="ai-factory-validation"]');
+const T = TEXT[META.dataset.lang] || TEXT.en;
+const ORDER = ["human_task", "plan", "ship", "review_answers", "merge_staging", "comment", "create_ticket", "review_comments", "nudge", "assign", "transition", "cleanup"];
+const ROUTINE = new Set(["assign", "transition", "cleanup"]);
+const ROUTINE_MAX = 400;
+
 let rows = [], filter = "all", col = null;
-const busy = new Set(), editing = new Set();
+const busy = new Set(), mode = new Map(), drafts = new Map(), opened = new Map(), cache = new Map(), errors = new Map();
 try { filter = localStorage.getItem("filter") || "all"; } catch (e) {}
 
 function el(tag, attrs = {}, ...kids) {
   const n = document.createElement(tag);
   for (const [k, v] of Object.entries(attrs)) {
-    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v);
+    if (v === false || v == null) continue;
+    if (k === "class") n.className = v; else if (k.startsWith("on")) n.addEventListener(k.slice(2), v); else n.setAttribute(k, v === true ? "" : v);
   }
   for (const k of kids) if (k != null) n.append(k);
   return n;
 }
-const when = iso => { if (!iso) return ""; const d = new Date(iso); return isNaN(d) ? "" : d.toLocaleString(undefined, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+const sync = (box, nodes) => {
+  const now = [...box.children];
+  if (now.length !== nodes.length || now.some((n, i) => n !== nodes[i])) box.replaceChildren(...nodes);
+};
+const parse = iso => new Date(String(iso || "").replace(" ", "T"));
+const when = iso => { const d = parse(iso); return isNaN(d) ? "" : d.toLocaleString(T.locale, { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" }); };
+function ago(iso) {
+  const d = parse(iso); if (isNaN(d)) return "";
+  const rel = new Intl.RelativeTimeFormat(T.locale, { numeric: "auto" }), m = Math.round((d - Date.now()) / 60000);
+  return Math.abs(m) < 60 ? rel.format(m, "minute") : Math.abs(m) < 1440 ? rel.format(Math.round(m / 60), "hour") : rel.format(Math.round(m / 1440), "day");
+}
+const time = iso => el("time", { datetime: iso || "", title: when(iso) }, ago(iso));
+const body = r => r.content == null ? "" : typeof r.content === "string" ? r.content : JSON.stringify(r.content, null, 2);
+const typeName = r => T.types[r.type] || r.type || "";
+const questions = r => Array.isArray(r.questions) ? r.questions : [];
+const list = v => Array.isArray(v) ? v.filter(Boolean) : [];
+const isRoutine = r => ROUTINE.has(r.type) && !questions(r).length && !list(r.watch).length && !r.reply && !r.note && body(r).length < ROUTINE_MAX;
+const key = r => r.ticket_url && /^https?:\/\//.test(r.ticket_url)
+  ? el("a", { class: "key", href: r.ticket_url, target: "_blank", rel: "noopener" }, r.ticket || "—")
+  : el("span", { class: "key" }, r.ticket || "—");
+function waits(r) {
+  const open = list(r.requires).map(id => rows.find(x => x.id === id)).filter(x => x && x.status !== "done");
+  return open.map(x => `${x.ticket} · ${typeName(x)}`).join(", ");
+}
 
-async function decide(id, status, note) {
+function inline(text) {
+  const out = [], re = /`([^`]+)`|\*\*([^*]+)\*\*|\*([^*\s][^*]*)\*|\[([^\]]+)\]\((https?:[^)\s]+)\)|(https?:\/\/[^\s)>»]+)/g;
+  let last = 0, m;
+  while ((m = re.exec(text))) {
+    out.push(text.slice(last, m.index));
+    if (m[1] != null) out.push(el("code", {}, m[1]));
+    else if (m[2] != null) out.push(el("strong", {}, ...inline(m[2])));
+    else if (m[3] != null) out.push(el("em", {}, ...inline(m[3])));
+    else out.push(el("a", { href: m[5] || m[6], target: "_blank", rel: "noopener" }, m[4] || m[6]));
+    last = re.lastIndex;
+  }
+  out.push(text.slice(last));
+  return out;
+}
+function codeBlock(text) {
+  const b = el("button", { type: "button", onclick: async () => {
+    try { await navigator.clipboard.writeText(text); b.textContent = T.copied; setTimeout(() => { b.textContent = T.copy; }, 1500); } catch (e) {}
+  } }, T.copy);
+  return el("div", { class: "code" }, b, el("pre", {}, text));
+}
+const cells = l => l.trim().replace(/^\||\|$/g, "").split("|").map(c => c.trim());
+function markdown(text) {
+  const box = el("div", { class: "md" }), lines = text.replace(/\r/g, "").split("\n");
+  for (let i = 0; i < lines.length;) {
+    const l = lines[i];
+    if (!l.trim()) { i++; continue; }
+    const fence = l.match(/^\s*```/);
+    if (fence) {
+      const code = []; i++;
+      while (i < lines.length && !/^\s*```/.test(lines[i])) code.push(lines[i++]);
+      i++; box.append(codeBlock(code.join("\n"))); continue;
+    }
+    const head = l.match(/^(#{1,6})\s+(.*)/);
+    if (head) { box.append(el(head[1].length <= 2 ? "h4" : "h5", {}, ...inline(head[2]))); i++; continue; }
+    if (/^\s*\|/.test(l) && /^\s*\|?[\s:|-]+\|?\s*$/.test(lines[i + 1] || "")) {
+      const headers = cells(l); i += 2; const trs = [];
+      while (i < lines.length && /^\s*\|/.test(lines[i])) trs.push(el("tr", {}, ...cells(lines[i++]).map(c => el("td", {}, ...inline(c)))));
+      box.append(el("div", { class: "scroll" }, el("table", {}, el("thead", {}, el("tr", {}, ...headers.map(c => el("th", {}, ...inline(c))))), el("tbody", {}, ...trs))));
+      continue;
+    }
+    const item = l.match(/^(\s*)([-*]|\d+\.)\s+(.*)/);
+    if (item) {
+      const ordered = /\d/.test(item[2]), items = [];
+      while (i < lines.length) {
+        const m = lines[i].match(/^\s*([-*]|\d+\.)\s+(.*)/);
+        if (m && /\d/.test(m[1]) === ordered) { items.push(m[2]); i++; }
+        else if (m || /^\s+\S/.test(lines[i])) { items[items.length - 1] += (m ? " · " + m[2] : " " + lines[i].trim()); i++; }
+        else if (!lines[i].trim() && /^\s*([-*]|\d+\.)\s/.test(lines[i + 1] || "")) i++;
+        else break;
+      }
+      box.append(el(ordered ? "ol" : "ul", {}, ...items.map(t => el("li", {}, ...inline(t)))));
+      continue;
+    }
+    if (/^\s{2,}\S/.test(l)) {
+      const code = [];
+      while (i < lines.length && /^\s{2,}\S/.test(lines[i])) code.push(lines[i++].replace(/^\s{2}/, ""));
+      box.append(codeBlock(code.join("\n"))); continue;
+    }
+    if (/^>\s?/.test(l)) {
+      const quote = [];
+      while (i < lines.length && /^>\s?/.test(lines[i])) quote.push(lines[i++].replace(/^>\s?/, ""));
+      box.append(el("blockquote", {}, ...inline(quote.join(" ")))); continue;
+    }
+    const para = [];
+    while (i < lines.length && lines[i].trim() && !/^(#{1,6}\s|\s*```|\s*\||\s*[-*]\s|\s*\d+\.\s|\s{2,}\S|>)/.test(lines[i])) para.push(lines[i++].trim());
+    if (!para.length) para.push(lines[i++].trim());
+    box.append(el("p", {}, ...inline(para.join(" "))));
+  }
+  return box;
+}
+
+async function decide(id, status, note, answers) {
   if (busy.has(id)) return;
-  busy.add(id); render();
+  busy.add(id); errors.delete(id); render();
   try {
     const fields = { status, decided_at: new Date().toISOString() };
     if (note !== undefined) fields.note = note;
+    if (answers !== undefined) fields.answers = answers;
     await col.doc(id).update(fields);
-    editing.delete(id);
-  } catch (e) {
-    const r = rows.find(x => x.id === id); if (r) r._err = "Saving failed (" + (e.code || "error") + "). Try again in a moment.";
-  } finally { busy.delete(id); render(); }
+    mode.delete(id); drafts.delete(id);
+  } catch (e) { errors.set(id, T.saveFailed(e.code || "error")); }
+  finally { busy.delete(id); render(); }
+}
+
+function draft(r) {
+  if (!drafts.has(r.id)) drafts.set(r.id, { answers: Object.fromEntries(questions(r).map(q => [q.id, { choice: q.proposed ? "proposed" : null, text: "" }])), note: "" });
+  return drafts.get(r.id);
+}
+function answerState(r) {
+  const d = draft(r), missing = [], answers = [];
+  let free = false, picked = false;
+  questions(r).forEach((q, i) => {
+    const a = d.answers[q.id] || {};
+    if (!a.choice || (a.choice === "other" && !a.text.trim())) { missing.push(i + 1); return; }
+    if (a.choice === "proposed") return;
+    if (a.choice === "other") { free = true; answers.push({ id: q.id, question: q.text, answer: a.text.trim() }); }
+    else { picked = true; answers.push({ id: q.id, question: q.text, answer: list(q.options)[a.choice - 1] }); }
+  });
+  return { missing, answers, free, picked };
+}
+
+function questionBlock(r, q, n, refresh) {
+  const d = draft(r).answers[q.id], name = "q-" + r.id + "-" + q.id;
+  const other = el("textarea", { id: name + "-text", "aria-label": T.otherPlaceholder, placeholder: T.otherPlaceholder, hidden: d.choice !== "other" });
+  other.value = d.text;
+  other.addEventListener("input", () => { d.text = other.value; refresh(); });
+  const pick = choice => () => { d.choice = choice; other.hidden = choice !== "other"; if (choice === "other") other.focus(); refresh(); };
+  const choice = (value, label, tag) => el("label", { class: "choice" },
+    el("input", { type: "radio", name, checked: d.choice === value, onchange: pick(value) }),
+    el("span", {}, label, tag ? el("small", {}, " · " + tag) : null));
+  return el("fieldset", {},
+    el("legend", { class: "q-text" }, `${n}. ${q.text}`, q.proposed ? null : el("span", { class: "tag needs" }, T.needsYou)),
+    q.why ? el("p", { class: "q-why" }, q.why) : null,
+    q.proposed ? choice("proposed", q.proposed, T.proposed) : null,
+    ...list(q.options).map((o, i) => choice(i + 1, o)),
+    choice("other", T.other), other);
+}
+
+function decisionZone(r, zone) {
+  const human = r.type === "human_task", id = r.id, m = mode.get(id), locked = busy.has(id);
+  const buttons = [];
+  if (m) {
+    const reject = m === "reject";
+    const ta = el("textarea", { id: "note-" + id, "aria-label": T.yourAnswer, placeholder: reject ? T.rejectPlaceholder : T.notePlaceholder });
+    ta.value = draft(r).note;
+    ta.addEventListener("input", () => { draft(r).note = ta.value; err.textContent = ""; });
+    const err = el("p", { class: "err", role: "alert" });
+    const hint = reject ? el("p", { class: "hint" }, r.type === "plan" ? T.rejectPlan : T.rejectHint) : null;
+    const go = el("button", { type: "button", class: "do " + (reject ? "danger" : "primary"), disabled: locked, onclick: () => {
+      const v = ta.value.trim();
+      if (reject) { decide(id, "rejected", v || undefined); return; }
+      if (!v) { err.textContent = T.noteMissing; ta.focus(); return; }
+      decide(id, "changed", v);
+    } }, reject ? T.rejectConfirm : T.send);
+    zone.replaceChildren(el("div", { class: "edit" }, ta, hint, err,
+      el("div", { class: "actions" }, go, el("button", { type: "button", class: "do", onclick: () => { mode.delete(id); render(); } }, T.cancel))));
+    setTimeout(() => { if (document.activeElement === document.body) ta.focus(); });
+    return;
+  }
+  const { missing, answers, free, picked } = answerState(r);
+  const open = next => () => { mode.set(id, next); render(); };
+  if (human) buttons.push(
+    el("button", { type: "button", class: "do primary", disabled: locked, onclick: () => decide(id, "done") }, T.done),
+    el("button", { type: "button", class: "do", disabled: locked, onclick: open("edit") }, T.stuck),
+    el("button", { type: "button", class: "do danger", disabled: locked, onclick: open("reject") }, T.drop));
+  else {
+    const note = answers.map(a => `${a.question} → ${a.answer}`).join("\n");
+    const label = free ? T.sendAnswers : picked ? T.approveAnswers : T.approve;
+    const go = () => free ? decide(id, "changed", note, answers) : decide(id, "ok", undefined, answers.length ? answers : undefined);
+    buttons.push(
+      el("button", { type: "button", class: "do primary", disabled: locked || missing.length > 0, onclick: go }, label),
+      el("button", { type: "button", class: "do", disabled: locked, onclick: open("edit") }, T.change),
+      el("button", { type: "button", class: "do danger", disabled: locked, onclick: open("reject") }, T.reject));
+  }
+  const hint = missing.length ? el("p", { class: "hint must" }, T.answerFirst(missing.join(", "))) : free ? el("p", { class: "hint" }, T.sendHint) : null;
+  zone.replaceChildren(...(hint ? [hint] : []), ...buttons);
+}
+
+function detail(r, startOpen) {
+  const text = body(r), files = list(r.files);
+  if (!text && !files.length) return null;
+  const minutes = Math.round(text.length / 1200);
+  const d = el("details", { open: opened.has(r.id) ? opened.get(r.id) : startOpen },
+    el("summary", {}, minutes >= 2 ? T.detailRead(minutes) : T.detail),
+    text ? markdown(text) : null,
+    files.length ? el("p", { class: "files" }, `${T.files}${T.colon}${files.join(" · ")}`) : null);
+  d.addEventListener("toggle", () => opened.set(r.id, d.open));
+  return d;
+}
+
+function feedback(r) {
+  if (r.reply) return el("div", { class: "feedback" }, el("b", {}, T.reply), el("p", {}, r.reply));
+  if (r.note) return el("div", { class: "feedback" }, el("b", {}, r.rewritten_at ? T.yourNote : T.note), el("p", {}, r.note));
+  return null;
+}
+function block(label, items, cls) {
+  return items.length ? el("div", { class: "block " + (cls || "") }, el("span", { class: "block-label" }, label), el("ul", {}, ...items.map(i => el("li", {}, ...inline(i))))) : null;
 }
 
 function card(r) {
-  const human = r.type === "human_task";
-  const top = el("div", { class: "top" },
-    el("span", { class: "key" }, r.ticket || "—"),
-    el("span", { class: "chip" }, r.pilot || ""),
-    el("span", { class: "chip" }, TYPES[r.type] || r.type || "Action"),
-    el("span", { class: "st st-" + r.status }, STATUSES[r.status] || r.status),
-    el("span", { class: "date" }, when(r.handled_at || r.decided_at || r.created_at)));
-  const c = el("article", { class: "card" + (human ? " human" : "") }, top, el("p", { class: "summary" }, r.summary || ""));
-  if (r.content) {
-    const pre = el("pre", {}, typeof r.content === "string" ? r.content : JSON.stringify(r.content, null, 2));
-    c.append(r.status === "pending" ? pre : el("details", {}, el("summary", {}, "Content"), pre));
-  }
-  if (Array.isArray(r.files) && r.files.length) c.append(el("div", { class: "files" }, ...r.files.map(f => el("span", {}, f))));
-  if (r.note && r.status !== "pending") c.append(el("div", { class: "note" }, (r.status === "failed" ? "Error: " : "Instruction: ") + r.note));
-  if (r._err) c.append(el("div", { class: "err", role: "alert" }, r._err));
-  if (r.status === "pending") {
-    const zone = el("div", { class: "actions" });
-    if (editing.has(r.id)) {
-      const ta = el("textarea", { id: "note-" + r.id, "aria-label": "Instruction for the pilot", placeholder: "What to change: tone, content, status, scope…" });
-      const err = el("div", { class: "err" });
-      ta.addEventListener("input", () => { err.textContent = ""; });
-      zone.append(el("div", { class: "edit" }, ta, err, el("div", { class: "actions" },
-        el("button", { type: "button", class: "primary", onclick: () => { const v = ta.value.trim(); if (!v) { err.textContent = "Write the instruction before sending."; ta.focus(); return; } decide(r.id, "changed", v); } }, "Send back to the pilot"),
-        el("button", { type: "button", onclick: () => { editing.delete(r.id); render(); } }, "Cancel"))));
-    } else if (human) {
-      zone.append(
-        el("button", { type: "button", class: "primary", onclick: () => decide(r.id, "done") }, "Done"),
-        el("button", { type: "button", onclick: () => { editing.add(r.id); render(); } }, "Change"),
-        el("button", { type: "button", class: "danger", onclick: () => decide(r.id, "rejected") }, "Drop"));
-    } else {
-      zone.append(
-        el("button", { type: "button", class: "primary", onclick: () => decide(r.id, "ok") }, "OK"),
-        el("button", { type: "button", onclick: () => { editing.add(r.id); render(); } }, "Change"),
-        el("button", { type: "button", class: "danger", onclick: () => decide(r.id, "rejected") }, "Reject"));
-    }
-    if (busy.has(r.id)) zone.querySelectorAll("button").forEach(b => b.disabled = true);
-    c.append(zone);
-  }
+  const human = r.type === "human_task", qs = questions(r), briefed = r.why || list(r.effects).length || list(r.watch).length || qs.length;
+  const needs = qs.some(q => !q.proposed), wait = waits(r);
+  const zone = el("div", { class: "actions" });
+  const refresh = () => decisionZone(r, zone);
+  const c = el("article", { class: "card" },
+    el("div", { class: "kicker" }, el("span", { class: "tag" }, typeName(r)), needs ? el("span", { class: "tag needs" }, T.needsYou) : null, time(r.rewritten_at || r.created_at)),
+    feedback(r),
+    el("h3", { class: "ask" }, r.summary || typeName(r)),
+    r.why ? el("p", { class: "why" }, ...inline(r.why)) : null,
+    wait ? el("p", { class: "waits" }, T.waits(wait)) : null,
+    block(T.ifOk[r.type] || T.ifOkDefault, list(r.effects)),
+    block(T.watch, list(r.watch), "watch"),
+    qs.length ? el("div", { class: "questions" }, ...qs.map((q, i) => questionBlock(r, q, i + 1, refresh))) : null,
+    detail(r, human || !briefed),
+    errors.has(r.id) ? el("p", { class: "err", role: "alert" }, errors.get(r.id)) : null,
+    zone);
+  refresh();
   return c;
 }
+function cached(id, sig, make) {
+  const hit = cache.get(id);
+  if (hit && hit.sig === sig) return hit.node;
+  const node = make();
+  cache.set(id, { sig, node });
+  return node;
+}
+const sigOf = r => JSON.stringify([r, mode.get(r.id), busy.has(r.id), errors.get(r.id), waits(r)]);
 
-function fill(id, list, empty) {
-  const box = document.getElementById(id);
-  box.replaceChildren();
-  if (!list.length) { box.className = "empty"; box.textContent = empty; return; }
-  box.className = "list";
-  list.forEach(r => box.append(card(r)));
+function ticketBlock(ticket, group) {
+  const first = group.find(r => r.ticket_title) || group[0];
+  const head = cached("head-" + ticket, JSON.stringify([first.ticket_url, first.ticket_title]), () =>
+    el("div", { class: "ticket-head" }, key(first), first.ticket_title ? el("span", { class: "ticket-title" }, first.ticket_title) : null));
+  const box = cached("ticket-" + ticket, "", () => el("div", { class: "ticket" }));
+  sync(box, [head, ...group.map(r => cached(r.id, sigOf(r), () => card(r)))]);
+  return box;
+}
+const rank = g => g.some(r => questions(r).some(q => !q.proposed)) ? 0 : g.some(r => r.type === "human_task") ? 1 : 2;
+const position = r => { const i = ORDER.indexOf(r.type); return i < 0 ? ORDER.length : i; };
+
+function routineRow(r) {
+  const summary = r.summary || typeName(r), sub = body(r).replace(/\s+/g, " ").trim();
+  return el("div", { class: "row" },
+    el("div", { class: "row-text" }, el("div", { class: "row-title" }, key(r), el("span", {}, summary)), sub ? el("span", { class: "row-sub" }, sub) : null,
+      errors.has(r.id) ? el("p", { class: "err", role: "alert" }, errors.get(r.id)) : null),
+    el("div", { class: "row-do" }, el("button", { type: "button", class: "do small", disabled: busy.has(r.id), onclick: () => decide(r.id, "ok") }, T.approve)));
+}
+function movingRow(r) {
+  const wait = waits(r), sub = r.status === "changed" ? T.waitsNote : wait ? T.waits(wait) : T.waitsTick;
+  return el("div", { class: "row" },
+    el("div", { class: "row-text" }, el("div", { class: "row-title" }, key(r), el("span", {}, r.summary || typeName(r))), el("span", { class: "row-sub" }, sub),
+      r.note ? el("span", { class: "row-sub" }, r.note) : null, errors.has(r.id) ? el("p", { class: "err", role: "alert" }, errors.get(r.id)) : null),
+    el("div", { class: "row-do" }, el("span", { class: "st st-" + r.status }, T.statuses[r.status] || r.status),
+      r.status === "ok" ? el("button", { type: "button", class: "do small", disabled: busy.has(r.id), onclick: () => decide(r.id, "pending") }, T.undo) : null));
+}
+function historyRow(r) {
+  const d = el("details", {},
+    el("summary", {}, key(r), el("span", { class: "st st-" + r.status }, T.statuses[r.status] || r.status), el("span", {}, r.summary || typeName(r)), time(r.handled_at || r.decided_at || r.created_at)),
+    el("div", { class: "body" }, r.note ? el("p", { class: "err" }, r.note) : null, body(r) ? markdown(body(r)) : null));
+  return d;
 }
 
 function render() {
+  const pilots = new Set(rows.map(r => r.pilot).filter(Boolean));
+  const fbox = document.getElementById("filters");
+  fbox.hidden = pilots.size < 2;
+  if (pilots.size < 2) filter = "all";
+  fbox.querySelectorAll("button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === filter)));
+
   const visible = rows.filter(r => filter === "all" || r.pilot === filter);
-  const pending = visible.filter(r => r.status === "pending" && r.type !== "human_task");
-  const tasks = visible.filter(r => r.status === "pending" && r.type === "human_task");
-  const history = visible.filter(r => !["pending", "ok", "changed"].includes(r.status));
-  fill("pending", pending, "Nothing to approve. The next pilot tick will put here what waits for you.");
-  fill("tasks", tasks, "No task waiting.");
-  fill("history", history, "Nothing yet.");
-  const n = s => visible.filter(r => r.status === s).length;
-  document.getElementById("counts").replaceChildren(
-    el("span", { class: "count" }, el("b", {}, String(pending.length)), " to approve"),
-    el("span", { class: "count" }, el("b", {}, String(tasks.length)), " tasks"),
-    el("span", { class: "count" }, el("b", {}, String(n("ok") + n("changed"))), " on their way to the pilot"),
-    el("span", { class: "count" }, el("b", {}, String(n("failed"))), " failed"));
-  document.querySelectorAll(".filters button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.f === filter)));
+  const pending = visible.filter(r => r.status === "pending");
+  const routine = pending.filter(isRoutine), decisions = pending.filter(r => !isRoutine(r));
+  const moving = visible.filter(r => r.status === "ok" || r.status === "changed");
+  const history = visible.filter(r => ["done", "rejected", "failed"].includes(r.status));
+  const failed = history.filter(r => r.status === "failed").length;
+  const answers = decisions.filter(r => questions(r).some(q => !q.proposed)).length;
+
+  const groups = new Map();
+  decisions.forEach(r => { const k = r.ticket || "—"; groups.set(k, [...(groups.get(k) || []), r]); });
+  const ordered = [...groups.entries()].map(([k, g]) => [k, g.sort((a, b) => position(a) - position(b))])
+    .sort((a, b) => rank(a[1]) - rank(b[1]) || String(a[1][0].created_at).localeCompare(String(b[1][0].created_at)));
+  const box = document.getElementById("decide");
+  if (ordered.length) { box.className = "ticket-list"; box.style.cssText = "display:flex;flex-direction:column;gap:24px;min-width:0"; sync(box, ordered.map(([k, g]) => ticketBlock(k, g))); }
+  else { box.className = "empty"; box.style.cssText = ""; box.replaceChildren(T.empty); }
+
+  document.getElementById("s-routine").hidden = !routine.length;
+  sync(document.getElementById("routine"), routine.map(r => cached("r-" + r.id, sigOf(r), () => routineRow(r))));
+  document.getElementById("routine-all").replaceChildren(el("button", { type: "button", class: "do small", onclick: async () => { for (const r of routine) await decide(r.id, "ok"); } }, T.approveAll(routine.length)));
+  document.getElementById("s-moving").hidden = !moving.length;
+  sync(document.getElementById("moving"), moving.map(r => cached("m-" + r.id, sigOf(r), () => movingRow(r))));
+  document.getElementById("s-history").hidden = !history.length;
+  document.getElementById("h-history").textContent = T.history(history.length, failed);
+  sync(document.getElementById("history"), history.map(r => cached("h-" + r.id, sigOf(r), () => historyRow(r))));
+
+  const part = (label, n) => n ? [el("span", {}, label + T.colon, el("b", {}, String(n)))] : [];
+  const parts = [...part(T.tally.decide, decisions.length), ...part(T.tally.answers, answers), ...part(T.tally.routine, routine.length), ...part(T.tally.moving, moving.length), ...part(T.tally.failed, failed)];
+  document.getElementById("tally").replaceChildren(...parts.flatMap((p, i) => i ? [" · ", p] : [p]));
 }
 
-document.querySelectorAll(".filters button").forEach(b => b.addEventListener("click", () => {
-  filter = b.dataset.f; try { localStorage.setItem("filter", filter); } catch (e) {} render();
-}));
-render();
+document.title = META.dataset.project ? `${META.dataset.project} · ${T.title}` : T.title;
+document.getElementById("title").textContent = META.dataset.project ? `${META.dataset.project} · ${T.title}` : T.title;
+document.getElementById("h-decide").textContent = T.decide;
+document.getElementById("h-routine").textContent = T.routine;
+document.getElementById("routine-hint").textContent = T.routineHint;
+document.getElementById("h-moving").textContent = T.moving;
+document.getElementById("decide").textContent = T.loading;
+document.getElementById("filters").append(...["all", "support", "dev"].map(f => el("button", { type: "button", "data-f": f, onclick: () => {
+  filter = f; try { localStorage.setItem("filter", f); } catch (e) {} render();
+} }, T.filters[f])));
 
 (async () => {
   const db = await claude.use("db");
-  if (!db) { document.getElementById("counts").replaceChildren(el("span", { class: "count" }, "Queue unavailable in this view")); return; }
+  if (!db) { document.getElementById("tally").textContent = T.unavailable; return; }
   col = db.collection("actions");
   let open = [], handled = [];
   const merge = () => {
-    const errors = Object.fromEntries(rows.filter(r => r._err).map(r => [r.id, r._err]));
-    rows = [...open, ...handled].map(r => ({ ...r, _err: errors[r.id] }))
-      .sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
+    rows = [...open, ...handled].sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
     render();
   };
-  const failed = e => { document.getElementById("counts").replaceChildren(el("span", { class: "count err" }, "Reading stopped (" + e.code + "). Reload the page.")); };
+  const failed = e => { document.getElementById("tally").textContent = T.readFailed(e.code); };
   col.where("status", "in", ["pending", "ok", "changed"]).onSnapshot(snap => {
     open = snap.docs.map(d => ({ id: d.id, ...d.data() })); merge();
   }, failed);

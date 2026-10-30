@@ -14,7 +14,7 @@ nobody to nudge. Say so and stop.
 
 This skill reads, proposes transitions and sends nudges. No comment, no thread resolved, no push.
 
-Proposed actions: in `pilot` mode they go to `state/pilot/actions-follow-reviews.json`,
+Proposed actions, written for the reader (`core/validation-queue.md`): in `pilot` mode they go to `state/pilot/actions-follow-reviews.json`,
 which the dev tick adds to the queue; alone, to the queue directly (queue adapter, `add`), or
 asked in the conversation.
 

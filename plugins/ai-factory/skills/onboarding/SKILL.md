@@ -35,10 +35,11 @@ neither a resumed onboarding nor a later `update` asks again.
 
 - From the current directory, look for `.ai-factory/profile.json` upwards (`core/architecture.md`).
   - **Found, complete**: say what it covers and offer to update one section (`update repos`,
-    `update tools`, `update environments`, `update workflow`, `update autonomy`, `update priorities`)
-    or to start over. `update priorities` adds to the profile's `priorities.md` the lines of
-    `core/priorities.md` it lacks, keeps the user's edits, shows the difference before writing, and
-    sets `onboarding.plugin_version`.
+    `update tools`, `update environments`, `update workflow`, `update autonomy`, `update priorities`,
+    `update page`) or to start over. `update priorities` adds to the profile's `priorities.md` the
+    lines of `core/priorities.md` it lacks, keeps the user's edits, shows the difference before
+    writing, and sets `onboarding.plugin_version`. `update page` publishes the current validation
+    page over the existing one (step 7): the rows stay, they live in the page's database.
   - **Found, with `"onboarding": {"done": false, …}`**: resume at the recorded phase; with
     `"path": "new-project"`, hand over to `/ai-factory:new-project`, which resumes itself.
   - **Not found**: the project root is the current directory, unless it is inside a git repository
@@ -187,10 +188,15 @@ short "ai-factory" section in a root `CLAUDE.md` that points to `.ai-factory/`).
 
 ## 7. Create the validation queue
 
-- `artifact` adapter: publish `<plugin root>/templates/validation-page.html` as a new private
-  artifact titled "<project name> validation", with `capabilities: {db: {rules: [{path: "", read:
-  "owner", write: "owner"}]}, user: {}}`; save its URL in `tools.queue.config.url`. Run the check of
-  `adapters/queue/artifact.md`.
+- `artifact` adapter: copy `<plugin root>/templates/validation-page.html`, and in the copy set the
+  `<title>` to "<project name> validation" and, on its `<meta name="ai-factory-validation">`,
+  `data-project` to the project's name and `data-lang` to `project.working_language`. The page
+  carries its texts in `en` and `fr`; for another language, add a block to `TEXT` first. Publish
+  the copy as a new private artifact with `capabilities: {db: {rules: [{path: "", read: "owner",
+  write: "owner"}]}, user: {}}`; save its URL in `tools.queue.config.url` and the `content` of the
+  meta in `tools.queue.config.page_version`. Run the check of `adapters/queue/artifact.md`.
+  For `update page`: the same copy, read the artifact, publish to its `url` without `capabilities`,
+  update `page_version`, run the check.
 - `file` adapter: create `state/pilot/queue.md` with its header.
 
 ## 8. Check and hand over

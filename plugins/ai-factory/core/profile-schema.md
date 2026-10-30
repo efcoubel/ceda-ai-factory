@@ -23,7 +23,7 @@
     "chat": { "adapter": "none", "config": {} },
     "database": { "adapter": "firestore", "config": {} },
     "logs": { "adapter": "none", "config": {} },
-    "queue": { "adapter": "artifact", "config": { "url": null } }
+    "queue": { "adapter": "artifact", "config": { "url": null, "page_version": null } }
   },
   "repos": [
     {

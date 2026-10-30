@@ -1,5 +1,29 @@
 # Changelog
 
+## 0.3.5
+
+From 76 real actions on three projects, and one approval given to a plan whose open question the
+user never saw.
+
+- Validation page rewritten: one reading column grouped by ticket, the question first, the detail on
+  request and rendered instead of shown as raw text in a small scrolling box. The page speaks the
+  working language, in English or French.
+- Actions gain a layer written for the reader, apart from what the pilot runs: `summary` becomes the
+  question asked, plus `why`, `effects`, `watch`, `ticket_title` and `ticket_url`. The rules are in
+  `core/validation-queue.md`, "Written for the reader".
+- Questions are answered on the card, one by one: `questions` carries the proposed answer and the
+  options. Approval stays closed while a question needs an answer; an option goes with the approval,
+  a free answer goes back to the pilot.
+- A row that comes back shows the pilot's `reply` first. Before, a refused approval was stored in a
+  note the page hid on pending rows.
+- Approved rows stay visible with what they wait for, and an approval can be taken back. Before,
+  they disappeared from the page until they were carried out.
+- Status changes, assignments and clean-ups are grouped as routine steps with one button; a refusal
+  asks for confirmation and takes a reason.
+- A card being read or answered is no longer rebuilt when the queue changes elsewhere.
+- `/ai-factory:onboarding update page` publishes the new page over an old one; the dev pilot and the
+  doctor say when it is due (`tools.queue.config.page_version`).
+
 ## 0.3.4
 
 - Dashboard banner for a screen left open: across all projects, in large type, what waits for

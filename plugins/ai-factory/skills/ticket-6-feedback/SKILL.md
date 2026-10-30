@@ -54,7 +54,8 @@ the reviewer must be able to answer before the thread closes.
 
 - manual / `chain`: **wait for approval**;
 - `pilot`: add a `review_answers` action to `actions.json` with the table, every answer and the
-  push; return. Called again with `pilot approved`, carry it out below.
+  push as `content`, `summary`, `why` and `effects` as `core/validation-queue.md`, "Written for the
+  reader", says; return. Called again with `pilot approved`, carry it out below.
 
 After approval: push each branch, answer each thread (forge adapter, `reply`), resolve the ones
 marked "yes" (`resolve`) and check they are resolved. Set `state.md` to `feedback`. If the MRs/PRs

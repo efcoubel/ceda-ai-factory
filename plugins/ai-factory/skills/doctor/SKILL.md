@@ -34,7 +34,8 @@ Run them in parallel where independent. For each tool in `profile.json` → `too
 | 11 | Expiry | a token whose expiry is known expires within 30 days; a server certificate (TLS) used by a data or log access is expired or misnamed |
 
 Warnings, not failures: a category set to `none`, an adapter still marked `draft`, a pending queue
-action older than 7 days.
+action older than 7 days, a `tools.queue.config.page_version` older than the template's (fix:
+`/ai-factory:onboarding update page`).
 
 ## Report
 
