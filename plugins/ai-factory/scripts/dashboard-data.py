@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Builds the factory dashboard's datasets from every registered ai-factory project.
 
-Reads only local files: each project's profile, ticket folders, doctor report and pending learnings,
-plus the live snapshots the dashboard skill writes beforehand (development queue, validation queue,
+Reads only local files: each project's profile, ticket folders, doctor report, pending learnings and
+queue archive, plus the live snapshots the dashboard skill writes beforehand (development queue, validation queue,
 open MRs/PRs).
 Writes one JSON array per dataset in --out and records today's snapshot in the history.
 
@@ -29,8 +29,23 @@ STEP_NAME = re.compile(r"^(?:ticket-\d-)?([\w-]+)")
 TITLE_SUFFIX = re.compile(r"\s*[·—–-]\s*plan\s*$", re.IGNORECASE)
 REVIEW_ROUND = re.compile(r"^#+\s*Round\s+\d+", re.IGNORECASE | re.MULTILINE)
 PENDING_STATES = {"pending", "changed"}
-DECIDED_STATES = {"ok", "rejected", "changed", "done", "failed"}
 OPEN_STATES = {"framing", "planned", "planned (auto)", "coded", "reviewed", "tested", "shipped", "feedback", "staging"}
+OVERRIDE_ROW = re.compile(r"^\|\s*`?(\w+)`?\s*\|\s*(Free|Delegated|Queue|Human|Never)\s*\|", re.IGNORECASE)
+EARNED_AFTER = 20
+# Action type -> (level in core/autonomy.md, loosenable).
+ACTION_LEVELS = {
+    "plan": ("Queue", False),
+    "ship": ("Queue", True),
+    "review_answers": ("Queue", True),
+    "merge_staging": ("Queue", True),
+    "comment": ("Queue", True),
+    "transition": ("Queue", True),
+    "assign": ("Queue", True),
+    "cleanup": ("Queue", True),
+    "create_ticket": ("Queue", True),
+    "review_comments": ("Delegated", False),
+    "nudge": ("Delegated", False),
+}
 
 
 def read_json(path, default):
@@ -122,7 +137,28 @@ def ticket_row(project, folder):
     }
 
 
-def queue_rows(project, root, profile):
+def read_moment(text):
+    """Reads the date formats of the queue; None when there is none."""
+    if not text or text == "None":
+        return None
+    try:
+        return datetime.fromisoformat(re.sub(r"([+-]\d{2})(\d{2})$", r"\1:\2", str(text).replace("Z", "+00:00"))).astimezone()
+    except ValueError:
+        return None
+
+
+def approval(row):
+    """'yes' for the user's approval as proposed, 'no' for anything else, None when the user decided nothing."""
+    if row.get("type") == "human_task":
+        return None
+    if row.get("rewritten_at") or row.get("answers") or row.get("status") in ("rejected", "changed"):
+        return "no"
+    if not read_moment(row.get("decided_at")):
+        return None
+    return {"ok": "yes", "done": "yes", "failed": "no"}.get(row.get("status"))
+
+
+def raw_queue(root, profile):
     if profile.get("tools", {}).get("queue", {}).get("adapter") == "file":
         rows, current = [], None
         queue = root / ".ai-factory" / "state" / "pilot" / "queue.md"
@@ -135,8 +171,58 @@ def queue_rows(project, root, profile):
                 current[match.group(1)] = match.group(2).strip()
     else:
         rows = read_json(root / ".ai-factory" / "state" / "pilot" / "dashboard-queue.json", [])
+    return rows
+
+
+def queue_rows(project, rows):
     fields = ("id", "ticket", "pilot", "type", "status", "summary", "created_at", "decided_at")
-    return [{"project": project, **{field: row.get(field) for field in fields}} for row in rows]
+    return [{"project": project, **{field: row.get(field) for field in fields}, "approved": approval(row)} for row in rows]
+
+
+def archived_rows(root):
+    rows = []
+    for path in sorted((root / ".ai-factory" / "state" / "pilot" / "archive").glob("*.jsonl")):
+        for line in path.read_text(encoding="utf-8").splitlines():
+            try:
+                rows.append(json.loads(line))
+            except ValueError:
+                continue
+    return rows
+
+
+def level_overrides(root):
+    path = root / ".ai-factory" / "autonomy.md"
+    lines = path.read_text(encoding="utf-8").splitlines() if path.is_file() else []
+    return {match.group(1): match.group(2).capitalize() for match in map(OVERRIDE_ROW.match, lines) if match}
+
+
+def autonomy_rows(project, root, live):
+    """One row per action type the user decided: its level, its approvals, the current series."""
+    rows = {row.get("id"): row for row in archived_rows(root) + live}
+    decided = [row for row in rows.values() if approval(row) and read_moment(row.get("decided_at") or row.get("rewritten_at") or row.get("created_at"))]
+    decided.sort(key=lambda row: read_moment(row.get("decided_at") or row.get("rewritten_at") or row.get("created_at")))
+    overrides = level_overrides(root)
+    result = []
+    for kind, (level, loosenable) in ACTION_LEVELS.items():
+        answers = [approval(row) for row in decided if row.get("type") == kind]
+        if not answers:
+            continue
+        current = overrides.get(kind, level)
+        if not loosenable and current == "Delegated" and level == "Queue":
+            current = level
+        streak = next((i for i, answer in enumerate(reversed(answers)) if answer != "yes"), len(answers))
+        result.append({
+            "project": project,
+            "type": kind,
+            "level": current,
+            "eligible": "yes" if loosenable and current == "Queue" else "no",
+            "decided": len(answers),
+            "approved": answers.count("yes"),
+            "streak": streak,
+            "threshold": EARNED_AFTER,
+            "due": "yes" if loosenable and current == "Queue" and streak >= EARNED_AFTER else "no",
+        })
+    return result
 
 
 def health_rows(project, root, tickets):
@@ -179,7 +265,7 @@ def snapshot(project, tickets, queue, prs, backlog):
     open_tickets = [t for t in tickets if t["state"] in OPEN_STATES]
     leads = [t["lead_hours"] for t in tickets if t["lead_hours"] is not None]
     rounds = [t["review_rounds"] for t in tickets if t["review_rounds"]]
-    decided = [q for q in queue if q["status"] in DECIDED_STATES and q["type"] != "human_task"]
+    decided = [q for q in queue if q["approved"]]
     return {
         "project": project,
         "day": date.today().isoformat(),
@@ -190,7 +276,7 @@ def snapshot(project, tickets, queue, prs, backlog):
         "median_lead_hours": statistics.median(leads) if leads else None,
         "mean_review_rounds": round(statistics.mean(rounds), 2) if rounds else None,
         "pending_actions": sum(1 for q in queue if q["status"] in PENDING_STATES),
-        "approved_unchanged": sum(1 for q in decided if q["status"] in ("ok", "done")),
+        "approved_unchanged": sum(1 for q in decided if q["approved"] == "yes"),
         "decided": len(decided),
         "open_prs": len(prs),
     }
@@ -220,7 +306,7 @@ def changed_datasets(hashes):
 
 
 def build(out, show_changed):
-    datasets = {name: [] for name in ("projects", "tickets", "backlog", "queue", "prs", "health", "history")}
+    datasets = {name: [] for name in ("projects", "tickets", "backlog", "queue", "prs", "health", "history", "autonomy")}
     for entry in read_json(REGISTRY, {"projects": []})["projects"]:
         root, project = Path(entry["root"]), entry["slug"]
         profile = read_json(root / ".ai-factory" / "profile.json", None)
@@ -230,7 +316,8 @@ def build(out, show_changed):
         folders = sorted((root / ".ai-factory" / "state" / "tickets").glob("*/state.md"))
         tickets = [row for row in (ticket_row(project, f.parent) for f in folders) if row]
         backlog = backlog_rows(project, root, tickets)
-        queue = queue_rows(project, root, profile)
+        raw = raw_queue(root, profile)
+        queue = queue_rows(project, raw)
         prs = [{"project": project, **pr} for pr in read_json(root / ".ai-factory" / "state" / "pilot" / "dashboard-prs.json", [])]
         health, doctor_at = health_rows(project, root, tickets)
         pilot = read_json(root / ".ai-factory" / "state" / "pilot" / "dev.json", {})
@@ -248,6 +335,7 @@ def build(out, show_changed):
         datasets["tickets"] += tickets
         datasets["backlog"] += backlog
         datasets["queue"] += queue
+        datasets["autonomy"] += autonomy_rows(project, root, raw)
         datasets["prs"] += prs
         datasets["health"] += health
         datasets["history"] += record_history(project, snapshot(project, tickets, queue, prs, backlog))
