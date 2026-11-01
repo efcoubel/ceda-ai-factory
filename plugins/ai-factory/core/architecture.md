@@ -67,7 +67,6 @@ Every ticketing tool has its own status names; `workflow.md` maps them to these:
 | `dashboard` | One page, one tab per project of this machine: what waits for the user, the flow of tickets, MRs/PRs, lead time, health, a daily trend | v0.2.3 |
 | `new-project` | Start a project from an empty folder: framing, stack, repositories, ticketing, backlog, profile | v0.1.2 |
 | `ticket` and `ticket-1-frame` … `ticket-7-staging` | The development chain for one ticket (`core/chain.md`) | v0.2 |
-| `support` and `support-*` | The support pilot (N1): triage, answer, export, fix data, import, escalate | planned |
 | `dev` | The development pilot: one tick of the chain in priority order, made for `/loop` | v0.3 |
 | `review-peers`, `follow-reviews` | Review teammates' MRs/PRs; follow and nudge one's own | v0.3, team profiles only |
 

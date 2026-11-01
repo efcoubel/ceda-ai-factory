@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.9
+
+- The support pilot leaves the roadmap and the descriptions: it is no longer planned. Earned autonomy
+  becomes 0.4.
+
 ## 0.3.8
 
 - Adapters: GitHub and GitHub Issues move from `draft` to `tested` after three real projects,
