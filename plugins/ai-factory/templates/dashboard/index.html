@@ -1,5 +1,5 @@
 <meta name="dash-one-writer">
-<meta name="ai-factory-dashboard" content="0.3.6" data-lang="en">
+<meta name="ai-factory-dashboard" content="0.4.0" data-lang="en">
 <style>
   .af { display: flex; flex-direction: column; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
   .af-head { display: flex; flex-direction: column; gap: var(--cds-gap-xs); }
@@ -138,6 +138,18 @@
     </div>
   </section>
 
+  <section class="af-card" id="autonomy" aria-label="Earned autonomy">
+    <h2>Earned autonomy</h2>
+    <p class="af-note">Your decisions per type of action. A series of approvals without changes lets the pilot propose to stop asking; a refusal, a change or a failure starts it again.</p>
+    <div class="af-scroll">
+      <table class="af-table" data-source="autonomy" data-row-key="project,type">
+        <thead><tr><th data-field="type">Action</th><th data-field="level">Level</th><th class="af-num" data-field="streak">Series</th><th class="af-num" data-field="approved">Approved unchanged</th><th data-field="due">Next</th></tr></thead>
+        <tbody data-draw="autonomy-rows"></tbody>
+      </table>
+    </div>
+    <p class="af-empty" data-empty="autonomy" hidden>No decision yet.</p>
+  </section>
+
   <section class="af-grid" aria-label="Reviews and trends">
     <div class="af-card" id="prs">
       <h2>Open MRs/PRs</h2>
@@ -198,6 +210,7 @@
     never: '{project}: no finished tick yet',
     stopped: '{project}: pilot stopped, {reason}',
   };
+  const AUTONOMY_TEXT = { due: 'Proposal due', building: 'Building a series', closed: 'Stays with you' };
   const SILENT_AFTER_MINUTES = 120;
   const LOCALE = 'en';
   const OPEN = ['framing', 'planned', 'planned (auto)', 'coded', 'reviewed', 'tested', 'shipped', 'feedback', 'staging'];
@@ -219,7 +232,7 @@
         const t = tickets.filter((r) => r.project === project);
         const q = queue.filter((r) => r.project === project && r.type !== 'human_task');
         const reviewed = t.filter((r) => Number(r.review_rounds) > 0);
-        const decided = q.filter((r) => ['ok', 'done', 'rejected', 'changed', 'failed'].includes(r.status));
+        const decided = q.filter((r) => r.approved);
         const open = t.filter((r) => ['framing', 'planned', 'planned (auto)', 'coded', 'reviewed', 'tested', 'shipped', 'feedback', 'staging'].includes(r.state));
         return {
           project,
@@ -230,7 +243,7 @@
           done: t.filter((r) => r.state === 'done').length,
           median_lead_hours: median(t.map((r) => r.lead_hours).filter((h) => h !== null && h !== undefined).map(Number)),
           first_pass_rate: reviewed.length ? reviewed.filter((r) => Number(r.review_rounds) === 1).length / reviewed.length : null,
-          approved_unchanged_rate: decided.length ? decided.filter((r) => ['ok', 'done'].includes(r.status)).length / decided.length : null,
+          approved_unchanged_rate: decided.length ? decided.filter((r) => r.approved === 'yes').length / decided.length : null,
           open_prs: prs.filter((r) => r.project === project).length,
         };
       });
@@ -279,7 +292,7 @@
     dash.setLink(slug);
   };
   const hash = location.hash.slice(1);
-  if (hash && !['top', 'alarm', 'chain', 'figures', 'queue', 'blocked', 'prs', 'trend', 'tickets', 'health'].includes(hash)) {
+  if (hash && !['top', 'alarm', 'chain', 'figures', 'queue', 'blocked', 'autonomy', 'prs', 'trend', 'tickets', 'health'].includes(hash)) {
     dash.setParams({ project: hash });
   }
 
@@ -394,6 +407,17 @@
     (a, b) => String(b.last_at).localeCompare(String(a.last_at)),
     (tr, r) => { window.afCell(tr, r.key); window.afCell(tr, r.state); window.afCell(tr, r.blocked_reason, 'af-bad'); },
     (r) => window.afKey(r.project, r.key));
+  table('autonomy-rows', 'autonomy',
+    () => true,
+    (a, b) => Number(b.streak) - Number(a.streak),
+    (tr, r) => {
+      window.afCell(tr, r.type);
+      window.afCell(tr, r.level);
+      window.afCell(tr, r.eligible === 'yes' ? `${r.streak}/${r.threshold}` : d3.format(',')(Number(r.streak)), 'af-num');
+      window.afCell(tr, `${r.approved}/${r.decided}`, 'af-num');
+      window.afCell(tr, r.due === 'yes' ? AUTONOMY_TEXT.due : r.eligible === 'yes' ? AUTONOMY_TEXT.building : AUTONOMY_TEXT.closed, r.due === 'yes' ? 'af-ok' : '');
+    },
+    (r) => window.afKey(r.project, r.type));
   table('pr-rows', 'prs',
     () => true,
     (a, b) => Number(b.age_days) - Number(a.age_days),
@@ -439,6 +463,7 @@
     };
     empty('queue', 'queue', (r) => PENDING.includes(r.status));
     empty('blocked', 'tickets', (r) => r.blocked === 'yes' && OPEN.includes(r.state));
+    empty('autonomy', 'autonomy', () => true);
     empty('prs', 'prs', () => true);
     const t = dash.data('totals');
     const totals = t.status === 'ok' && t.data.length ? t.data[0] : null;

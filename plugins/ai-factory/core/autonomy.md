@@ -97,9 +97,29 @@ Any doubt on one criterion makes the plan a normal one, queued for approval.
 
 ## Earned autonomy
 
-The queue archive records, per action type, how often the user approved without changes. After
-**20 consecutive approvals without modification** of one action type, the pilot proposes (once, in
-its report) to move that type one level up. Only the user changes the profile's `autonomy.md`.
+The queue and its archive record, per action type and per project, how often the user approved
+without changes. After **20 consecutive approvals without modification** of one action type, the
+pilot proposes once, in a `human_task` and its report, to move that type from Queue to Delegated.
+Only the user changes the profile's `autonomy.md`.
+
+- **Counted**: the rows the user decided. Rows the pilot marked `done` on its own (`decided_at`
+  empty), plans it approved itself and `human_task`s count neither way.
+- **Ends a series**: a row refused, changed, rewritten for any reason, answered otherwise than
+  proposed, or failed when run.
+- **Eligible**: the types at Queue whose row of the matrix is loosenable: `ship`, `review_answers`,
+  `merge_staging`, `comment`, `transition`, `assign`, `cleanup` and `create_ticket`. A `plan` is not.
+
+The profile's `autonomy.md` holds one table:
+
+```markdown
+| Action type | Level |
+|---|---|
+| `transition` | Delegated |
+```
+
+A delegated type is added to the queue at `ok` by the pilot, with no `decided_at`, and runs on the
+next tick; until then the user can take it back on the validation page. In `dry` mode it stays
+`pending`. Removing the row sets the type back to Queue.
 
 ## The validation queue
 

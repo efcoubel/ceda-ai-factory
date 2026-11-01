@@ -71,6 +71,8 @@ carry `summary`, `why` and `effects`. An `assign`, `transition` or `cleanup` car
 - `rejected` is written at once in the ticket's `state.md` as `rejected: <type> — <note>` and gets
   `handled_at`. That line, not the queue, prevents proposing the same action again. A rejected
   `plan` takes the whole ticket out of the pilot until the user restarts it.
+- A type the profile's `autonomy.md` delegates is added at `ok`, with no `decided_at`: no card to
+  answer, and it does not count toward earned autonomy (`core/autonomy.md`).
 - A `human_task` becomes `done` when the user ticks it; the pilot then prepares what follows.
 - No two pending actions for the same ticket, type and content.
 

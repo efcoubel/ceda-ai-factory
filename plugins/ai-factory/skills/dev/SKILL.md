@@ -156,7 +156,8 @@ Without the `Agent` tool, run the ticket in the tick itself, one code ticket per
 
 After each ticket, add to the queue (queue adapter, `add`) the actions of its `actions.json` not
 yet there (same ticket, type and content), with `pilot: dev`, `status: pending`, then empty the
-file. An action with no `why` where one is required, or a `summary` that names a branch or an action
+file. A type delegated in the profile's `autonomy.md`, on a row marked loosenable, is added at `ok`
+instead, unless the tick runs `dry` (`core/autonomy.md`, "Earned autonomy"). An action with no `why` where one is required, or a `summary` that names a branch or an action
 id, is rewritten first (`core/validation-queue.md`, "Written for the reader"): it is the last look
 before the user's. A ticket that
 failed the same step three times in a row is `blocked:` by the circuit breaker (`core/chain.md`).
@@ -165,12 +166,16 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
 
 1. **Cleanup**, once per calendar day (`cadences.json` → `cleanup`): archive then delete the handled rows
    older than 7 days (`core/validation-queue.md`, "Cleanup").
-2. **Counters** in `dev.json`: `ticks_today` (`{date, n}`), `tickets_started_today`,
+2. **Earned autonomy**: for each row of `dashboard-out/autonomy.json` of this project with
+   `due: yes` and a `type` not yet in `dev.json` → `autonomy_proposed`, add one `human_task`
+   (`ticket: "-"`) giving the figures and the exact row to add to `.ai-factory/autonomy.md`, say it in
+   the report, and add the type to `autonomy_proposed`. Never edit `autonomy.md`.
+3. **Counters** in `dev.json`: `ticks_today` (`{date, n}`), `tickets_started_today`,
    `last_tick_at` (ISO time, from the clock), `failed_ticks` (reset by a tick that ends without an error). Three failed ticks in a row:
    set `stopped` with the last error, and say so in the report and the notification.
-3. **Journal**: one line per action in `journal.md`, `YYYY-MM-DD HH:MM — <KEY> — <action> — <outcome>`,
+4. **Journal**: one line per action in `journal.md`, `YYYY-MM-DD HH:MM — <KEY> — <action> — <outcome>`,
    the time from the clock.
-4. **Notify**, if `pilots.dev.notify` is not `false`: when this tick added pending actions or
+5. **Notify**, if `pilots.dev.notify` is not `false`: when this tick added pending actions or
    `human_task`s, newly blocked a ticket, or tripped the circuit breaker, send **one**
    `PushNotification` for the tick, under 200 characters, leading with what to act on:
    `Lima: 2 to approve (plan #21, ship #19), #14 blocked`. The ids already notified are in
@@ -178,9 +183,9 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
    twice for the same row or block. Nothing new: no notification. If the tool answers that the
    phone was not reached (Remote Control inactive), say it once in the report and in
    `notified.json`, so the user knows a long absence will not reach them.
-5. **Dashboard**: the refresh of section 0c, always, last of all before the report: its banner is
+6. **Dashboard**: the refresh of section 0c, always, last of all before the report: its banner is
    how the user learns the tick ended and what waits for them. A refresh still running blocks this
    one, so first wait for `~/.ai-factory/dashboard.lock` to go, five minutes at most.
-6. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
+7. **Report**, short: approvals carried out; tickets moved with the state reached; what waits in
    the queue (its link); blocks with their reason; tickets started by hand; what was left for the
    next tick for lack of budget. Remove `dev.lock`.

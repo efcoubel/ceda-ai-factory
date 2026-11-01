@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.4.0
+
+Earned autonomy, measured on the 131 actions of three projects.
+
+- Per project and action type, `dashboard-data.py` reads the queue and its archive and writes the
+  `autonomy` dataset: level, approvals, current series. A new dashboard section shows it.
+- At 20 approvals in a row on an eligible type, the dev tick proposes once, in a `human_task`, to
+  delegate that type. Only the user edits `autonomy.md`.
+- The profile's `autonomy.md` now takes effect: a delegated type is queued at `ok` and runs on the
+  next tick, unless the tick is `dry`. No skill read that file before.
+- "Approved unchanged" no longer counts rows the pilot marked `done` itself, or rows rewritten after
+  a change, which ended `done`. Its figures can go down. `dashboard-queue.json` gains `rewritten_at`
+  and `answers`, and the queue dataset gains `approved`.
+
 ## 0.3.9
 
 - The support pilot leaves the roadmap and the descriptions: it is no longer planned. Earned autonomy

@@ -9,7 +9,7 @@ It works with the tools you already use. An onboarding discovers your repositori
 ticketing, forge, chat, data and logs, asks only what it could not find, and writes a project
 profile. The engine stays the same; the profile makes it yours.
 
-> Status: **0.3, early**. The onboarding, the doctor, new projects, the ticket chain, the dashboard
+> Status: **0.4, early**. The onboarding, the doctor, new projects, the ticket chain, the dashboard
 > and the dev pilot are written. See [the roadmap](#roadmap).
 
 ## What it does
@@ -33,6 +33,9 @@ profile. The engine stays the same; the profile makes it yours.
 - **The dev pilot** — `/ai-factory:dev` is one tick: it carries out what you approved, moves
   tickets forward in your priority order up to their next checkpoint, queues what needs you and
   notifies you. Run it in a loop: `/loop 30m /ai-factory:dev`.
+- **Earned autonomy** — after 20 approvals in a row without changes on one type of action, the pilot
+  proposes to stop asking for that type. You decide, in the profile's `autonomy.md`; the dashboard
+  shows the series.
 - **Team reviews** — on team profiles, `review-peers` reviews teammates' MRs/PRs in Conventional
   Comments and approves the clean ones; `follow-reviews` follows yours and nudges reviewers once a
   day at most. The dev pilot runs both on a schedule.
@@ -83,7 +86,7 @@ claude --plugin-dir /path/to/ceda-ai-factory/plugins/ai-factory
 - 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page; new projects (0.1.2).
 - 0.2 — the ticket chain; the dashboard (0.2.3).
 - 0.3 — the dev pilot and the review skills for teams; a validation page written for its reader (0.3.5).
-- 0.4 — earned autonomy, with its figures on the dashboard.
+- 0.4 — earned autonomy, with its figures on the dashboard. *(written, not yet proposed on a real project)*
 
 ## License
 
