@@ -1,7 +1,7 @@
 # ai-factory
 
 A Claude Code plugin that turns your tickets into an assembly line: Claude frames, codes, reviews,
-tests and ships each ticket, and two pilots (support and dev) loop on their own. Every action that
+tests and ships each ticket, and a dev pilot loops on its own. Every action that
 leaves your machine — an answer to a requester, a status change, a push, a merge request — waits in
 a validation queue until you approve it.
 
@@ -10,7 +10,7 @@ ticketing, forge, chat, data and logs, asks only what it could not find, and wri
 profile. The engine stays the same; the profile makes it yours.
 
 > Status: **0.3, early**. The onboarding, the doctor, new projects, the ticket chain, the dashboard
-> and the dev pilot are written; the support pilot is being ported from a production setup. See [the roadmap](#roadmap).
+> and the dev pilot are written. See [the roadmap](#roadmap).
 
 ## What it does
 
@@ -36,7 +36,6 @@ profile. The engine stays the same; the profile makes it yours.
 - **Team reviews** — on team profiles, `review-peers` reviews teammates' MRs/PRs in Conventional
   Comments and approves the clean ones; `follow-reviews` follows yours and nudges reviewers once a
   day at most. The dev pilot runs both on a schedule.
-- **The support pilot** *(coming)* — triages and answers support requests.
 
 ## Supported tools
 
@@ -84,8 +83,7 @@ claude --plugin-dir /path/to/ceda-ai-factory/plugins/ai-factory
 - 0.1 — onboarding, doctor, adapters, protected-branch hook, validation page; new projects (0.1.2).
 - 0.2 — the ticket chain; the dashboard (0.2.3).
 - 0.3 — the dev pilot and the review skills for teams; a validation page written for its reader (0.3.5).
-- 0.4 — the support pilot.
-- 0.5 — earned autonomy, with its figures on the dashboard.
+- 0.4 — earned autonomy, with its figures on the dashboard.
 
 ## License
 
