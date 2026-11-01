@@ -24,10 +24,9 @@ In `pilot dry` mode, *Delegated* becomes *Queue*.
 | Write in `.ai-factory/state/`, create a branch, commit locally | Free | — |
 | Approve one's own plan for a *low-risk* ticket, then code, review and test it locally | Delegated if `unattended.auto_plan` is on, else Queue | yes |
 | Approve the plan of any other ticket | Queue | no |
-| Support: answer a *safe case* and close it | Delegated | — |
-| Support: assign oneself an unassigned ticket | Queue | yes |
-| Any other public answer or ticket transition | Queue | yes |
-| Create a dev ticket from a support ticket, link them | Queue | yes |
+| Assign oneself an unassigned ticket | Queue | yes |
+| Any public answer or ticket transition | Queue | yes |
+| Create a ticket, link it | Queue | yes |
 | Push a branch, open a MR/PR, answer review threads | Queue | yes |
 | Merge into the staging branch | Queue | yes |
 | Review a teammate's MR/PR and approve it (team profiles) | Delegated | — |
@@ -35,18 +34,6 @@ In `pilot dry` mode, *Delegated* becomes *Queue*.
 | Write to any non-production data | Queue | no |
 | Write to production data, run a production script | Human | no |
 | Merge or push to a protected branch; connect to production data | Never | no |
-
-## Safe case (support)
-
-A support answer is published without approval only if **all** hold: the ticket is assigned to
-the user; the answer promises nothing and asks nobody to act; and it is one of:
-
-- a **figure** computed on non-production data that mirrors production, given with its query and
-  the date of the data;
-- a **verified finding**: the reported problem no longer exists in data newer than the ticket;
-- a **duplicate** of a ticket already done, which the answer cites.
-
-When in doubt, it is not a safe case.
 
 ## Working while the user is away
 

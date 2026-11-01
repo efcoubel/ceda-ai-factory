@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.4.1
+
+- The support groundwork leaves the engine: the onboarding's questions, the safe case and its
+  delegated row, the support states and `support.md`, `pilots.support`, the support queue of
+  `workflow.md`, the page's filter. A `pilots.support` left in a profile is ignored.
+- The matrix keeps assignments, public answers and ticket creation, now for the dev pilot, with the
+  levels they had.
+- Examples: a private project's name and Firebase ids replaced by `acme`, found by `check_no_leak.py`.
+
 ## 0.4.0
 
 Earned autonomy, measured on the 131 actions of three projects.

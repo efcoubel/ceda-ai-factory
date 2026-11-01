@@ -22,7 +22,7 @@ never taken over.
 
 | # | What | How to recognize it | Skill |
 |---|---|---|---|
-| 4 | Urgent | linked to a support ticket, or tool priority at or above the profile's "urgent" level | `ticket` |
+| 4 | Urgent | tool priority at or above the profile's "urgent" level | `ticket` |
 | 5 | In progress | `state.md` at `planned`, `coded`, `reviewed` or `tested`; most advanced first | `ticket` |
 
 ## C. Start, if fewer than `pilots.dev.max_in_chain` tickets are in the chain
