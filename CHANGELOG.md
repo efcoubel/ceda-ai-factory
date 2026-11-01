@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.8
+
+- Adapters: GitHub and GitHub Issues move from `draft` to `tested` after three real projects,
+  Firestore after one.
+
 ## 0.3.7
 
 From the 21 findings waiting on three projects.

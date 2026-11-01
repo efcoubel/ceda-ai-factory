@@ -1,6 +1,6 @@
 # GitHub
 
-**Status**: draft.
+**Status**: tested.
 
 ## Detect
 

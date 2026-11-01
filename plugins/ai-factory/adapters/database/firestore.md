@@ -1,6 +1,6 @@
 # Cloud Firestore (Firebase)
 
-**Status**: draft.
+**Status**: tested.
 
 ## Detect
 
