@@ -36,9 +36,6 @@
   },
   "repos": [],
   "pilots": {
-    "support": {
-      "enabled": false
-    },
     "dev": {
       "enabled": true,
       "max_in_chain": 3,

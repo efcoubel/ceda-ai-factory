@@ -166,7 +166,7 @@ const TEXT = {
     notePlaceholder: "What to change", noteMissing: "Write what to change first.", rejectPlaceholder: "Why, optional",
     rejectPlan: "The ticket leaves the pilot until you restart it.", rejectHint: "The pilot will not propose this again.",
     copy: "Copy", copied: "Copied", saveFailed: c => `Saving failed (${c}). Try again in a moment.`, unavailable: "The queue cannot be read in this view.", readFailed: c => `Reading stopped (${c}). Reload the page.`,
-    filters: { all: "All", support: "Support", dev: "Dev" },
+    filters: { all: "All", dev: "Dev" },
   },
   fr: {
     locale: "fr", colon: " : ", title: "Validation", decide: "À décider", routine: "Gestes de routine", moving: "Validé, en route vers le pilote", loading: "Chargement…",
@@ -186,7 +186,7 @@ const TEXT = {
     notePlaceholder: "Ce qu'il faut changer", noteMissing: "Écris d'abord ce qu'il faut changer.", rejectPlaceholder: "Pourquoi, facultatif",
     rejectPlan: "Le ticket sort du pilote jusqu'à ce que tu le relances.", rejectHint: "Le pilote ne le proposera plus.",
     copy: "Copier", copied: "Copié", saveFailed: c => `L'enregistrement a échoué (${c}). Réessaie dans un instant.`, unavailable: "La file ne peut pas être lue dans cette vue.", readFailed: c => `Lecture interrompue (${c}). Recharge la page.`,
-    filters: { all: "Tous", support: "Support", dev: "Dev" },
+    filters: { all: "Tous", dev: "Dev" },
   },
 };
 const META = document.querySelector('meta[name="ai-factory-validation"]');
@@ -518,7 +518,7 @@ document.getElementById("h-routine").textContent = T.routine;
 document.getElementById("routine-hint").textContent = T.routineHint;
 document.getElementById("h-moving").textContent = T.moving;
 document.getElementById("decide").textContent = T.loading;
-document.getElementById("filters").append(...["all", "support", "dev"].map(f => el("button", { type: "button", "data-f": f, onclick: () => {
+document.getElementById("filters").append(...["all", "dev"].map(f => el("button", { type: "button", "data-f": f, onclick: () => {
   filter = f; try { localStorage.setItem("filter", f); } catch (e) {} render();
 } }, T.filters[f])));
 

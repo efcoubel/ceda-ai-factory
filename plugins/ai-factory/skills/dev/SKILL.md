@@ -178,7 +178,7 @@ failed the same step three times in a row is `blocked:` by the circuit breaker (
 5. **Notify**, if `pilots.dev.notify` is not `false`: when this tick added pending actions or
    `human_task`s, newly blocked a ticket, or tripped the circuit breaker, send **one**
    `PushNotification` for the tick, under 200 characters, leading with what to act on:
-   `Lima: 2 to approve (plan #21, ship #19), #14 blocked`. The ids already notified are in
+   `Acme: 2 to approve (plan #21, ship #19), #14 blocked`. The ids already notified are in
    `notified.json` (a rewritten row is `<id>@<rewritten_at>`, so it counts as new): never notify
    twice for the same row or block. Nothing new: no notification. If the tool answers that the
    phone was not reached (Remote Control inactive), say it once in the report and in

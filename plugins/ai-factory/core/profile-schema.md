@@ -10,7 +10,7 @@
 {
   "schema": 1,
   "project": {
-    "name": "Lima",
+    "name": "Acme",
     "kind": "personal",
     "organization": null,
     "team": "solo",
@@ -27,9 +27,9 @@
   },
   "repos": [
     {
-      "name": "lima",
-      "path": "lima",
-      "remote": "git@github.com:<owner>/lima.git",
+      "name": "acme",
+      "path": "acme",
+      "remote": "git@github.com:<owner>/acme.git",
       "default_branch": "main",
       "staging": { "kind": "release", "build": "flutter build apk --release", "how": "firebase appdistribution:distribute …", "target": "testers", "unattended": false },
       "protected_branches": ["main"],
@@ -40,11 +40,10 @@
     }
   ],
   "pilots": {
-    "support": { "enabled": false },
     "dev": { "enabled": true, "max_in_chain": 3, "notify": true, "quiet_hours": { "enabled": false, "from": "22:00", "to": "07:00" } }
   },
   "autonomy": { "start_mode": "dry" },
-  "production_targets": ["lima-prod-ec"],
+  "production_targets": ["acme-prod"],
   "unattended": {
     "auto_plan": false,
     "low_risk": ["cause_proven", "single_repo", "no_data_migration", "no_dependency_change", "no_public_contract", "small", "type_allowed"],
@@ -108,8 +107,7 @@ production), and **what is forbidden** (production writes are always forbidden t
 
 ## `workflow.md`
 
-- The ticketing **queues**: the query that lists support tickets and the one that lists dev
-  tickets, in the tool's own query language.
+- The ticketing **queue**: the query that lists dev tickets, in the tool's own query language.
 - The **status map**: each tool status → engine state (`core/architecture.md`).
 - The **transitions** the chain uses (start work, ask for review, mark approved, done), by target
   status name, never by id.

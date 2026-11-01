@@ -14,15 +14,12 @@ Chain steps hand over through files, not through the conversation. Each ticket h
 | `ship-comment.md` | ship | The ticket comment, as sent |
 | `test-data.md` | test | The queries that found the accounts or records the test procedure uses |
 | `feedback.md` | feedback | Review threads handled, with their outcome |
-| `support.md` | support skills | Type, difficulty, diagnosis and evidence, proposed answer |
 | `actions.json` | skills in pilot mode | Actions proposed, waiting to be added to the validation queue. The pilot empties it once they are queued: the queue is the only source for their status |
 
 Development states, in order: `framing`, `planned` (or `planned (auto)` when the pilot approved a
 low-risk plan itself), `coded`, `reviewed`, `tested`, `shipped`, `feedback`, `staging`, `done`
 (the MR/PR is merged into the default branch). Worktrees a
 pilot needs live under `.ai-factory/state/worktrees/<KEY>/`.
-
-Support states: `triaged`, `queued`, `human-task`, `waiting-requester`, `escalated`, `closed`.
 
 Rules:
 

@@ -7,7 +7,7 @@ app):
 ```json
 "staging": { "kind": "branch", "branch": "staging" }
 "staging": { "kind": "release", "how": "firebase appdistribution:distribute build/app/outputs/flutter-apk/app-release.apk --app <app id> --groups testers", "build": "flutter build apk --release --flavor staging", "target": "Firebase App Distribution, group testers", "unattended": false }
-"staging": { "kind": "deploy", "how": "firebase deploy --only functions,firestore:rules --project lima-staging-ec", "target": "lima-staging-ec", "unattended": false }
+"staging": { "kind": "deploy", "how": "firebase deploy --only functions,firestore:rules --project acme-staging", "target": "acme-staging", "unattended": false }
 "staging": { "kind": "none" }
 "staging": [{ "kind": "deploy", … }, { "kind": "release", … }]
 ```

@@ -3,7 +3,6 @@
 ## Queues
 
 - **Dev queue**:
-- **Support queue**:
 - **Background** (started only when nothing else is left):
 
 ## Status map

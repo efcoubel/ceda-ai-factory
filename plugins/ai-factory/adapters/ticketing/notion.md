@@ -9,7 +9,7 @@ The Notion MCP connector is available (`notion-search`, `notion-fetch`,
 
 ## Profile config
 
-`{"data_source": "<data source id or url>", "properties": {"title": "Name", "status": "Status", "type": "Type", "priority": "Priority", "assignee": "Assignee", "key": "ID"}, "key_prefix": "LIMA"}`
+`{"data_source": "<data source id or url>", "properties": {"title": "Name", "status": "Status", "type": "Type", "priority": "Priority", "assignee": "Assignee", "key": "ID"}, "key_prefix": "ACME"}`
 — the property names are read from the database schema during onboarding, not guessed.
 
 ## Check

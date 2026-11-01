@@ -102,8 +102,7 @@ call:
 2. **Repositories**: for each repo, its purpose in business terms (open answer, one call per two or
    three repos), and which repos talk to which. Confirm the inferred stack and commands only where
    discovery was unsure.
-3. **Tickets**: which tool and which project/board/database; is there a support queue (requests
-   from users) distinct from development work; which statuses mean "new", "in progress", "in
+3. **Tickets**: which tool and which project/board/database; which statuses mean "new", "in progress", "in
    review", "done"; what is "urgent". **Keys**: if the ids that branches and commits carry are not
    the tool's own (a file backlog's `US-3.2` against GitHub's `#42`), say which ones were found and
    ask where the key lives from now on: at the start of the ticket title (recommended when the
@@ -128,8 +127,7 @@ call:
    user to complete. In `environments.md`, say exactly what the hooks guard (those targets through
    the deploy and cloud CLIs, the protected branches) and that the rest relies on the rules: never
    write that "the hook protects production" more broadly than that.
-6. **Pilots and autonomy**: enable the support pilot, the dev pilot, or both; scope of the dev
-   pilot (which projects, which are background only); start in `dry` mode (recommended: everything
+6. **Pilot and autonomy**: enable the dev pilot; its scope (which projects, which are background only); start in `dry` mode (recommended: everything
    waits for approval) or `normal`; validation queue on an artifact page (if available) or a local
    file; a notification when something new waits for approval (`pilots.dev.notify`, recommended:
    yes; it reaches the phone when Remote Control is connected). Quiet hours are not asked: they

@@ -10,7 +10,7 @@ with buttons, or a local markdown file when artifacts are not available.
 |---|---|
 | `id` | `<KEY>-<type>-<YYYYMMDDHHMM>`: `<type>` is the `type` field, the time from the clock |
 | `ticket` | Ticket key |
-| `pilot` | `support` or `dev` |
+| `pilot` | `dev` |
 | `type` | `comment`, `transition`, `assign`, `create_ticket`, `human_task`, `plan`, `ship`, `review_answers`, `merge_staging`, `cleanup`, `review_comments`, `nudge` |
 | `ticket_title`, `ticket_url` | The ticket's title, as its tool shows it, and its link |
 | `summary` | The question put to the user, one sentence (see "Written for the reader") |
@@ -78,7 +78,7 @@ carry `summary`, `why` and `effects`. An `assign`, `transition` or `cleanup` car
 
 ## Cleanup
 
-Once a day, on the first tick of either pilot (`state/pilot/cadences.json`, key `cleanup`):
+Once a day, on the first tick of the day (`state/pilot/cadences.json`, key `cleanup`):
 
 1. append every `done`, `rejected` or `failed` action older than **7 days** to
    `state/pilot/archive/YYYY-MM.jsonl`, one JSON line each;
